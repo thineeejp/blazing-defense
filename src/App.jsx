@@ -9,13 +9,16 @@ import {
   Shield,
   Bell,
   Truck,
-  BookOpen,
-  CheckCircle,
   AlertTriangle,
   HelpCircle,
   Skull,
-  PenTool,
 } from 'lucide-react';
+
+// コンポーネントのインポート
+import Menu from './components/Menu';
+import GameOver from './components/GameOver';
+import DraftPhase from './components/DraftPhase';
+import ExamPhase from './components/ExamPhase';
 
 // --- データ定義 ---
 
@@ -561,146 +564,6 @@ export default function BlazingDefense() {
     setIsPaused(false);
   };
 
-  const renderMenu = () => (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white p-4">
-      <h1 className="text-4xl md:text-6xl font-black text-red-500 mb-2 italic tracking-tighter drop-shadow-[0_4px_0_rgba(0,0,0,0.5)]">
-        BLAZING DEFENSE
-      </h1>
-      <div className="bg-red-600 text-white font-bold px-4 py-1 skew-x-[-12deg] mb-8">Ver.4.4 Phase 2 &amp; Types</div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
-        {DRAFT_MISSIONS.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => startBattle(m)}
-            className="bg-slate-800 border-2 border-slate-600 hover:border-yellow-400 p-6 rounded-xl text-left transition-all hover:-translate-y-2 group relative overflow-hidden"
-          >
-            <div
-              className={`text-xs font-bold mb-1 ${
-                m.difficulty === 'EASY' ? 'text-green-400' : m.difficulty === 'NORMAL' ? 'text-yellow-400' : 'text-red-400'
-              }`}
-            >
-              MISSION: {m.difficulty}
-            </div>
-            <div className="text-xl font-bold text-white mb-2">{m.title}</div>
-            <div className="text-gray-400 text-sm">{m.desc}</div>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderDraft = () => (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white p-4">
-      <div className="max-w-2xl w-full bg-slate-800 p-8 rounded-xl border-2 border-blue-500 relative">
-        <h2 className="text-2xl font-bold text-blue-300 mb-6 flex items-center gap-2">
-          <BookOpen /> Phase 1: 現場診断 (DRAFT)
-        </h2>
-
-        {draftResult === null ? (
-          <>
-            <p className="text-lg mb-6">{selectedMission.question}</p>
-            <div className="space-y-4">
-              {selectedMission.options.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => answerDraft(opt.correct)}
-                  className="w-full p-4 bg-slate-700 hover:bg-slate-600 border border-slate-500 rounded text-left transition-colors"
-                >
-                  {opt.text}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="text-center animate-in zoom-in">
-            {draftResult === 'correct' ? (
-              <div className="mb-6">
-                <CheckCircle size={64} className="mx-auto text-green-400 mb-2" />
-                <h3 className="text-2xl font-bold text-green-400">正解！的確な判断だ。</h3>
-                <p className="text-gray-400 mt-2">
-                  特別報酬として<span className="text-yellow-400 font-bold"> {REWARD_CARDS[selectedMission.rewardCard].name} </span>
-                  を支給する。
-                </p>
-              </div>
-            ) : (
-              <div className="mb-6">
-                <AlertTriangle size={64} className="mx-auto text-red-500 mb-2" />
-                <h3 className="text-2xl font-bold text-red-500">判断ミス...</h3>
-                <p className="text-gray-400 mt-2">初期装備のみで出動する。健闘を祈る。</p>
-              </div>
-            )}
-            <button
-              onClick={startExam}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full w-full"
-            >
-              次へ: 予算獲得試験 (Phase 2)
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderExam = () => {
-    const currentQ = EXAM_QUESTIONS[examState.qIndex];
-
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white p-4">
-        <div className="max-w-2xl w-full bg-slate-800 p-8 rounded-xl border-2 border-yellow-500 relative">
-          <h2 className="text-2xl font-bold text-yellow-300 mb-6 flex items-center gap-2">
-            <PenTool /> Phase 2: 予算獲得ライセンス試験
-          </h2>
-
-          {!examState.finished ? (
-            <div className="animate-in fade-in slide-in-from-right duration-300">
-              <div className="flex justify-between text-sm text-gray-400 mb-4">
-                <span>Question {examState.qIndex + 1} / {EXAM_QUESTIONS.length}</span>
-                <span>Score: {examState.correctCount}</span>
-              </div>
-              <p className="text-xl font-bold mb-8 min-h-[80px]">{currentQ.q}</p>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={() => answerExam(true)}
-                  className="p-6 bg-blue-600 hover:bg-blue-500 rounded-xl text-2xl font-bold transition-transform hover:scale-105"
-                >
-                  ◯ 正しい
-                </button>
-                <button
-                  onClick={() => answerExam(false)}
-                  className="p-6 bg-red-600 hover:bg-red-500 rounded-xl text-2xl font-bold transition-transform hover:scale-105"
-                >
-                  × 誤り
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center animate-in zoom-in">
-              <h3 className="text-3xl font-bold mb-4">試験終了</h3>
-              <div className="text-6xl font-black text-yellow-400 mb-2">{examState.correctCount} / {EXAM_QUESTIONS.length}</div>
-              <p className="text-gray-400 mb-6">正解数に応じて初期予算が決定されます。</p>
-
-              <div className="bg-slate-900 p-4 rounded mb-6 text-left max-h-40 overflow-y-auto">
-                {examState.history.map((h, i) => (
-                  <div key={i} className={`flex items-start gap-2 mb-2 text-sm ${h.isCorrect ? 'text-green-400' : 'text-red-400'}`}>
-                    <span>{h.isCorrect ? '◯' : '×'}</span>
-                    <span>Q{i + 1}: {h.note || (h.isCorrect ? '正解' : '不正解')}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={goBattle}
-                className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full w-full animate-pulse"
-              >
-                出動開始 (BATTLE START)
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   const renderBattle = () => {
     const gridStyle = {
@@ -935,22 +798,29 @@ export default function BlazingDefense() {
 
   return (
     <div className="w-full h-screen overflow-hidden font-sans select-none">
-      {phase === 'MENU' && renderMenu()}
-      {phase === 'DRAFT' && renderDraft()}
-      {phase === 'EXAM' && renderExam()}
+      {phase === 'MENU' && (
+        <Menu missions={DRAFT_MISSIONS} onStartBattle={startBattle} />
+      )}
+      {phase === 'DRAFT' && (
+        <DraftPhase
+          selectedMission={selectedMission}
+          draftResult={draftResult}
+          rewardCards={REWARD_CARDS}
+          onAnswerDraft={answerDraft}
+          onStartExam={startExam}
+        />
+      )}
+      {phase === 'EXAM' && (
+        <ExamPhase
+          examQuestions={EXAM_QUESTIONS}
+          examState={examState}
+          onAnswerExam={answerExam}
+          onGoBattle={goBattle}
+        />
+      )}
       {phase === 'BATTLE' && renderBattle()}
       {phase === 'GAMEOVER' && (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-black/90 text-white">
-          <h2 className="text-5xl font-black text-red-600 mb-4 animate-bounce">GAME OVER</h2>
-          <div className="text-2xl mb-8">救助人数: {score}人</div>
-          <div className="text-gray-400 mb-8">敵が防衛ライン(手前)を突破しました</div>
-          <button
-            onClick={() => setPhase('MENU')}
-            className="bg-white text-black font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform"
-          >
-            タイトルへ戻る
-          </button>
-        </div>
+        <GameOver score={score} onBackToMenu={() => setPhase('MENU')} />
       )}
     </div>
   );
