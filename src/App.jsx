@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import {
   Flame,
   Wind,
@@ -208,6 +208,7 @@ export default function BlazingDefense() {
   const [supplyModal, setSupplyModal] = useState(null);
   const [supplyCooldown, setSupplyCooldown] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [removeModal, setRemoveModal] = useState(null);
 
   const frameRef = useRef(0);
   const gameLoopRef = useRef(null);
@@ -240,6 +241,7 @@ export default function BlazingDefense() {
     };
     gameLoopRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(gameLoopRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, isPaused]);
 
   const updateBattleLogic = () => {
@@ -272,8 +274,9 @@ export default function BlazingDefense() {
 
         // サイズが大きくなるほど移動速度をわずかに減速させる
         // サイズが大きいほど減速。特にサイズ3は強めにブレーキをかける。
-        const sizeSlow = e.size >= 3 ? 2.0 : 1 + (e.size - 1) * 0.6;
-        let newProgress = e.progress + e.speed / sizeSlow;
+        // 安全ガード: sizeが異常値でも0除算を防ぐ
+        const sizeSlow = e.size >= 3 ? 2.0 : Math.max(0.1, 1 + (e.size - 1) * 0.6);
+        let newProgress = isNaN(e.progress) || !isFinite(e.progress) ? -1 : e.progress + e.speed / sizeSlow;
         let newSize = e.size;
         const currentBottom = e.progress + e.size;
         if (e.size === 1 && currentBottom > 3.0) newSize = 2;
@@ -458,11 +461,7 @@ export default function BlazingDefense() {
     const key = `${r}-${c}`;
     if (towers[key]) {
       if (towers[key].card.type !== 'purple') {
-        if (window.confirm('撤去しますか？')) {
-          const newTowers = { ...towers };
-          delete newTowers[key];
-          setTowers(newTowers);
-        }
+        setRemoveModal({ r, c, key });
       }
       return;
     }
@@ -472,6 +471,16 @@ export default function BlazingDefense() {
       addEffect(c, r, '設置', 'text-white');
       setSelectedCard(null);
     }
+  };
+
+  const confirmRemove = () => {
+    if (removeModal) {
+      const newTowers = { ...towers };
+      delete newTowers[removeModal.key];
+      setTowers(newTowers);
+      addEffect(removeModal.c, removeModal.r, '撤去', 'text-gray-400');
+    }
+    setRemoveModal(null);
   };
 
   const startBattle = (mission) => {
@@ -890,6 +899,32 @@ export default function BlazingDefense() {
                     {i + 1}. {opt}
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Remove Confirmation Modal */}
+        {removeModal && (
+          <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-6">
+            <div className="bg-slate-800 border-2 border-red-500 p-6 rounded-xl w-full max-w-md animate-in zoom-in">
+              <h3 className="text-red-400 font-bold text-xl mb-4 flex items-center gap-2">
+                <AlertTriangle /> 設備撤去確認
+              </h3>
+              <p className="text-white text-lg mb-6">この設備を撤去しますか？</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={confirmRemove}
+                  className="flex-1 p-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded transition-colors"
+                >
+                  撤去する
+                </button>
+                <button
+                  onClick={() => setRemoveModal(null)}
+                  className="flex-1 p-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded transition-colors"
+                >
+                  キャンセル
+                </button>
               </div>
             </div>
           </div>
