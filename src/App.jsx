@@ -8,6 +8,7 @@ import {
   Shield,
   Bell,
   Truck,
+  Package,
 } from 'lucide-react';
 
 // コンポーネントのインポート
@@ -39,6 +40,7 @@ const DRAFT_MISSIONS = [
       { id: 'B', text: '不活性ガス消火設備', correct: true },
     ],
     rewardCard: 'gasSystem',
+    evacuationGoal: 100,
   },
   {
     id: 'department',
@@ -51,6 +53,7 @@ const DRAFT_MISSIONS = [
       { id: 'B', text: '光電式スポット型感知器', correct: true },
     ],
     rewardCard: 'superSmoke',
+    evacuationGoal: 300,
   },
   {
     id: 'factory',
@@ -63,6 +66,7 @@ const DRAFT_MISSIONS = [
       { id: 'B', text: '泡による窒息', correct: true },
     ],
     rewardCard: 'foamHead',
+    evacuationGoal: 600,
   },
 ];
 
@@ -121,10 +125,21 @@ const CARDS_BASE = {
     type: 'green',
     cost: 50,
     icon: <DoorOpen size={24} />,
-    desc: '【避難】定期的に救助スコアを獲得',
-    effect: 'score',
-    value: 20,
-    interval: 60,
+    desc: '【避難】避難速度を0.5人/秒加速',
+    effect: 'evacuation',
+    value: 0.5,
+    rangeType: 'self',
+  },
+  rescueChute: {
+    id: 'rescueChute',
+    name: '救助袋',
+    type: 'green',
+    cost: 80,
+    icon: <Package size={24} />,
+    desc: '【避難】避難速度を1.0人/秒加速',
+    effect: 'evacuation',
+    value: 1.0,
+    rangeType: 'self',
   },
   fireEngine: {
     id: 'fireEngine',
@@ -187,7 +202,6 @@ export default function BlazingDefense() {
 
   const [hp, setHp] = useState(INITIAL_HP);
   const [cost, setCost] = useState(100);
-  const [score, setScore] = useState(0);
   const [towers, setTowers] = useState({});
   const [enemies, setEnemies] = useState([]);
   const [deck, setDeck] = useState(CARDS_BASE);
@@ -202,6 +216,14 @@ export default function BlazingDefense() {
   const [supplyCooldown, setSupplyCooldown] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [removeModal, setRemoveModal] = useState(null);
+
+  // 勝利条件とスコアシステム関連の状態
+  const [isVictory, setIsVictory] = useState(false);
+  const [evacuatedCount, setEvacuatedCount] = useState(0);
+  const [timeLimit] = useState(10800); // 3分 = 180秒 × 60FPS
+  const [evacuationGoal, setEvacuationGoal] = useState(100);
+  const [defeatedEnemies, setDefeatedEnemies] = useState(0);
+  const [clearTime, setClearTime] = useState(0);
 
   const frameRef = useRef(0);
   const gameLoopRef = useRef(null);
@@ -247,6 +269,22 @@ export default function BlazingDefense() {
       if (t.card.effect === 'economy') recovery += t.card.value;
     });
     setCost((c) => Math.min(999, c + recovery));
+
+    // 避難速度計算（基本1人/秒 + green系タワーの加速）
+    let currentEvacSpeed = 1.0;
+    Object.values(towersRef.current).forEach((t) => {
+      if (t.card.type === 'green') {
+        const evacuationBoost = t.card.id === 'exitSign' ? 0.5
+                              : t.card.id === 'rescueChute' ? 1.0
+                              : 0.5;
+        currentEvacSpeed += evacuationBoost;
+      }
+    });
+
+    // 60フレームごとに避難人数を更新（1秒 = 60フレーム）
+    if (frameRef.current % 60 === 0) {
+      setEvacuatedCount((count) => Math.min(evacuationGoal, count + currentEvacSpeed));
+    }
 
     const spawnRate = Math.max(30, difficultyRef.current.spawnRate - Math.floor(frameRef.current / 500));
     if (frameRef.current % spawnRate === 0) {
@@ -303,11 +341,34 @@ export default function BlazingDefense() {
         }
       });
 
+      // 勝利条件チェック
+      if (!isVictory) {
+        // 条件1: 時間制限到達
+        if (frameRef.current >= timeLimit) {
+          setIsVictory(true);
+          setClearTime(frameRef.current);
+          setPhase('GAMEOVER');
+          return next;
+        }
+
+        // 条件2: 避難目標達成
+        if (evacuatedCount >= evacuationGoal) {
+          setIsVictory(true);
+          setClearTime(frameRef.current);
+          setPhase('GAMEOVER');
+          return next;
+        }
+      }
+
+      // 敗北判定
       if (damageEvents.length > 0) {
         const totalDamage = damageEvents.reduce((acc, ev) => acc + ev.damage, 0);
         setHp((h) => {
           const val = h - totalDamage;
-          if (val <= 0) setPhase('GAMEOVER');
+          if (val <= 0) {
+            setIsVictory(false);
+            setPhase('GAMEOVER');
+          }
           return val;
         });
         setDamaged(true);
@@ -334,13 +395,11 @@ export default function BlazingDefense() {
         return;
       }
 
-      const triggerTime = t.card.type === 'green' ? t.card.interval : t.card.speed;
-      if (t.timer >= triggerTime) {
-        t.timer = 0;
-        if (t.card.type === 'green') {
-          setScore((s) => s + t.card.value);
-          addEffect(tc, tr, `+${t.card.value}`, 'text-green-400');
-        } else {
+      // green系タワーは避難速度のみに影響（タイマー処理なし）
+      if (t.card.type === 'red' || t.card.type === 'purple') {
+        const triggerTime = t.card.speed;
+        if (t.timer >= triggerTime) {
+          t.timer = 0;
           fireAttack(t, tr, tc);
         }
       }
@@ -440,7 +499,7 @@ export default function BlazingDefense() {
       const killedCount = targets.length - survivors.length;
       if (killedCount > 0) {
         setCost((c) => c + 15 * killedCount);
-        setScore((s) => s + 100 * killedCount);
+        setDefeatedEnemies((count) => count + killedCount);
       }
       return survivors;
     });
@@ -448,6 +507,45 @@ export default function BlazingDefense() {
 
   const addEffect = (c, r, text, color) => {
     setEffects((prev) => [...prev, { id: Math.random(), c, r, y: 0, text, color, life: 30 }]);
+  };
+
+  const calculateFinalScore = () => {
+    // 基本スコア（避難重視）
+    const evacuationScore = evacuatedCount * 100;
+
+    // 時間ボーナス（早いほど高い）
+    const timeBonus = isVictory ? Math.max(0, (timeLimit - clearTime) * 10) : 0;
+
+    // HP残量ボーナス
+    const hpBonus = Math.floor(hp) * 20;
+
+    // コスト効率ボーナス
+    const costBonus = Math.floor(cost) * 5;
+
+    // 撃破ボーナス
+    const defeatBonus = defeatedEnemies * 100;
+
+    // 特別ボーナス
+    const noDamageBonus = (hp === INITIAL_HP) ? 2000 : 0;
+    const speedBonus = (isVictory && clearTime <= timeLimit / 2) ? 1000 : 0;
+    const economyBonus = (cost >= 200) ? 500 : 0;
+
+    const totalScore = evacuationScore + timeBonus + hpBonus + costBonus + defeatBonus
+                     + noDamageBonus + speedBonus + economyBonus;
+
+    return {
+      total: totalScore,
+      breakdown: {
+        evacuation: evacuationScore,
+        time: timeBonus,
+        hp: hpBonus,
+        cost: costBonus,
+        defeat: defeatBonus,
+        noDamage: noDamageBonus,
+        speed: speedBonus,
+        economy: economyBonus,
+      }
+    };
   };
 
   const handleSlotClick = (r, c) => {
@@ -533,7 +631,17 @@ export default function BlazingDefense() {
     setSupplyCooldown(0);
     setIsPaused(false);
     frameRef.current = 0;
-    setScore(0);
+
+    // 勝利条件・スコアシステムの初期化
+    setIsVictory(false);
+    setEvacuatedCount(0);
+    setDefeatedEnemies(0);
+    setClearTime(0);
+    // ミッション選択に応じた避難目標を設定
+    if (selectedMission) {
+      setEvacuationGoal(selectedMission.evacuationGoal || 100);
+    }
+
     setPhase('BATTLE');
   };
 
@@ -580,7 +688,10 @@ export default function BlazingDefense() {
         <BattleField
           hp={hp}
           cost={cost}
-          score={score}
+          evacuatedCount={evacuatedCount}
+          evacuationGoal={evacuationGoal}
+          frameCount={frameRef.current}
+          timeLimit={timeLimit}
           towers={towers}
           enemies={enemies}
           effects={effects}
@@ -601,8 +712,19 @@ export default function BlazingDefense() {
         />
       )}
       {phase === 'GAMEOVER' && (
-        <GameOver score={score} onBackToMenu={() => setPhase('MENU')} />
+        <GameOver
+          isVictory={isVictory}
+          scoreData={calculateFinalScore()}
+          onBackToMenu={() => setPhase('MENU')}
+        />
       )}
     </div>
   );
 }
+
+
+
+
+
+
+

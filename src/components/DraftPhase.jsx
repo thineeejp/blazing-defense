@@ -1,12 +1,6 @@
 import { BookOpen, CheckCircle, AlertTriangle } from 'lucide-react';
 
-export default function DraftPhase({
-  selectedMission,
-  draftResult,
-  rewardCards,
-  onAnswerDraft,
-  onStartExam
-}) {
+export default function DraftPhase({ selectedMission, draftResult, rewardCards, onAnswerDraft, onStartExam }) {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white p-4">
       <div className="max-w-2xl w-full bg-slate-800 p-8 rounded-xl border-2 border-blue-500 relative">
@@ -47,10 +41,7 @@ export default function DraftPhase({
                 <p className="text-gray-400 mt-2">初期装備のみで出動する。健闘を祈る。</p>
               </div>
             )}
-            <button
-              onClick={onStartExam}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full w-full"
-            >
+            <button onClick={onStartExam} className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full w-full">
               次へ: 予算獲得試験 (Phase 2)
             </button>
           </div>

@@ -1,11 +1,6 @@
 import { PenTool } from 'lucide-react';
 
-export default function ExamPhase({
-  examQuestions,
-  examState,
-  onAnswerExam,
-  onGoBattle
-}) {
+export default function ExamPhase({ examQuestions, examState, onAnswerExam, onGoBattle }) {
   const currentQ = examQuestions[examState.qIndex];
 
   return (
@@ -18,7 +13,9 @@ export default function ExamPhase({
         {!examState.finished ? (
           <div className="animate-in fade-in slide-in-from-right duration-300">
             <div className="flex justify-between text-sm text-gray-400 mb-4">
-              <span>Question {examState.qIndex + 1} / {examQuestions.length}</span>
+              <span>
+                Question {examState.qIndex + 1} / {examQuestions.length}
+              </span>
               <span>Score: {examState.correctCount}</span>
             </div>
             <p className="text-xl font-bold mb-8 min-h-[80px]">{currentQ.q}</p>
@@ -40,14 +37,21 @@ export default function ExamPhase({
         ) : (
           <div className="text-center animate-in zoom-in">
             <h3 className="text-3xl font-bold mb-4">試験終了</h3>
-            <div className="text-6xl font-black text-yellow-400 mb-2">{examState.correctCount} / {examQuestions.length}</div>
+            <div className="text-6xl font-black text-yellow-400 mb-2">
+              {examState.correctCount} / {examQuestions.length}
+            </div>
             <p className="text-gray-400 mb-6">正解数に応じて初期予算が決定されます。</p>
 
             <div className="bg-slate-900 p-4 rounded mb-6 text-left max-h-40 overflow-y-auto">
               {examState.history.map((h, i) => (
-                <div key={i} className={`flex items-start gap-2 mb-2 text-sm ${h.isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                <div
+                  key={i}
+                  className={`flex items-start gap-2 mb-2 text-sm ${h.isCorrect ? 'text-green-400' : 'text-red-400'}`}
+                >
                   <span>{h.isCorrect ? '◯' : '×'}</span>
-                  <span>Q{i + 1}: {h.note || (h.isCorrect ? '正解' : '不正解')}</span>
+                  <span>
+                    Q{i + 1}: {h.note || (h.isCorrect ? '正解' : '不正解')}
+                  </span>
                 </div>
               ))}
             </div>

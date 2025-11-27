@@ -1,11 +1,4 @@
-import {
-  Flame,
-  ShieldAlert,
-  Zap,
-  AlertTriangle,
-  HelpCircle,
-  Skull,
-} from 'lucide-react';
+import { Flame, ShieldAlert, Zap, AlertTriangle, HelpCircle, Skull, Users } from 'lucide-react';
 
 const GRID_ROWS = 6;
 const RANGE_LABEL = {
@@ -18,7 +11,10 @@ const RANGE_LABEL = {
 export default function BattleField({
   hp,
   cost,
-  score,
+  evacuatedCount,
+  evacuationGoal,
+  frameCount,
+  timeLimit,
   towers,
   enemies,
   effects,
@@ -58,8 +54,14 @@ export default function BattleField({
           <div className="flex items-center gap-2 bg-yellow-900/40 text-yellow-400 px-3 py-1 rounded border border-yellow-900">
             <Zap size={18} /> <span className="font-mono font-bold text-xl">{Math.floor(cost)}</span>
           </div>
+          <div className="flex items-center gap-2 bg-green-900/40 text-green-400 px-3 py-1 rounded border border-green-900">
+            <Users size={18} />
+            <span className="font-mono font-bold text-xl">{Math.floor(evacuatedCount)}/{evacuationGoal}</span>
+          </div>
         </div>
-        <div className="font-mono font-bold text-green-400 text-xl">{score} Pt</div>
+        <div className="font-mono font-bold text-white text-xl">
+          残り時間: {Math.floor((timeLimit - frameCount) / 60)}秒
+        </div>
       </div>
 
       {/* Main 3D Grid Area */}
@@ -145,7 +147,7 @@ export default function BattleField({
 
           {/* Effects */}
           {effects.map((ef) => {
-          const topPct = (Math.floor(ef.r) / GRID_ROWS) * 100;
+            const topPct = (Math.floor(ef.r) / GRID_ROWS) * 100;
             const leftPct = (ef.c / difficultyRef.current.cols) * 100;
             return (
               <div

@@ -26,47 +26,68 @@ npm run lint         # ESLintでコードチェック（.jsx拡張子対象）
 ### プロジェクト構造
 ```
 src/
-  ├── App.jsx       # メインゲームコンポーネント（全ゲームロジック）
-  ├── main.jsx      # Reactアプリケーションのエントリーポイント
-  └── index.css     # グローバルスタイル（Tailwindディレクティブ含む）
+  ├── components/
+  │   ├── Menu.jsx          # メニュー画面（~30行）
+  │   ├── GameOver.jsx      # ゲームオーバー画面（~15行）
+  │   ├── DraftPhase.jsx    # Phase 1: 現場診断フェーズ（~60行）
+  │   ├── ExamPhase.jsx     # Phase 2: 予算獲得試験フェーズ（~70行）
+  │   └── BattleField.jsx   # Phase 3: バトル画面（~240行）
+  ├── App.jsx               # メインロジックと状態管理（~560行）
+  ├── main.jsx              # Reactアプリケーションのエントリーポイント
+  └── index.css             # グローバルスタイル（Tailwindディレクティブ含む）
 
-public/             # 静的アセット（あれば）
-index.html          # HTMLテンプレート
-vite.config.js      # Viteビルド設定
-tailwind.config.js  # TailwindCSS設定
-postcss.config.js   # PostCSS設定
+public/                     # 静的アセット（あれば）
+index.html                  # HTMLテンプレート
+vite.config.js              # Viteビルド設定
+tailwind.config.js          # TailwindCSS設定
+postcss.config.js           # PostCSS設定
+.eslintrc.json              # ESLint設定（React/JSX対応）
+.eslintignore               # ESLint除外設定
+設計仕様書.md              # 詳細な設計ドキュメント
 ```
 
 ### アーキテクチャの特徴
 
-#### モノリシックコンポーネント設計
-**重要**: このプロジェクトは意図的に単一の大きなコンポーネント（`App.jsx`）にすべてのロジックを集約しています。
+#### コンポーネントベース設計（Phase 1-3でリファクタリング済み）
 
-- **BlazingDefense**: 約900行の単一コンポーネント
-  - すべてのゲーム状態（HP、コスト、スコア、タワー、敵など）
-  - すべてのゲームロジック（スポーン、戦闘、攻撃判定など）
-  - すべてのUI描画（メニュー、試験、バトル、ゲームオーバー）
-  - すべてのイベントハンドラー
+**進化の履歴**:
+- **当初**: 922行の単一コンポーネント（モノリシック設計）
+- **現在**: 560行のApp.jsx + 5つの画面コンポーネント（39%削減）
 
-この設計を採用した理由:
-- 小規模なゲームプロジェクトとして、状態の共有が容易
-- すべてのゲームロジックが一箇所にあるため、ゲーム全体の動作を理解しやすい
-- コンポーネント間の複雑なprops受け渡しを避ける
+**現在の設計方針**:
+- **App.jsx**: すべてのゲーム状態とロジックを一元管理（~560行）
+  - ゲーム状態（HP、コスト、スコア、タワー、敵など）
+  - ゲームロジック（スポーン、戦闘、攻撃判定、ゲームループ）
+  - イベントハンドラー
+- **画面コンポーネント**: Propsベースの純粋なUIコンポーネント
+  - `Menu.jsx`: ミッション選択画面
+  - `DraftPhase.jsx`: Phase 1 現場診断クイズ
+  - `ExamPhase.jsx`: Phase 2 予算獲得試験
+  - `BattleField.jsx`: Phase 3 バトル画面（グリッド、敵、タワー、デッキ、モーダル）
+  - `GameOver.jsx`: ゲームオーバー画面
 
-**コード変更時の注意点**:
-- コンポーネント分割を提案する前に、現在の設計意図を尊重してください
-- 新機能追加時も基本的に`App.jsx`内に実装してください
-- リファクタリングは必要性が明確な場合のみ提案してください
+**この設計を採用した理由**:
+- 小規模ゲームのため、Redux/Zustand等の状態管理ライブラリは不要
+- データフローがシンプル（App.jsx → コンポーネント）
+- 各画面の責務が明確で保守性が向上
+- 過度な細分化を避け、適切な粒度を維持
+
+**欠点と今後の検討事項**:
+- Props Drillingが深い（BattleFieldで20個のprops）
+- 将来的な規模拡大時は状態管理ライブラリの導入を検討
 
 #### 状態管理
 - **React Hooksベース**: `useState`、`useEffect`、`useRef`を使用
 - **useRefの活用**: `requestAnimationFrame`ループ内で最新状態を参照するため、`towersRef`、`difficultyRef`などのrefを使用
-- **直接的な状態更新**: グローバル状態管理ライブラリ（Redux、Zustandなど）は使用していません
+- **直接的な状態更新**: グローバル状態管理ライブラリ（Redux、Zustandなど）は現時点では使用していません
+- **一元管理**: すべての状態はApp.jsxで管理し、Propsで子コンポーネントに渡す
 
 #### ゲームループ
 ```javascript
 // requestAnimationFrameベースのゲームループ
 useEffect(() => {
+  if (phase !== 'BATTLE' || isPaused) return;
+
   const loop = () => {
     frameRef.current += 1;
     updateBattleLogic();  // ゲームロジック更新
@@ -77,7 +98,7 @@ useEffect(() => {
 }, [phase, isPaused]);
 ```
 
-- フレームベースでゲーム状態を更新
+- フレームベースでゲーム状態を更新（60FPS）
 - `phase`が`'BATTLE'`でかつ`isPaused`が`false`の時のみループが動作
 - 敵のスポーン、移動、攻撃判定、タワーの発動などをフレームごとに処理
 
@@ -89,6 +110,30 @@ useEffect(() => {
 #### アイコン
 - **lucide-react**: すべてのアイコン（Flame、Wind、Shield、Bellなど）はlucide-reactから読み込み
 - カスタムSVGアイコンは使用していません
+
+### 開発履歴とコード品質改善
+
+#### Phase 1: コード品質改善（2025-11-26 / コミット: ae703ca）
+- **ESLint設定追加**: `.eslintrc.json`でReact/JSX推奨ルールを適用
+- **非ブロッキングUI**: `window.confirm` → カスタムモーダル（`removeModal`）に置き換え
+- **安全ガード**: `sizeSlow`計算でNaN/Infinite対策、0除算防止
+- **結果**: lint/buildエラー0、警告0達成
+
+#### Phase 2: コンポーネント分割（Menu/Draft/Exam/GameOver）（2025-11-26 / コミット: 36328bc）
+- `src/components/`ディレクトリを新規作成
+- Menu、GameOver、DraftPhase、ExamPhaseコンポーネントを分離
+- App.jsx: 922行 → 780行（-15%削減）
+
+#### Phase 3: BattleFieldコンポーネント分割（2025-11-26 / コミット: 13625ba）
+- `BattleField.jsx`を作成（~240行）
+- グリッド、敵、タワー、エフェクト、デッキ、モーダルを含む
+- App.jsx: 780行 → 560行（累計-39%削減）
+
+#### コード品質保証
+- **ESLint**: React/JSX推奨設定で静的解析
+- **安全ガード**: NaN/Infinite対策、0除算防止
+- **非ブロッキングUI**: window.confirm廃止、カスタムモーダル採用
+- **ビルド最適化**: Viteによる高速ビルド（~3.7秒、167kB gzipped 55kB）
 
 ### データ構造
 
@@ -104,6 +149,8 @@ phase: 'MENU' | 'DRAFT' | 'EXAM' | 'BATTLE' | 'GAMEOVER'
 - `SUPPLY_QUESTIONS`: 緊急補給クイズの問題
 - `CARDS_BASE`: 基本カードデッキ
 - `REWARD_CARDS`: ミッションクリア報酬カード
+- `GRID_ROWS`: グリッド行数（6固定、BattleField.jsx内で定義）
+- `RANGE_LABEL`: 攻撃範囲ラベル（BattleField.jsx内で定義）
 
 #### カードシステム
 カードは以下のタイプに分類:
@@ -137,8 +184,15 @@ MENU → DRAFT（現場診断） → EXAM（予算獲得試験） → BATTLE →
 
 ### 一般的なガイドライン
 - **言語**: このプロジェクトのコメントとUI文言はすべて日本語です
-- **コンポーネント**: 新機能は基本的に`App.jsx`内に追加してください
+- **コンポーネント分割**: 新しい画面やフェーズを追加する場合は、`src/components/`に新規コンポーネントを作成
+- **状態管理**: すべての状態はApp.jsxで管理し、Propsで子コンポーネントに渡す
 - **命名**: 既存のコードスタイルに従ってください（キャメルケース、わかりやすい変数名）
+
+### コンポーネント設計
+- **画面単位**: 各フェーズ（MENU/DRAFT/EXAM/BATTLE/GAMEOVER）は独立したコンポーネント
+- **Propsベース**: コンポーネントは純粋なUI表示を担当し、ロジックはApp.jsxに配置
+- **過度な細分化を避ける**: 画面レベルまでで止め、ボタンやカードなどの小さなUIは各コンポーネント内に記述
+- **Props Drillingの認識**: BattleFieldのように多数のpropsが必要な場合は、将来的に状態管理ライブラリの導入を検討
 
 ### スタイリング
 - Tailwindのユーティリティクラスを優先的に使用
@@ -152,7 +206,13 @@ MENU → DRAFT（現場診断） → EXAM（予算獲得試験） → BATTLE →
 
 ### ESLint
 - コミット前に `npm run lint` でコードチェック
-- 警告は0を目標としてください（`--max-warnings 0`）
+- 警告は0を目標としてください
+- 設定ファイル: `.eslintrc.json` (React/JSX推奨設定)
+
+### 安全性
+- **NaN/Infinite対策**: 数値計算後に`isNaN()`と`isFinite()`でチェック
+- **0除算防止**: 除算前に分母が0でないことを確認
+- **非ブロッキングUI**: `window.confirm`や`window.alert`は使用せず、カスタムモーダルを実装
 
 ## 新機能開発時の推奨アプローチ
 
@@ -160,3 +220,22 @@ MENU → DRAFT（現場診断） → EXAM（予算獲得試験） → BATTLE →
 2. **段階的な実装**: 大きな機能は小さなステップに分けて実装し、都度動作確認
 3. **データとロジックの分離**: 新しいゲーム要素（ミッション、カードなど）は定数として定義
 4. **UIの一貫性**: 既存のUIスタイル（色、レイアウト、アニメーション）を踏襲
+5. **コンポーネント分割の検討**: 新しいフェーズや画面を追加する場合は、`src/components/`に新規ファイルを作成
+
+## 今後の拡張案
+
+詳細は`設計仕様書.md`の第8章を参照してください。
+
+### 技術的改善の候補
+- **TypeScript移行**: 型安全性の向上
+- **状態管理ライブラリ**: Zustand/Jotai等でProps Drilling解消
+- **カスタムフック**: `useGameLoop`, `useEnemies`, `useTowers`への分離
+- **定数ファイル分離**: `constants/cards.js`, `missions.js`, `questions.js`
+- **ユニットテスト**: Vitest導入でゲームロジックのテスト
+- **パフォーマンス最適化**: React.memo、useMemo、useCallbackの適用
+
+## 参考資料
+- `設計仕様書.md`: ゲームシステム、フェーズ、カード、敵の詳細仕様
+- Vite公式ドキュメント: https://vitejs.dev/
+- Tailwind CSS公式ドキュメント: https://tailwindcss.com/
+- lucide-react公式ドキュメント: https://lucide.dev/
