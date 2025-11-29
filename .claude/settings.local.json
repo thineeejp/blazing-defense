@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(npm run build:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nStep 5: バグ修正完了 - アイコン描画/攻撃判定/effect処理/特殊効果実装\n\n- BattleField.jsx: React.createElementでアイコン描画を修正\n- App.jsx: 攻撃可能カード判定を power !== undefined && power > 0 に修正\n- App.jsx: 13種類のeffect処理を完全実装（economy, evacuation, buffs等）\n- App.jsx: 特殊効果ロジック実装（変身/DoT/スロー/バフ/コスト割引）\n- 動作確認完了（ビルドエラー0）\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nStep 6: セルフレビュー修正 - duration未定義/earlyWarning削除\n\n- cards.js: fireNotificationに duration: null を追加（永続・変身まで明示）\n- cards.js: autoFireAlarmから earlyWarning: true を削除（未実装機能）\n- ビルド確認: エラー0（3.85s, 187.75kB gzipped 62.40kB）\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

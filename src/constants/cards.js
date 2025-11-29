@@ -113,7 +113,6 @@ export const ALL_CARDS = {
     rangeType: 'self',
     effect: 'economy',
     value: 1.2,
-    earlyWarning: true,
   },
 
   broadcastSystem: {
@@ -139,6 +138,7 @@ export const ALL_CARDS = {
     tier: 3,
     type: 'yellow',
     cost: 120,
+    duration: null, // 永続（変身まで）
     icon: AlertTriangle,
     desc: '【警報】コスト+1.0/秒→10秒後ポンプ車に変身',
     rangeType: 'self',
