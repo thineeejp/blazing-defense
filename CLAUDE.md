@@ -27,23 +27,26 @@ npm run lint         # ESLintでコードチェック（.jsx拡張子対象）
 ```
 src/
   ├── components/
-  │   ├── Menu.jsx          # メニュー画面（~30行）
-  │   ├── GameOver.jsx      # ゲームオーバー画面（~15行）
-  │   ├── DraftPhase.jsx    # Phase 1: 現場診断フェーズ（~60行）
-  │   ├── ExamPhase.jsx     # Phase 2: 予算獲得試験フェーズ（~70行）
-  │   └── BattleField.jsx   # Phase 3: バトル画面（~240行）
-  ├── App.jsx               # メインロジックと状態管理（~560行）
-  ├── main.jsx              # Reactアプリケーションのエントリーポイント
-  └── index.css             # グローバルスタイル（Tailwindディレクティブ含む）
+  │   ├── Menu.jsx            # メニュー画面（~30行）
+  │   ├── GameOver.jsx        # ゲームオーバー画面（~15行）
+  │   ├── BriefingPhase.jsx   # BRIEFINGフェーズ（~200行）- Tier強化システム
+  │   └── BattleField.jsx     # バトル画面（~270行）
+  ├── constants/
+  │   ├── cards.js            # 全22種類のカード定義
+  │   ├── equipment.js        # Tierシステム・オーバーフロー報酬定義
+  │   └── quizzes.js          # クイズ問題プール（5種別×10問）
+  ├── App.jsx                 # メインロジックと状態管理（~960行）
+  ├── main.jsx                # Reactアプリケーションのエントリーポイント
+  └── index.css               # グローバルスタイル（Tailwindディレクティブ含む）
 
-public/                     # 静的アセット（あれば）
-index.html                  # HTMLテンプレート
-vite.config.js              # Viteビルド設定
-tailwind.config.js          # TailwindCSS設定
-postcss.config.js           # PostCSS設定
-.eslintrc.json              # ESLint設定（React/JSX対応）
-.eslintignore               # ESLint除外設定
-設計仕様書.md              # 詳細な設計ドキュメント
+public/                       # 静的アセット（あれば）
+index.html                    # HTMLテンプレート
+vite.config.js                # Viteビルド設定
+tailwind.config.js            # TailwindCSS設定
+postcss.config.js             # PostCSS設定
+.eslintrc.json                # ESLint設定（React/JSX対応）
+.eslintignore                 # ESLint除外設定
+設計仕様書.md                # 詳細な設計ドキュメント（Ver.5.0）
 ```
 
 ### アーキテクチャの特徴
@@ -52,28 +55,35 @@ postcss.config.js           # PostCSS設定
 
 **進化の履歴**:
 - **当初**: 922行の単一コンポーネント（モノリシック設計）
-- **現在**: 560行のApp.jsx + 5つの画面コンポーネント（39%削減）
+- **Phase 1-3**: 560行のApp.jsx + 5つの画面コンポーネント（39%削減）
+- **Phase 4以降**: BRIEFINGシステム導入でApp.jsx再拡大（~960行）+ 定数ファイル分離
 
-**現在の設計方針**:
-- **App.jsx**: すべてのゲーム状態とロジックを一元管理（~560行）
-  - ゲーム状態（HP、コスト、スコア、タワー、敵など）
-  - ゲームロジック（スポーン、戦闘、攻撃判定、ゲームループ）
+**現在の設計方針（v2.0）**:
+- **App.jsx**: すべてのゲーム状態とロジックを一元管理（~960行）
+  - ゲーム状態（HP、コスト、避難人数、タワー、敵など）
+  - ゲームロジック（スポーン、戦闘、攻撃判定、13種類のeffect処理）
+  - Tierシステム、オーバーフロー報酬、変身/DoT/スロー/バフ等の特殊効果
   - イベントハンドラー
 - **画面コンポーネント**: Propsベースの純粋なUIコンポーネント
-  - `Menu.jsx`: ミッション選択画面
-  - `DraftPhase.jsx`: Phase 1 現場診断クイズ
-  - `ExamPhase.jsx`: Phase 2 予算獲得試験
-  - `BattleField.jsx`: Phase 3 バトル画面（グリッド、敵、タワー、デッキ、モーダル）
+  - `Menu.jsx`: 難易度選択画面
+  - `BriefingPhase.jsx`: BRIEFING画面（Tier強化システム、3ラウンド制クイズ）
+  - `BattleField.jsx`: バトル画面（グリッド、敵、タワー、デッキ、モーダル）
   - `GameOver.jsx`: ゲームオーバー画面
+- **定数ファイル**: `src/constants/`で分離管理
+  - `cards.js`: 全22種類のカード定義（13種類のeffect処理対応）
+  - `equipment.js`: Tierシステム（5カテゴリ×3Tier）とオーバーフロー報酬定義
+  - `quizzes.js`: クイズ問題プール（5種別×10問＝50問）
 
 **この設計を採用した理由**:
 - 小規模ゲームのため、Redux/Zustand等の状態管理ライブラリは不要
 - データフローがシンプル（App.jsx → コンポーネント）
 - 各画面の責務が明確で保守性が向上
+- 定数ファイル分離でデータとロジックを分離
 - 過度な細分化を避け、適切な粒度を維持
 
 **欠点と今後の検討事項**:
-- Props Drillingが深い（BattleFieldで20個のprops）
+- Props Drillingが深い（BattleFieldで25個以上のprops）
+- App.jsx再拡大（960行）→ カスタムフック分離の検討
 - 将来的な規模拡大時は状態管理ライブラリの導入を検討
 
 #### 状態管理
@@ -129,37 +139,99 @@ useEffect(() => {
 - グリッド、敵、タワー、エフェクト、デッキ、モーダルを含む
 - App.jsx: 780行 → 560行（累計-39%削減）
 
+#### Phase 4: 勝利条件とスコアシステムの刷新（2025-11-28 / コミット: f4eda77）
+- **BRIEFINGシステム導入**: DRAFT/EXAMフェーズを廃止し、Tier強化システムに置き換え
+  - 3ラウンド制のクイズ形式
+  - 5カテゴリ（消火/警報/避難/施設/その他）× 3Tier
+  - Tier4以降でオーバーフロー報酬（コスト割引-10%、攻撃力+15%）
+- **定数ファイル分離**: `src/constants/`ディレクトリ新設
+  - `cards.js`: 全22カード定義
+  - `equipment.js`: Tierシステム定義
+  - `quizzes.js`: クイズ問題プール（50問）
+- **勝利条件変更**: 時間制限 + 避難人数目標達成
+- **BriefingPhase.jsx**: 新コンポーネント作成（~200行）
+- App.jsx: 560行 → ~960行（BRIEFINGロジック追加で再拡大）
+
+#### Phase 5: バグ修正（レビュー指摘対応）（2025-11-30 / コミット: 32749de）
+- **アイコン描画修正**: `React.createElement(tower.card.icon, { size: 24 })`に統一
+- **攻撃可能カード判定修正**: `power !== undefined && power > 0`で判定
+- **effect処理完全実装**: 13種類のeffectをswitch-caseで実装
+  - economy, evacuation, economyAndEvacuation, economyWithTransform
+  - evacuationWithRegen, evacuationWithRegenAndBuff, buffPower
+  - globalSpeedBuffWithRegen, globalSlowWithEvacuation, rowBlockTimed
+  - firefighterSupport, areaDotWithSlow, ultimateBuff
+- **特殊効果ロジック実装**: 変身、DoT、スロー、バフ、コスト割引
+
+#### Phase 6: セルフレビュー対応（データ定義の整合性修正）（2025-11-30 / コミット: aac03a7）
+- **fireNotificationのduration未定義を修正**: `duration: null`（永続・変身まで）を明示
+- **autoFireAlarmのearlyWarning削除**: 未実装機能のプロパティを削除
+
 #### コード品質保証
 - **ESLint**: React/JSX推奨設定で静的解析
 - **安全ガード**: NaN/Infinite対策、0除算防止
 - **非ブロッキングUI**: window.confirm廃止、カスタムモーダル採用
-- **ビルド最適化**: Viteによる高速ビルド（~3.7秒、167kB gzipped 55kB）
+- **ビルド最適化**: Viteによる高速ビルド（~3.8秒、187kB gzipped 62kB）
+- **継続的なセルフレビュー**: 実装内容の整合性確認とバグ修正
 
 ### データ構造
 
 #### ゲームフェーズ
 ```javascript
-phase: 'MENU' | 'DRAFT' | 'EXAM' | 'BATTLE' | 'GAMEOVER'
+phase: 'MENU' | 'BRIEFING' | 'BATTLE' | 'GAMEOVER'
 ```
 
-#### 主要な定数
-- `DIFFICULTIES`: 難易度設定（EASY/NORMAL/HARD）
-- `DRAFT_MISSIONS`: ミッション定義（現場診断）
-- `EXAM_QUESTIONS`: 予算獲得試験の問題
+#### 主要な定数（`src/constants/`で定義）
+
+**cards.js**:
+- `ALL_CARDS`: 全22種類のカード定義（id, name, category, tier, type, cost, duration, effect, 等）
+  - 消火設備（fire）: 5種類（extinguisher, indoorHydrant, sprinkler, foamSystem, inertGasSystem）
+  - 警報設備（alarm）: 4種類（emergencyBell, autoFireAlarm, broadcastSystem, fireNotification）
+  - 避難設備（evacuation）: 4種類（escapeLadder, guidanceLight, descentDevice, rescueChute）
+  - 施設（facility）: 3種類（standpipe, emergencyOutlet, smokeControl）
+  - その他（other）: 5種類（fireDoor, emergencyElevator, packageFireSystem, compactFireAlarm, disasterControlCenter）
+  - 特別（alarm）: 1種類（fireEngine - fireNotificationから変身）
+
+**equipment.js**:
+- `EQUIPMENT_CATEGORIES`: 5カテゴリ定義（fire, alarm, evacuation, facility, other）
+- `EQUIPMENT_TIERS`: 各カテゴリのTier1-3装備リスト
+- `OVERFLOW_BONUSES`: Tier4以降の報酬（costDiscount: -10%, powerBuff: +15%）
+
+**quizzes.js**:
+- `QUIZ_POOL`: 5カテゴリ × 10問 = 50問のクイズ問題プール
+
+**App.jsx内**:
+- `DIFFICULTIES`: 難易度設定（EASY/NORMAL/HARD）- cols, spawnInterval, enemySpeedBase
 - `SUPPLY_QUESTIONS`: 緊急補給クイズの問題
-- `CARDS_BASE`: 基本カードデッキ
-- `REWARD_CARDS`: ミッションクリア報酬カード
-- `GRID_ROWS`: グリッド行数（6固定、BattleField.jsx内で定義）
+- `GRID_ROWS`: グリッド行数（6固定、BattleField.jsx内でも定義）
 - `RANGE_LABEL`: 攻撃範囲ラベル（BattleField.jsx内で定義）
 
 #### カードシステム
 カードは以下のタイプに分類:
-- **red（消火設備）**: 敵にダメージを与える
+- **red（消火設備）**: 敵にダメージを与える攻撃タワー
 - **yellow（警報設備）**: コスト回復を強化
-- **green（避難設備）**: 定期的にスコアを獲得
-- **purple（特殊）**: 強力な効果を持つ期間限定設備
+- **green（避難設備）**: 避難速度を上げ、勝利条件達成を促進
+- **blue（施設）**: バフ効果を周囲または全体に付与
+- **purple（特殊）**: 強力な効果を持つ期間限定設備やサポート
 
-各カードは`rangeType`（攻撃範囲）と`damageType`（ダメージタイプ）を持ち、敵の`fireType`との相性でダメージが変動します。
+各カードは以下のプロパティを持つ:
+- **攻撃カード**: `rangeType`（攻撃範囲）、`damageType`（ダメージタイプ）、`power`（攻撃力）、`speed`（攻撃速度）
+- **効果カード**: `effect`（効果タイプ）、`value`（効果値）、`duration`（持続時間）
+- **特殊カード**: `transformInto`（変身先）、`dotDamage`（DoTダメージ）、`slowValue`（スロー効果）等
+
+**13種類のeffectタイプ**:
+1. `economy`: コスト回復強化
+2. `evacuation`: 避難速度強化
+3. `economyAndEvacuation`: コスト回復＋避難速度
+4. `economyWithTransform`: コスト回復＋時間経過で変身
+5. `evacuationWithRegen`: 避難速度＋HP回復
+6. `evacuationWithRegenAndBuff`: 避難速度＋HP回復＋全体攻撃速度バフ
+7. `buffPower`: 周囲の攻撃力バフ
+8. `globalSpeedBuffWithRegen`: 全体攻撃速度バフ＋HP回復
+9. `globalSlowWithEvacuation`: 全敵スロー＋避難速度強化
+10. `rowBlockTimed`: 横1列を一定時間完全停止（自爆）
+11. `firefighterSupport`: 全体攻撃速度バフ＋配置コスト割引
+12. `areaDotWithSlow`: 周囲にDoT＋スロー
+13. `ultimateBuff`: 全能力バフ＋避難速度＋HP回復
 
 #### 座標系
 - グリッドは`r`（行）と`c`（列）で管理
@@ -167,18 +239,30 @@ phase: 'MENU' | 'DRAFT' | 'EXAM' | 'BATTLE' | 'GAMEOVER'
 - `c`は左から右へ（0 ～ difficulty.cols-1）
 - タワーの位置は`"r-c"`形式の文字列キーで管理（例: `"2-3"`）
 
-### ゲームフロー
+### ゲームフロー（v2.0 - BRIEFINGシステム）
 
 ```
-MENU → DRAFT（現場診断） → EXAM（予算獲得試験） → BATTLE → GAMEOVER → MENU
-                  ↓                    ↓
-          ミッション選択         正解数で初期コスト決定
-          正解で報酬カード獲得
+MENU → BRIEFING（Tier強化） → BATTLE → GAMEOVER → MENU
+          ↓                      ↓
+    3ラウンドクイズ          HP維持 + 避難目標達成
+    Tier1-3を順次解放         勝利条件: 時間内に避難完了
+    Tier4以降でボーナス       敗北条件: HP 0% or 時間切れ
 ```
 
-1. **DRAFT**: ミッション選択後、現場に関するクイズに回答。正解すると特別カードを獲得
-2. **EXAM**: ○×形式の消防設備試験。正解数×40のコストボーナスを獲得
-3. **BATTLE**: タワーを配置して火災（敵）を防衛。HPが0になるとゲームオーバー
+1. **MENU**: 難易度選択（EASY/NORMAL/HARD）
+2. **BRIEFING**: Tier強化システム（3ラウンド制）
+   - 各ラウンドで5カテゴリ（消火/警報/避難/施設/その他）からランダム出題
+   - 正解するとそのカテゴリのTierが1上昇（Tier1→2→3）
+   - Tier3到達後もクイズに正解するとTier4, 5...と上昇
+   - Tier4以降: オーバーフロー報酬（コスト割引-10%、攻撃力+15%）
+   - Round 3終了後、獲得したTierに応じたカードデッキで戦闘開始
+3. **BATTLE**: タワーディフェンス戦闘
+   - タワー配置: デッキからカードを選択してグリッドに配置
+   - 攻撃タワー: 敵にダメージを与える（rangeType: surround/line/wide/global）
+   - 効果タワー: コスト回復、避難速度、バフ、デバフ等の効果を発揮
+   - 緊急補給: クイズに正解してカードを獲得（クールダウン300フレーム）
+   - 勝利条件: 時間内（難易度により変動）に避難目標人数を達成
+   - 敗北条件: HP 0%到達 または 時間切れ
 
 ## コーディング規約
 
@@ -189,10 +273,11 @@ MENU → DRAFT（現場診断） → EXAM（予算獲得試験） → BATTLE →
 - **命名**: 既存のコードスタイルに従ってください（キャメルケース、わかりやすい変数名）
 
 ### コンポーネント設計
-- **画面単位**: 各フェーズ（MENU/DRAFT/EXAM/BATTLE/GAMEOVER）は独立したコンポーネント
+- **画面単位**: 各フェーズ（MENU/BRIEFING/BATTLE/GAMEOVER）は独立したコンポーネント
 - **Propsベース**: コンポーネントは純粋なUI表示を担当し、ロジックはApp.jsxに配置
 - **過度な細分化を避ける**: 画面レベルまでで止め、ボタンやカードなどの小さなUIは各コンポーネント内に記述
 - **Props Drillingの認識**: BattleFieldのように多数のpropsが必要な場合は、将来的に状態管理ライブラリの導入を検討
+- **定数ファイル分離**: カード定義、クイズ問題、Tierシステムは`src/constants/`で管理
 
 ### スタイリング
 - Tailwindのユーティリティクラスを優先的に使用
@@ -224,15 +309,24 @@ MENU → DRAFT（現場診断） → EXAM（予算獲得試験） → BATTLE →
 
 ## 今後の拡張案
 
-詳細は`設計仕様書.md`の第8章を参照してください。
+詳細は`設計仕様書.md`を参照してください。
 
 ### 技術的改善の候補
-- **TypeScript移行**: 型安全性の向上
-- **状態管理ライブラリ**: Zustand/Jotai等でProps Drilling解消
-- **カスタムフック**: `useGameLoop`, `useEnemies`, `useTowers`への分離
-- **定数ファイル分離**: `constants/cards.js`, `missions.js`, `questions.js`
-- **ユニットテスト**: Vitest導入でゲームロジックのテスト
-- **パフォーマンス最適化**: React.memo、useMemo、useCallbackの適用
+- **TypeScript移行**: 型安全性の向上（特にcard定義、effect処理の型安全化）
+- **状態管理ライブラリ**: Zustand/Jotai等でProps Drilling解消（BattleFieldの25個以上のprops対策）
+- **カスタムフック**: `useGameLoop`, `useEnemies`, `useTowers`, `useEffects`への分離でApp.jsx簡素化
+- **ユニットテスト**: Vitest導入でゲームロジックのテスト（effect処理、攻撃判定、勝利条件等）
+- **パフォーマンス最適化**: React.memo、useMemo、useCallbackの適用（特にBattleFieldのレンダリング最適化）
+- **エラーハンドリング強化**: カード定義の不整合検出、effectタイプの未実装検出
+- **デバッグツール**: 開発モード時のゲーム状態可視化、タワー効果の詳細表示
+
+### ゲームシステム拡張の候補
+- **追加カテゴリ**: 避難誘導、消火活動（消防隊）、防災訓練等
+- **追加難易度**: VERY EASY（チュートリアル）、VERY HARD（上級者向け）
+- **追加敵タイプ**: 特殊火災（油火災、電気火災等）、複合災害
+- **追加勝利条件**: パーフェクト勝利（HP 100%維持）、スピードクリア（時間短縮）
+- **実績システム**: カード使用実績、敵撃破数、累計避難人数等
+- **ストーリーモード**: 段階的な難易度上昇、チュートリアル統合
 
 ## 参考資料
 - `設計仕様書.md`: ゲームシステム、フェーズ、カード、敵の詳細仕様
