@@ -14,9 +14,13 @@ import {
 // コンポーネントのインポート
 import Menu from './components/Menu';
 import GameOver from './components/GameOver';
-import DraftPhase from './components/DraftPhase';
-import ExamPhase from './components/ExamPhase';
+import BriefingPhase from './components/BriefingPhase';
 import BattleField from './components/BattleField';
+
+// 新しい定数のインポート
+import { ALL_CARDS } from './constants/cards';
+import { EQUIPMENT_TREES, BRIEFING_REWARD_TABLE, OVERFLOW_BONUS } from './constants/equipment';
+import { QUIZ_QUESTIONS } from './constants/quizzes';
 
 // --- データ定義 ---
 
@@ -204,18 +208,43 @@ export default function BlazingDefense() {
   const [cost, setCost] = useState(100);
   const [towers, setTowers] = useState({});
   const [enemies, setEnemies] = useState([]);
-  const [deck, setDeck] = useState(CARDS_BASE);
+  const [deck, setDeck] = useState({});
   const [selectedCard, setSelectedCard] = useState(null);
   const [effects, setEffects] = useState([]);
   const [damaged, setDamaged] = useState(false);
 
   const [selectedMission, setSelectedMission] = useState(null);
-  const [draftResult, setDraftResult] = useState(null);
-  const [examState, setExamState] = useState({ qIndex: 0, correctCount: 0, history: [], finished: false });
   const [supplyModal, setSupplyModal] = useState(null);
   const [supplyCooldown, setSupplyCooldown] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [removeModal, setRemoveModal] = useState(null);
+
+  // 新しいBRIEFINGシステムの状態
+  const [tiers, setTiers] = useState({
+    fire: 1,
+    alarm: 1,
+    evacuation: 1,
+    facility: 1,
+    other: 1,
+  });
+
+  const [categoryBuffs, setCategoryBuffs] = useState({
+    fire: { costDiscount: 0, powerBuff: 0 },
+    alarm: { costDiscount: 0, powerBuff: 0 },
+    evacuation: { costDiscount: 0, powerBuff: 0 },
+    facility: { costDiscount: 0, powerBuff: 0 },
+    other: { costDiscount: 0, powerBuff: 0 },
+  });
+
+  const [briefingState, setBriefingState] = useState({
+    round: 1,
+    phase: 'SELECT', // 'SELECT' | 'QUIZ' | 'RESULT'
+    selectedCategory: null,
+    quizzes: [],
+    currentQIndex: 0,
+    correctCount: 0,
+    totalCost: 0,
+  });
 
   // 勝利条件とスコアシステム関連の状態
   const [isVictory, setIsVictory] = useState(false);
@@ -224,12 +253,14 @@ export default function BlazingDefense() {
   const [evacuationGoal, setEvacuationGoal] = useState(100);
   const [defeatedEnemies, setDefeatedEnemies] = useState(0);
   const [clearTime, setClearTime] = useState(0);
+  const [globalCostReduction, setGlobalCostReduction] = useState(0);
 
   const frameRef = useRef(0);
   const gameLoopRef = useRef(null);
   const towersRef = useRef(towers);
   const difficultyRef = useRef(difficulty);
   const supplyCooldownRef = useRef(supplyCooldown);
+  const globalBuffsRef = useRef({ speed: 0 });
 
   useEffect(() => {
     towersRef.current = towers;
@@ -264,24 +295,80 @@ export default function BlazingDefense() {
       setSupplyCooldown((c) => Math.max(0, c - 1));
     }
 
+    // effect処理（全13種類に対応）
     let recovery = 0.05;
-    Object.values(towersRef.current).forEach((t) => {
-      if (t.card.effect === 'economy') recovery += t.card.value;
-    });
-    setCost((c) => Math.min(999, c + recovery));
+    let evacBoost = 0;
+    let hpRegen = 0;
+    let globalSpeedBuff = 0;
+    let globalSlowDebuff = 0;
+    let globalPowerBuff = 0;
+    let globalCostReduction = 0;
 
-    // 避難速度計算（基本1人/秒 + green系タワーの加速）
-    let currentEvacSpeed = 1.0;
     Object.values(towersRef.current).forEach((t) => {
-      if (t.card.type === 'green') {
-        const evacuationBoost = t.card.id === 'exitSign' ? 0.5
-                              : t.card.id === 'rescueChute' ? 1.0
-                              : 0.5;
-        currentEvacSpeed += evacuationBoost;
+      const card = t.card;
+      if (!card.effect) return;
+
+      switch (card.effect) {
+        case 'economy':
+          recovery += card.value;
+          break;
+        case 'economyAndEvacuation':
+          recovery += card.economyValue;
+          evacBoost += card.evacuationValue;
+          break;
+        case 'economyWithTransform':
+          recovery += card.value;
+          break;
+        case 'evacuation':
+          evacBoost += card.value;
+          break;
+        case 'evacuationWithRegen':
+          evacBoost += card.evacuationValue;
+          hpRegen += card.regenValue;
+          break;
+        case 'evacuationWithRegenAndBuff':
+          evacBoost += card.evacuationValue;
+          hpRegen += card.regenValue;
+          globalSpeedBuff += card.globalSpeedBuff;
+          break;
+        case 'buffPower':
+          // 周囲バフは攻撃計算時に処理
+          break;
+        case 'globalSpeedBuffWithRegen':
+          globalSpeedBuff += card.speedBuff;
+          hpRegen += card.regenValue;
+          break;
+        case 'globalSlowWithEvacuation':
+          globalSlowDebuff += card.slowValue;
+          evacBoost += card.evacuationValue;
+          break;
+        case 'firefighterSupport':
+          globalSpeedBuff += card.globalSpeedBuff;
+          globalCostReduction += card.costReduction;
+          break;
+        case 'ultimateBuff':
+          globalPowerBuff += card.globalPowerBuff;
+          globalSpeedBuff += card.globalSpeedBuff;
+          evacBoost += card.evacuationValue;
+          hpRegen += card.regenValue;
+          break;
       }
     });
 
-    // 60フレームごとに避難人数を更新（1秒 = 60フレーム）
+    // グローバルバフを保存（攻撃間隔・UI用）
+    globalBuffsRef.current = { speed: globalSpeedBuff, power: globalPowerBuff };
+    setGlobalCostReduction((prev) => (prev === globalCostReduction ? prev : globalCostReduction));
+
+    // コスト回復適用
+    setCost((c) => Math.min(999, c + recovery));
+
+    // HP回復適用（毎秒）
+    if (frameRef.current % 60 === 0 && hpRegen > 0) {
+      setHp((h) => Math.min(100, h + hpRegen));
+    }
+
+    // 避難速度適用（基本1.0 + ブースト）
+    const currentEvacSpeed = 1.0 + evacBoost;
     if (frameRef.current % 60 === 0) {
       setEvacuatedCount((count) => Math.min(evacuationGoal, count + currentEvacSpeed));
     }
@@ -291,11 +378,24 @@ export default function BlazingDefense() {
       spawnEnemy();
     }
 
+    // 防火戸で塞がれている行
+    const blockedRows = new Set();
+    Object.entries(towersRef.current).forEach(([key, t]) => {
+      if (t.card.effect === 'rowBlockTimed' && t.lifeTime < (t.card.blockDuration || t.card.duration || 0)) {
+        blockedRows.add(Number(key.split('-')[0]));
+      }
+    });
+
     setEnemies((prev) => {
       const next = [];
       const damageEvents = [];
 
       prev.forEach((e) => {
+        if (e.slowTimer && e.slowTimer > 0) {
+          e = { ...e, slowTimer: e.slowTimer - 1 };
+          if (e.slowTimer <= 0) e.slowValue = 0;
+        }
+
         if (e.isAttacking) {
           if (e.attackAnimTimer > 0) {
             next.push({ ...e, attackAnimTimer: e.attackAnimTimer - 1 });
@@ -307,7 +407,13 @@ export default function BlazingDefense() {
         // サイズが大きいほど減速。特にサイズ3は強めにブレーキをかける。
         // 安全ガード: sizeが異常値でも0除算を防ぐ
         const sizeSlow = e.size >= 3 ? 2.0 : Math.max(0.1, 1 + (e.size - 1) * 0.6);
-        let newProgress = isNaN(e.progress) || !isFinite(e.progress) ? -1 : e.progress + e.speed / sizeSlow;
+        // globalSlowDebuff適用（smokeControl等の減速効果）
+        const actualSpeed = e.speed * (1 - globalSlowDebuff) * (1 - (e.slowValue || 0));
+        let newProgress = isNaN(e.progress) || !isFinite(e.progress) ? -1 : e.progress + actualSpeed / sizeSlow;
+        const enemyRow = Math.floor(e.progress + e.size / 2);
+        if (blockedRows.has(enemyRow)) {
+          newProgress = e.progress;
+        }
         let newSize = e.size;
         const currentBottom = e.progress + e.size;
         if (e.size === 1 && currentBottom > 3.0) newSize = 2;
@@ -389,15 +495,62 @@ export default function BlazingDefense() {
       t.timer += 1;
       t.lifeTime = (t.lifeTime || 0) + 1;
 
-      if (t.card.duration && t.lifeTime >= t.card.duration) {
+      // duration処理（nullは永続なのでスキップ）
+      if (t.card.duration !== null && t.lifeTime >= t.card.duration) {
         delete newTowers[key];
-        addEffect(tc, tr, '帰隊', 'text-purple-300');
+
+        // 種別ごとの消滅メッセージ
+        const category = t.card.category;
+        let message = '停止！';
+        if (category === 'fire') message = '薬剤切れ！';
+        else if (category === 'alarm') message = '電源ダウン！';
+        else if (category === 'evacuation') message = '疲労限界！';
+        else if (category === 'facility') message = '過負荷！';
+
+        addEffect(tc, tr, message, 'text-gray-400');
         return;
       }
 
-      // green系タワーは避難速度のみに影響（タイマー処理なし）
-      if (t.card.type === 'red' || t.card.type === 'purple') {
-        const triggerTime = t.card.speed;
+      // fireNotificationの変身処理
+      if (t.card.effect === 'economyWithTransform' && t.card.transformDelay && t.lifeTime >= t.card.transformDelay) {
+        const fireEngine = ALL_CARDS[t.card.transformInto];
+        if (fireEngine) {
+          newTowers[key] = { card: fireEngine, timer: 0, lifeTime: 0 };
+          addEffect(tc, tr, '🚒 出動！', 'text-red-500 font-bold');
+        }
+      }
+
+      // 攻撃可能カード（power定義あり）のみ攻撃処理
+      if (t.card.effect === 'areaDotWithSlow') {
+        t.aoeTimer = (t.aoeTimer || 0) + 1;
+        if (t.aoeTimer >= 60) {
+          t.aoeTimer = 0;
+          setEnemies((prev) =>
+            prev
+            .map((e) => {
+              const eCenterR = e.progress + e.size / 2;
+              const eCenterC = e.c + e.size / 2;
+              const distR = Math.abs(eCenterR - (tr + 0.5));
+              const distC = Math.abs(eCenterC - (tc + 0.5));
+              if (distR < e.size / 2 + 1.5 && distC < e.size / 2 + 1.5) {
+                const newSlow = Math.max(e.slowValue || 0, t.card.slowValue || 0);
+                return {
+                  ...e,
+                  hp: e.hp - t.card.dotDamage,
+                  slowValue: newSlow,
+                  slowTimer: Math.max(e.slowTimer || 0, 60),
+                };
+              }
+              return e;
+            })
+            .filter((e) => e.hp > 0 || e.isAttacking)
+          );
+        }
+      }
+
+      if (t.card.power !== undefined && t.card.power > 0) {
+        const triggerTime = Math.max(1, t.card.speed / (1 + (globalBuffsRef.current.speed || 0)));
+        t.lastInterval = triggerTime;
         if (t.timer >= triggerTime) {
           t.timer = 0;
           fireAttack(t, tr, tc);
@@ -433,6 +586,8 @@ export default function BlazingDefense() {
         size: 1,
         maxHp: t.hp,
         hp: t.hp,
+        slowValue: 0,
+        slowTimer: 0,
         ...t,
       },
     ]);
@@ -468,7 +623,27 @@ export default function BlazingDefense() {
 
         if (inRange) {
           hit = true;
-          let dmg = card.power;
+          // オーバーフロー報酬の攻撃力バフを適用
+          const powerBuff = categoryBuffs[card.category]?.powerBuff || 0;
+
+          // globalPowerBuffとstandpipeの周囲バフを計算
+          let globalPowerBuff = 0;
+          let localPowerBuff = 0;
+          Object.entries(towersRef.current).forEach(([bKey, bTower]) => {
+            if (bTower.card.effect === 'ultimateBuff') {
+              globalPowerBuff += bTower.card.globalPowerBuff || 0;
+            }
+            if (bTower.card.effect === 'buffPower') {
+              const [br, bc] = bKey.split('-').map(Number);
+              const distR = Math.abs(br - tr);
+              const distC = Math.abs(bc - tc);
+              if (distR <= 1 && distC <= 1) {  // 周囲3x3
+                localPowerBuff += bTower.card.value || 0;
+              }
+            }
+          });
+
+          let dmg = card.power * (1 + powerBuff + globalPowerBuff + localPowerBuff);
           let knockback = 0;
 
           if (e.fireType === 'B') {
@@ -556,11 +731,27 @@ export default function BlazingDefense() {
       }
       return;
     }
-    if (selectedCard && cost >= selectedCard.cost) {
-      setCost((val) => val - selectedCard.cost);
-      setTowers((prev) => ({ ...prev, [key]: { card: selectedCard, timer: 0 } }));
-      addEffect(c, r, '設置', 'text-white');
-      setSelectedCard(null);
+    if (selectedCard) {
+      // オーバーフロー報酬のコスト割引を適用
+      const discount = categoryBuffs[selectedCard.category]?.costDiscount || 0;
+
+      // emergencyElevatorのコスト割引を計算
+      let globalCostReduction = 0;
+      Object.values(towersRef.current).forEach((t) => {
+        if (t.card.effect === 'firefighterSupport') {
+          globalCostReduction += t.card.costReduction || 0;
+        }
+      });
+
+      const totalDiscount = discount + globalCostReduction;
+      const actualCost = Math.floor(selectedCard.cost * (1 - totalDiscount));
+
+      if (cost >= actualCost) {
+        setCost((val) => val - actualCost);
+        setTowers((prev) => ({ ...prev, [key]: { card: selectedCard, timer: 0 } }));
+        addEffect(c, r, '設置', 'text-white');
+        setSelectedCard(null);
+      }
     }
   };
 
@@ -577,52 +768,122 @@ export default function BlazingDefense() {
   const startBattle = (mission) => {
     setSelectedMission(mission);
     setDifficulty(DIFFICULTIES[mission.difficulty]);
-    setDraftResult(null);
-    setDeck(CARDS_BASE);
-    setSelectedCard(null);
-    setPhase('DRAFT');
+    // BRIEFINGシステムの初期化
+    setTiers({
+      fire: 1,
+      alarm: 1,
+      evacuation: 1,
+      facility: 1,
+      other: 1,
+    });
+    setCategoryBuffs({
+      fire: { costDiscount: 0, powerBuff: 0 },
+      alarm: { costDiscount: 0, powerBuff: 0 },
+      evacuation: { costDiscount: 0, powerBuff: 0 },
+      facility: { costDiscount: 0, powerBuff: 0 },
+      other: { costDiscount: 0, powerBuff: 0 },
+    });
+    setBriefingState({
+      round: 1,
+      phase: 'SELECT',
+      selectedCategory: null,
+      quizzes: [],
+      currentQIndex: 0,
+      correctCount: 0,
+      totalCost: 0,
+    });
+    setPhase('BRIEFING');
   };
 
-  const answerDraft = (isCorrect) => {
-    setDraftResult(isCorrect ? 'correct' : 'wrong');
-    let newDeck = { ...CARDS_BASE };
-    if (isCorrect && selectedMission.rewardCard) {
-      newDeck[selectedMission.rewardCard] = REWARD_CARDS[selectedMission.rewardCard];
-    }
-    setDeck(newDeck);
+  // BRIEFINGフェーズ: カテゴリ選択
+  const handleBriefingCategorySelect = (categoryId) => {
+    // 問題プールからランダムに3問選択
+    const allQuestions = QUIZ_QUESTIONS[categoryId] || [];
+    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+    const selectedQuizzes = shuffled.slice(0, 3);
+
+    setBriefingState(prev => ({
+      ...prev,
+      phase: 'QUIZ',
+      selectedCategory: categoryId,
+      quizzes: selectedQuizzes,
+      currentQIndex: 0,
+      correctCount: 0,
+    }));
   };
 
-  const startExam = () => {
-    setExamState({ qIndex: 0, correctCount: 0, history: [], finished: false });
-    setPhase('EXAM');
-  };
+  // BRIEFINGフェーズ: クイズ回答
+  const handleBriefingAnswerQuiz = (answerIndex) => {
+    const currentQuiz = briefingState.quizzes[briefingState.currentQIndex];
+    const isCorrect = answerIndex === currentQuiz.answer;
+    const newCorrectCount = briefingState.correctCount + (isCorrect ? 1 : 0);
 
-  const answerExam = (answer) => {
-    const currentQ = EXAM_QUESTIONS[examState.qIndex];
-    const isCorrect = currentQ.a === answer;
-    const newHistory = [...examState.history, { ...currentQ, userAns: answer, isCorrect }];
-
-    if (examState.qIndex < EXAM_QUESTIONS.length - 1) {
-      setExamState({
-        qIndex: examState.qIndex + 1,
-        correctCount: examState.correctCount + (isCorrect ? 1 : 0),
-        history: newHistory,
-        finished: false,
-      });
+    if (briefingState.currentQIndex < briefingState.quizzes.length - 1) {
+      // 次の問題へ
+      setBriefingState(prev => ({
+        ...prev,
+        currentQIndex: prev.currentQIndex + 1,
+        correctCount: newCorrectCount,
+      }));
     } else {
-      const finalCorrectCount = examState.correctCount + (isCorrect ? 1 : 0);
-      setExamState({
-        ...examState,
-        finished: true,
-        correctCount: finalCorrectCount,
-        history: newHistory,
-      });
+      // 全問終了 → 結果画面へ
+      const reward = BRIEFING_REWARD_TABLE[newCorrectCount] || 0;
+      const newTotalCost = briefingState.totalCost + reward;
+
+      // Tier更新
+      const currentTier = tiers[briefingState.selectedCategory];
+      const newTier = currentTier + 1;
+      setTiers(prev => ({
+        ...prev,
+        [briefingState.selectedCategory]: newTier,
+      }));
+
+      // オーバーフロー報酬（Tier > 3の場合）
+      if (newTier > 3) {
+        setCategoryBuffs(prev => ({
+          ...prev,
+          [briefingState.selectedCategory]: {
+            costDiscount: prev[briefingState.selectedCategory].costDiscount + OVERFLOW_BONUS.costDiscount,
+            powerBuff: prev[briefingState.selectedCategory].powerBuff + OVERFLOW_BONUS.powerBuff,
+          },
+        }));
+      }
+
+      setBriefingState(prev => ({
+        ...prev,
+        phase: 'RESULT',
+        correctCount: newCorrectCount,
+        totalCost: newTotalCost,
+      }));
     }
   };
 
-  const goBattle = () => {
-    const bonus = examState.correctCount * 40;
-    setCost(100 + bonus);
+  // BRIEFINGフェーズ: ラウンド終了
+  const handleBriefingFinishRound = () => {
+    setBriefingState(prev => ({
+      ...prev,
+      round: prev.round + 1,
+      phase: 'SELECT',
+      selectedCategory: null,
+      quizzes: [],
+      currentQIndex: 0,
+      correctCount: 0,
+    }));
+  };
+
+  // BRIEFINGフェーズ: 戦闘開始
+  const handleBriefingStartBattle = () => {
+    // 獲得したTierに基づいてデッキを構築
+    const newDeck = {};
+    Object.entries(ALL_CARDS).forEach(([cardId, card]) => {
+      const categoryTier = tiers[card.category];
+      if (card.tier <= categoryTier) {
+        newDeck[cardId] = card;
+      }
+    });
+
+    setDeck(newDeck);
+    setCost(briefingState.totalCost);
     setHp(INITIAL_HP);
     setTowers({});
     setEnemies([]);
@@ -637,7 +898,6 @@ export default function BlazingDefense() {
     setEvacuatedCount(0);
     setDefeatedEnemies(0);
     setClearTime(0);
-    // ミッション選択に応じた避難目標を設定
     if (selectedMission) {
       setEvacuationGoal(selectedMission.evacuationGoal || 100);
     }
@@ -667,21 +927,20 @@ export default function BlazingDefense() {
       {phase === 'MENU' && (
         <Menu missions={DRAFT_MISSIONS} onStartBattle={startBattle} />
       )}
-      {phase === 'DRAFT' && (
-        <DraftPhase
-          selectedMission={selectedMission}
-          draftResult={draftResult}
-          rewardCards={REWARD_CARDS}
-          onAnswerDraft={answerDraft}
-          onStartExam={startExam}
-        />
-      )}
-      {phase === 'EXAM' && (
-        <ExamPhase
-          examQuestions={EXAM_QUESTIONS}
-          examState={examState}
-          onAnswerExam={answerExam}
-          onGoBattle={goBattle}
+      {phase === 'BRIEFING' && (
+        <BriefingPhase
+          round={briefingState.round}
+          phase={briefingState.phase}
+          selectedCategory={briefingState.selectedCategory}
+          quizzes={briefingState.quizzes}
+          currentQIndex={briefingState.currentQIndex}
+          correctCount={briefingState.correctCount}
+          totalCost={briefingState.totalCost}
+          tiers={tiers}
+          onSelectCategory={handleBriefingCategorySelect}
+          onAnswerQuiz={handleBriefingAnswerQuiz}
+          onFinishRound={handleBriefingFinishRound}
+          onStartBattle={handleBriefingStartBattle}
         />
       )}
       {phase === 'BATTLE' && (
@@ -703,6 +962,8 @@ export default function BlazingDefense() {
           removeModal={removeModal}
           supplyCooldown={supplyCooldown}
           damaged={damaged}
+          categoryBuffs={categoryBuffs}
+          globalCostReduction={globalCostReduction}
           handleSlotClick={handleSlotClick}
           setSelectedCard={setSelectedCard}
           triggerSupply={triggerSupply}
@@ -721,10 +982,3 @@ export default function BlazingDefense() {
     </div>
   );
 }
-
-
-
-
-
-
-

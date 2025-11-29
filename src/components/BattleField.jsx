@@ -1,11 +1,12 @@
+﻿import React from 'react';
 import { Flame, ShieldAlert, Zap, AlertTriangle, HelpCircle, Skull, Users } from 'lucide-react';
 
 const GRID_ROWS = 6;
 const RANGE_LABEL = {
-  surround: '周囲',
-  wide: '横列',
-  line: '縦列',
-  global: '全体',
+  surround: 'Surround',
+  wide: 'Wide',
+  line: 'Line',
+  global: 'Global',
 };
 
 export default function BattleField({
@@ -26,6 +27,8 @@ export default function BattleField({
   removeModal,
   supplyCooldown,
   damaged,
+  categoryBuffs,
+  globalCostReduction = 0,
   handleSlotClick,
   setSelectedCard,
   triggerSupply,
@@ -60,8 +63,7 @@ export default function BattleField({
           </div>
         </div>
         <div className="font-mono font-bold text-white text-xl">
-          残り時間: {Math.floor((timeLimit - frameCount) / 60)}秒
-        </div>
+          谿九ｊ譎る俣: {Math.floor((timeLimit - frameCount) / 60)}遘・        </div>
       </div>
 
       {/* Main 3D Grid Area */}
@@ -94,13 +96,38 @@ export default function BattleField({
                       ${tower.card.type === 'red' ? 'text-red-400' : tower.card.type === 'green' ? 'text-green-400' : tower.card.type === 'purple' ? 'text-purple-400' : 'text-yellow-400'}
                     `}
                   >
-                    <div className="drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">{tower.card.icon}</div>
+                    <div className="drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+                      {React.createElement(tower.card.icon, { size: 24 })}
+                    </div>
+
+                    {/* 謾ｻ謦・ち繧､繝槭・繝舌・ */}
                     <div className="w-8 h-1 bg-gray-700 mt-1 rounded overflow-hidden">
                       <div
                         className="h-full bg-current"
-                        style={{ width: `${(tower.timer / (tower.card.speed || tower.card.interval)) * 100}%` }}
+                        style={{ width: `${(tower.timer / (tower.lastInterval || tower.card.speed || tower.card.interval)) * 100}%` }}
                       />
                     </div>
+
+                    {/* 謖∫ｶ壽凾髢楢｡ｨ遉ｺ */}
+                    {tower.card.duration === null ? (
+                      <div className="text-[8px] font-bold text-green-300 mt-0.5">INF</div>
+                    ) : (
+                      (() => {
+                        const remaining = tower.card.duration - tower.lifeTime;
+                        const remainingSec = Math.ceil(remaining / 60);
+                        const percentage = (remaining / tower.card.duration) * 100;
+                        const barColor = percentage > 50 ? 'bg-green-400' : percentage > 20 ? 'bg-yellow-400' : 'bg-red-400';
+                        return (
+                          <>
+                            <div className="w-8 h-0.5 bg-gray-900 mt-0.5 rounded overflow-hidden">
+                              <div className={`h-full ${barColor}`} style={{ width: `${percentage}%` }} />
+                            </div>
+                            <div className={`text-[7px] font-bold mt-0.5 ${percentage > 20 ? 'text-white' : 'text-red-300 animate-pulse'}`}>
+                              {remainingSec}遘・                            </div>
+                          </>
+                        );
+                      })()
+                    )}
                   </div>
                 )}
               </div>
@@ -184,37 +211,59 @@ export default function BattleField({
 
       {/* Deck (Bottom) */}
       <div className="h-32 bg-slate-900 border-t border-slate-700 z-30 flex items-center justify-center gap-2 p-2 overflow-x-auto">
-        {Object.values(deck).map((card) => (
-          <button
-            key={card.id}
-            onClick={() => cost >= card.cost && setSelectedCard(card)}
-            disabled={cost < card.cost}
-            className={`
-              relative flex-shrink-0 w-24 h-24 rounded-lg border-b-4 flex flex-col items-center justify-center transition-all
-              ${selectedCard?.id === card.id ? 'bg-slate-700 border-white -translate-y-2' : 'bg-slate-800 border-black/30 hover:bg-slate-700'}
-              ${cost < card.cost ? 'opacity-40 grayscale cursor-not-allowed' : ''}
-            `}
-          >
-            <div
-              className={`${
-                card.type === 'red'
-                  ? 'text-red-400'
-                  : card.type === 'green'
-                    ? 'text-green-400'
-                    : card.type === 'purple'
-                      ? 'text-purple-400'
-                      : 'text-yellow-400'
-              }`}
+        {Object.values(deck).map((card) => {
+          // オーバーフロー報酬 + グローバル割引を反映したコスト計算
+          const discount = (categoryBuffs[card.category]?.costDiscount || 0) + (globalCostReduction || 0);
+          const actualCost = Math.floor(card.cost * (1 - discount));
+          const hasDiscount = discount > 0;
+
+          return (
+            <button
+              key={card.id}
+              onClick={() => cost >= actualCost && setSelectedCard(card)}
+              disabled={cost < actualCost}
+              className={`
+                relative flex-shrink-0 w-24 h-24 rounded-lg border-b-4 flex flex-col items-center justify-center transition-all
+                ${selectedCard?.id === card.id ? 'bg-slate-700 border-white -translate-y-2' : 'bg-slate-800 border-black/30 hover:bg-slate-700'}
+                ${cost < actualCost ? 'opacity-40 grayscale cursor-not-allowed' : ''}
+              `}
             >
-              {card.icon}
-            </div>
-            <div className="text-[10px] font-bold text-gray-300 mt-1">{card.name}</div>
-            <div className="text-lg font-black text-white">{card.cost}</div>
-            <div className="absolute top-1 right-1 text-[8px] text-gray-500 bg-black/50 px-1 rounded">
-              {card.rangeType ? RANGE_LABEL[card.rangeType] : '支援'}
-            </div>
-          </button>
-        ))}
+              <div
+                className={`${
+                  card.type === 'red'
+                    ? 'text-red-400'
+                    : card.type === 'green'
+                      ? 'text-green-400'
+                      : card.type === 'purple'
+                        ? 'text-purple-400'
+                        : 'text-yellow-400'
+                }`}
+              >
+                {React.createElement(card.icon, { size: 32 })}
+              </div>
+              <div className="text-[10px] font-bold text-gray-300 mt-1">{card.name}</div>
+              <div className="flex items-baseline gap-1">
+                {hasDiscount && (
+                  <div className="text-xs line-through text-gray-500">{card.cost}</div>
+                )}
+                <div className={`text-lg font-black ${hasDiscount ? 'text-yellow-300' : 'text-white'}`}>
+                  {actualCost}
+                </div>
+              </div>
+              <div className="absolute top-1 right-1 text-[8px] text-gray-500 bg-black/50 px-1 rounded">
+                {card.rangeType ? RANGE_LABEL[card.rangeType] : '謾ｯ謠ｴ'}
+              </div>
+              <div className="absolute top-1 left-1 text-[8px] font-bold text-cyan-300 bg-black/50 px-1 rounded">
+                {card.duration === null ? 'INF' : `${Math.floor(card.duration / 60)}s`}
+              </div>
+              {hasDiscount && (
+                <div className="absolute bottom-0 right-0 text-[8px] font-bold text-yellow-400 bg-black/70 px-1 rounded">
+                  -{Math.floor(discount * 100)}%
+                </div>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Emergency Modal */}
@@ -222,7 +271,7 @@ export default function BattleField({
         <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-6">
           <div className="bg-slate-800 border-2 border-yellow-500 p-6 rounded-xl w-full max-w-md animate-in zoom-in">
             <h3 className="text-yellow-400 font-bold text-xl mb-4 flex items-center gap-2">
-              <AlertTriangle /> 緊急補給クイズ
+              <AlertTriangle /> 邱頑･陬懃ｵｦ繧ｯ繧､繧ｺ
             </h3>
             <p className="text-white text-lg font-bold mb-6">{supplyModal.q}</p>
             <div className="space-y-3">
@@ -245,21 +294,21 @@ export default function BattleField({
         <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-6">
           <div className="bg-slate-800 border-2 border-red-500 p-6 rounded-xl w-full max-w-md animate-in zoom-in">
             <h3 className="text-red-400 font-bold text-xl mb-4 flex items-center gap-2">
-              <AlertTriangle /> 設備撤去確認
+              <AlertTriangle /> Remove Equipment
             </h3>
-            <p className="text-white text-lg mb-6">この設備を撤去しますか？</p>
+            <p className="text-white text-lg mb-6">Do you want to remove this equipment?</p>
             <div className="flex gap-3">
               <button
                 onClick={confirmRemove}
                 className="flex-1 p-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded transition-colors"
               >
-                撤去する
+                Remove
               </button>
               <button
                 onClick={() => setRemoveModal(null)}
                 className="flex-1 p-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded transition-colors"
               >
-                キャンセル
+                Cancel
               </button>
             </div>
           </div>
