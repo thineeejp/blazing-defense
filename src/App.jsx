@@ -1,25 +1,15 @@
 ﻿import { useState, useEffect, useRef } from 'react';
-import {
-  Wind,
-  Siren,
-  DoorOpen,
-  ShieldAlert,
-  Zap,
-  Shield,
-  Bell,
-  Truck,
-  Package,
-} from 'lucide-react';
 
 // コンポーネントのインポート
 import Menu from './components/Menu';
 import GameOver from './components/GameOver';
 import BriefingPhase from './components/BriefingPhase';
+import DeckBuildPhase from './components/DeckBuildPhase';
 import BattleField from './components/BattleField';
 
 // 新しい定数のインポート
 import { ALL_CARDS } from './constants/cards';
-import { EQUIPMENT_TREES, BRIEFING_REWARD_TABLE, OVERFLOW_BONUS } from './constants/equipment';
+import { BRIEFING_REWARD_TABLE, OVERFLOW_BONUS } from './constants/equipment';
 import { QUIZ_QUESTIONS } from './constants/quizzes';
 
 // --- データ定義 ---
@@ -74,134 +64,11 @@ const DRAFT_MISSIONS = [
   },
 ];
 
-const EXAM_QUESTIONS = [
-  { q: '屋内消火栓設備の放水圧力は、0.17MPa以上であることが求められる。', a: true },
-  { q: '自動火災報知設備の音響装置は、中間距離で70dB以上でよい。', a: false, note: '正しくは90dB以上' },
-  { q: '避難はしごは、地下階には設置できない場合がある。', a: true },
-  { q: '第4類危険物（引火性液体）火災には、注水消火が常に有効である。', a: false, note: '油火災に注水は危険（拡大の恐れ）' },
-  { q: '誘導灯の有効範囲は、歩行距離で原則20m以下となるよう設置する。', a: true },
-];
-
-const SUPPLY_QUESTIONS = [
-  { q: '消火器の「黄」マークの適応火災は？', options: ['A火災', 'B火災', 'C火災'], ans: 1 },
-  { q: '屋内消火栓の放水圧力として正しいのは？', options: ['0.17 MPa以上', '0.25 MPa以上', '0.35 MPa以上'], ans: 0 },
-  { q: '避難はしごで地下設置がNGなのは？', options: ['固定はしご', '吊下げはしご', '金属製'], ans: 1 },
-];
-
-const CARDS_BASE = {
-  extinguisher: {
-    id: 'extinguisher',
-    name: '10型消火器',
-    type: 'red',
-    cost: 30,
-    icon: <Shield size={24} />,
-    desc: '【消火】周囲1マス(3x3)へ短距離散水',
-    rangeType: 'surround',
-    power: 2,
-    speed: 40,
-    damageType: 'water',
-  },
-  sprinkler: {
-    id: 'sprinkler',
-    name: 'スプリンクラーヘッド',
-    type: 'red',
-    cost: 90,
-    icon: <Zap size={24} />,
-    desc: '【消火】横一列×縦3マスを散水で制圧',
-    rangeType: 'wide',
-    power: 1.0,
-    speed: 60,
-    damageType: 'water',
-  },
-  alarm: {
-    id: 'alarm',
-    name: '感知器',
-    type: 'yellow',
-    cost: 25,
-    icon: <Bell size={24} />,
-    desc: '【警報】コスト回復UP',
-    effect: 'economy',
-    value: 0.6,
-  },
-  exitSign: {
-    id: 'exitSign',
-    name: '誘導灯',
-    type: 'green',
-    cost: 50,
-    icon: <DoorOpen size={24} />,
-    desc: '【避難】避難速度を0.5人/秒加速',
-    effect: 'evacuation',
-    value: 0.5,
-    rangeType: 'self',
-  },
-  rescueChute: {
-    id: 'rescueChute',
-    name: '救助袋',
-    type: 'green',
-    cost: 80,
-    icon: <Package size={24} />,
-    desc: '【避難】避難速度を1.0人/秒加速',
-    effect: 'evacuation',
-    value: 1.0,
-    rangeType: 'self',
-  },
-  fireEngine: {
-    id: 'fireEngine',
-    name: 'ポンプ車',
-    type: 'purple',
-    cost: 200,
-    icon: <Truck size={24} />,
-    desc: '【召喚】縦1列の敵をまとめて押し戻す！',
-    rangeType: 'line',
-    power: 10,
-    speed: 10,
-    duration: 300,
-    knockback: 1.5,
-    damageType: 'water',
-  },
-};
-
-const REWARD_CARDS = {
-  gasSystem: {
-    id: 'gasSystem',
-    name: '不活性ガス',
-    type: 'red',
-    cost: 70,
-    icon: <Wind size={24} />,
-    desc: '【特効】全画面へ持続ダメージ(DoT)',
-    rangeType: 'global',
-    power: 0.3,
-    speed: 5,
-    damageType: 'gas',
-  },
-  foamHead: {
-    id: 'foamHead',
-    name: '泡消火ヘッド',
-    type: 'red',
-    cost: 100,
-    icon: <ShieldAlert size={24} />,
-    desc: '【特効】周囲1マスに大ダメージ（油に強い）',
-    rangeType: 'surround',
-    power: 20,
-    speed: 80,
-    damageType: 'foam',
-  },
-  superSmoke: {
-    id: 'superSmoke',
-    name: '光電式分離型感知器',
-    type: 'yellow',
-    cost: 40,
-    icon: <Siren size={24} />,
-    desc: '【特効】コスト回復(特大)',
-    effect: 'economy',
-    value: 1.5,
-  },
-};
-
 const INITIAL_HP = 100;
 
 export default function BlazingDefense() {
   const [phase, setPhase] = useState('MENU');
+  const [isFirstLaunch, setIsFirstLaunch] = useState(true); // 初回起動判定
   const [difficulty, setDifficulty] = useState(DIFFICULTIES.EASY);
 
   const [hp, setHp] = useState(INITIAL_HP);
@@ -214,8 +81,6 @@ export default function BlazingDefense() {
   const [damaged, setDamaged] = useState(false);
 
   const [selectedMission, setSelectedMission] = useState(null);
-  const [supplyModal, setSupplyModal] = useState(null);
-  const [supplyCooldown, setSupplyCooldown] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [removeModal, setRemoveModal] = useState(null);
 
@@ -246,10 +111,16 @@ export default function BlazingDefense() {
     totalCost: 0,
   });
 
+  // DECK_BUILDフェーズの状態
+  const [deckBuildState, setDeckBuildState] = useState({
+    selectedCardIds: [],    // 選択済みカードIDの配列
+    remainingCost: 0,       // 残りコスト
+  });
+
   // 勝利条件とスコアシステム関連の状態
   const [isVictory, setIsVictory] = useState(false);
   const [evacuatedCount, setEvacuatedCount] = useState(0);
-  const [timeLimit] = useState(10800); // 3分 = 180秒 × 60FPS
+  const [timeLimit] = useState(5400); // 1.5分 = 90秒 × 60FPS
   const [evacuationGoal, setEvacuationGoal] = useState(100);
   const [defeatedEnemies, setDefeatedEnemies] = useState(0);
   const [clearTime, setClearTime] = useState(0);
@@ -259,7 +130,6 @@ export default function BlazingDefense() {
   const gameLoopRef = useRef(null);
   const towersRef = useRef(towers);
   const difficultyRef = useRef(difficulty);
-  const supplyCooldownRef = useRef(supplyCooldown);
   const globalBuffsRef = useRef({ speed: 0 });
 
   useEffect(() => {
@@ -269,10 +139,6 @@ export default function BlazingDefense() {
   useEffect(() => {
     difficultyRef.current = difficulty;
   }, [difficulty]);
-
-  useEffect(() => {
-    supplyCooldownRef.current = supplyCooldown;
-  }, [supplyCooldown]);
 
   useEffect(() => {
     if (phase !== 'BATTLE' || isPaused) {
@@ -291,10 +157,6 @@ export default function BlazingDefense() {
   }, [phase, isPaused]);
 
   const updateBattleLogic = () => {
-    if (supplyCooldownRef.current > 0) {
-      setSupplyCooldown((c) => Math.max(0, c - 1));
-    }
-
     // effect処理（全13種類に対応）
     let recovery = 0.05;
     let evacBoost = 0;
@@ -527,23 +389,23 @@ export default function BlazingDefense() {
           t.aoeTimer = 0;
           setEnemies((prev) =>
             prev
-            .map((e) => {
-              const eCenterR = e.progress + e.size / 2;
-              const eCenterC = e.c + e.size / 2;
-              const distR = Math.abs(eCenterR - (tr + 0.5));
-              const distC = Math.abs(eCenterC - (tc + 0.5));
-              if (distR < e.size / 2 + 1.5 && distC < e.size / 2 + 1.5) {
-                const newSlow = Math.max(e.slowValue || 0, t.card.slowValue || 0);
-                return {
-                  ...e,
-                  hp: e.hp - t.card.dotDamage,
-                  slowValue: newSlow,
-                  slowTimer: Math.max(e.slowTimer || 0, 60),
-                };
-              }
-              return e;
-            })
-            .filter((e) => e.hp > 0 || e.isAttacking)
+              .map((e) => {
+                const eCenterR = e.progress + e.size / 2;
+                const eCenterC = e.c + e.size / 2;
+                const distR = Math.abs(eCenterR - (tr + 0.5));
+                const distC = Math.abs(eCenterC - (tc + 0.5));
+                if (distR < e.size / 2 + 1.5 && distC < e.size / 2 + 1.5) {
+                  const newSlow = Math.max(e.slowValue || 0, t.card.slowValue || 0);
+                  return {
+                    ...e,
+                    hp: e.hp - t.card.dotDamage,
+                    slowValue: newSlow,
+                    slowTimer: Math.max(e.slowTimer || 0, 60),
+                  };
+                }
+                return e;
+              })
+              .filter((e) => e.hp > 0 || e.isAttacking)
           );
         }
       }
@@ -573,8 +435,26 @@ export default function BlazingDefense() {
       { hp: 40, speed: 0.015, color: 'text-orange-500', name: 'B火災(油)', fireType: 'B' },
       { hp: 15, speed: 0.04, color: 'text-yellow-400', name: 'C火災(電気)', fireType: 'C' },
     ];
-    const level = Math.min(2, Math.floor(frameRef.current / 1500));
-    const t = types[Math.min(types.length - 1, Math.floor(Math.random() * (level + 1.5)))];
+
+    // 難易度ごとの出現率（重み付け）
+    const weights =
+      difficultyRef.current.name === 'EASY' ? [90, 5, 5] :    // A多め、BC極少
+      difficultyRef.current.name === 'NORMAL' ? [90, 5, 5] :  // A多め、BC極少（列数でバランス）
+      [40, 35, 25];                                            // HARD: BCの比率アップ
+
+    // 重み付けランダム選択
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+    const rand = Math.random() * totalWeight;
+    let cumWeight = 0;
+    let selectedIndex = 0;
+    for (let i = 0; i < weights.length; i++) {
+      cumWeight += weights[i];
+      if (rand < cumWeight) {
+        selectedIndex = i;
+        break;
+      }
+    }
+    const t = types[selectedIndex];
 
     setEnemies((prev) => [
       ...prev,
@@ -648,7 +528,7 @@ export default function BlazingDefense() {
 
           if (e.fireType === 'B') {
             if (card.damageType === 'water') {
-              dmg *= 0.1;
+              dmg *= 0.5;
               if (Math.random() > 0.8) addEffect(e.c, Math.floor(e.progress), 'Bad!', 'text-blue-300 text-xs');
             } else if (card.damageType === 'foam') {
               dmg *= 2.0;
@@ -706,7 +586,7 @@ export default function BlazingDefense() {
     const economyBonus = (cost >= 200) ? 500 : 0;
 
     const totalScore = evacuationScore + timeBonus + hpBonus + costBonus + defeatBonus
-                     + noDamageBonus + speedBonus + economyBonus;
+      + noDamageBonus + speedBonus + economyBonus;
 
     return {
       total: totalScore,
@@ -719,6 +599,13 @@ export default function BlazingDefense() {
         noDamage: noDamageBonus,
         speed: speedBonus,
         economy: economyBonus,
+      },
+      stats: {
+        evacuated: Math.floor(evacuatedCount),
+        goal: evacuationGoal,
+        hp: Math.floor(hp),
+        timeBonus: Math.floor(timeBonus),
+        totalScore: totalScore
       }
     };
   };
@@ -750,7 +637,7 @@ export default function BlazingDefense() {
         setCost((val) => val - actualCost);
         setTowers((prev) => ({ ...prev, [key]: { card: selectedCard, timer: 0 } }));
         addEffect(c, r, '設置', 'text-white');
-        setSelectedCard(null);
+        // カード選択を維持（連続配置を可能にする）
       }
     }
   };
@@ -766,6 +653,7 @@ export default function BlazingDefense() {
   };
 
   const startBattle = (mission) => {
+    setIsFirstLaunch(false); // 初回アニメーション無効化
     setSelectedMission(mission);
     setDifficulty(DIFFICULTIES[mission.difficulty]);
     // BRIEFINGシステムの初期化
@@ -871,25 +759,59 @@ export default function BlazingDefense() {
     }));
   };
 
-  // BRIEFINGフェーズ: 戦闘開始
-  const handleBriefingStartBattle = () => {
-    // 獲得したTierに基づいてデッキを構築
-    const newDeck = {};
-    Object.entries(ALL_CARDS).forEach(([cardId, card]) => {
-      const categoryTier = tiers[card.category];
-      if (card.tier <= categoryTier) {
-        newDeck[cardId] = card;
+  // BRIEFINGフェーズ: DECK_BUILDへ遷移
+  const handleBriefingToDeckBuild = () => {
+    setDeckBuildState({
+      selectedCardIds: [],
+      remainingCost: briefingState.totalCost,
+    });
+    setPhase('DECK_BUILD');
+  };
+
+  // DECK_BUILDフェーズ: カード選択/解除
+  const handleDeckCardSelect = (cardId) => {
+    const card = ALL_CARDS[cardId];
+    if (!card) return;
+
+    const selectCost = card.tier === 1 ? 0 : card.cost;
+
+    setDeckBuildState(prev => {
+      const isSelected = prev.selectedCardIds.includes(cardId);
+
+      if (isSelected) {
+        // 解除: コスト返却
+        return {
+          selectedCardIds: prev.selectedCardIds.filter(id => id !== cardId),
+          remainingCost: prev.remainingCost + selectCost,
+        };
+      } else {
+        // 選択: 上限・コストチェック
+        if (prev.selectedCardIds.length >= 6) return prev;
+        if (prev.remainingCost < selectCost) return prev;
+
+        return {
+          selectedCardIds: [...prev.selectedCardIds, cardId],
+          remainingCost: prev.remainingCost - selectCost,
+        };
       }
+    });
+  };
+
+  // DECK_BUILDフェーズ: 戦闘開始（選択されたカードでデッキを構築）
+  const handleDeckBuildStartBattle = () => {
+    // 選択されたカードでデッキを構築
+    const newDeck = {};
+    deckBuildState.selectedCardIds.forEach(cardId => {
+      newDeck[cardId] = ALL_CARDS[cardId];
     });
 
     setDeck(newDeck);
-    setCost(briefingState.totalCost);
+    setCost(deckBuildState.remainingCost);
     setHp(INITIAL_HP);
     setTowers({});
     setEnemies([]);
     setEffects([]);
     setSelectedCard(null);
-    setSupplyCooldown(0);
     setIsPaused(false);
     frameRef.current = 0;
 
@@ -905,27 +827,10 @@ export default function BlazingDefense() {
     setPhase('BATTLE');
   };
 
-  const triggerSupply = () => {
-    if (supplyCooldown > 0) return;
-    setIsPaused(true);
-    setSupplyModal(SUPPLY_QUESTIONS[Math.floor(Math.random() * SUPPLY_QUESTIONS.length)]);
-  };
-
-  const answerSupply = (idx) => {
-    if (idx === supplyModal.ans) {
-      setCost((c) => c + 150);
-      addEffect(Math.floor(difficulty.cols / 2), 5, '補給!', 'text-blue-400 font-bold text-2xl');
-    } else {
-      setSupplyCooldown(300);
-    }
-    setSupplyModal(null);
-    setIsPaused(false);
-  };
-
   return (
     <div className="w-full h-screen overflow-hidden font-sans select-none">
       {phase === 'MENU' && (
-        <Menu missions={DRAFT_MISSIONS} onStartBattle={startBattle} />
+        <Menu missions={DRAFT_MISSIONS} onStartBattle={startBattle} isFirstLaunch={isFirstLaunch} />
       )}
       {phase === 'BRIEFING' && (
         <BriefingPhase
@@ -940,7 +845,21 @@ export default function BlazingDefense() {
           onSelectCategory={handleBriefingCategorySelect}
           onAnswerQuiz={handleBriefingAnswerQuiz}
           onFinishRound={handleBriefingFinishRound}
-          onStartBattle={handleBriefingStartBattle}
+          onStartBattle={handleBriefingToDeckBuild}
+        />
+      )}
+      {phase === 'DECK_BUILD' && (
+        <DeckBuildPhase
+          availableCards={Object.values(ALL_CARDS).filter(card =>
+            card.id !== 'fireEngine' && card.tier <= tiers[card.category]
+          )}
+          selectedCards={deckBuildState.selectedCardIds}
+          remainingCost={deckBuildState.remainingCost}
+          totalCost={briefingState.totalCost}
+          tiers={tiers}
+          categoryBuffs={categoryBuffs}
+          onSelectCard={handleDeckCardSelect}
+          onStartBattle={handleDeckBuildStartBattle}
         />
       )}
       {phase === 'BATTLE' && (
@@ -958,16 +877,12 @@ export default function BlazingDefense() {
           difficultyRef={difficultyRef}
           deck={deck}
           selectedCard={selectedCard}
-          supplyModal={supplyModal}
           removeModal={removeModal}
-          supplyCooldown={supplyCooldown}
           damaged={damaged}
           categoryBuffs={categoryBuffs}
           globalCostReduction={globalCostReduction}
           handleSlotClick={handleSlotClick}
           setSelectedCard={setSelectedCard}
-          triggerSupply={triggerSupply}
-          answerSupply={answerSupply}
           confirmRemove={confirmRemove}
           setRemoveModal={setRemoveModal}
         />

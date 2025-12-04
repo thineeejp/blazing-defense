@@ -10,9 +10,9 @@ export const ALL_CARDS = {
     tier: 1,
     type: 'red',
     cost: 30,
-    duration: 2700, // 45秒
+    duration: 1500, // 25秒
     icon: Shield,
-    desc: '【消火】周囲1マス(3×3)へ散水 [45秒]',
+    desc: '【消火】周囲1マス(3×3)へ散水 [25秒]',
     rangeType: 'surround',
     power: 2,
     speed: 40,
@@ -26,9 +26,9 @@ export const ALL_CARDS = {
     tier: 2,
     type: 'red',
     cost: 80,
-    duration: 5400, // 90秒
+    duration: 2700, // 45秒
     icon: Droplets,
-    desc: '【消火】縦1列に強力放水＋ノックバック [90秒]',
+    desc: '【消火】縦1列に強力放水＋ノックバック [45秒]',
     rangeType: 'line',
     power: 4,
     speed: 50,
@@ -43,9 +43,9 @@ export const ALL_CARDS = {
     tier: 2,
     type: 'red',
     cost: 90,
-    duration: 7200, // 120秒
+    duration: 3600, // 60秒
     icon: Zap,
-    desc: '【消火】横1列×縦3マスを高速散水 [120秒]',
+    desc: '【消火】横1列×縦3マスを高速散水 [60秒]',
     rangeType: 'wide',
     power: 1.5,
     speed: 30,
@@ -59,9 +59,9 @@ export const ALL_CARDS = {
     tier: 3,
     type: 'red',
     cost: 120,
-    duration: 3600, // 60秒
+    duration: 1800, // 30秒
     icon: ShieldAlert,
-    desc: '【特効】周囲1マスに大ダメージ（B火災2倍）[60秒]',
+    desc: '【特効】周囲1マスに大ダメージ（B火災2倍）[30秒]',
     rangeType: 'surround',
     power: 8,
     speed: 60,
@@ -75,9 +75,9 @@ export const ALL_CARDS = {
     tier: 3,
     type: 'red',
     cost: 100,
-    duration: 2700, // 45秒
+    duration: 1500, // 25秒
     icon: Wind,
-    desc: '【特効】全画面へ持続ダメージ（C火災1.5倍）[45秒]',
+    desc: '【特効】全画面へ持続ダメージ（C火災1.5倍）[25秒]',
     rangeType: 'global',
     power: 0.4,
     speed: 5,
@@ -92,9 +92,9 @@ export const ALL_CARDS = {
     tier: 1,
     type: 'yellow',
     cost: 30,
-    duration: 3600, // 60秒
+    duration: 1800, // 30秒
     icon: Bell,
-    desc: '【警報】コスト回復+0.6/秒 [60秒]',
+    desc: '【警報】コスト回復+0.6/秒 [30秒]',
     rangeType: 'self',
     effect: 'economy',
     value: 0.6,
@@ -107,9 +107,9 @@ export const ALL_CARDS = {
     tier: 2,
     type: 'yellow',
     cost: 60,
-    duration: 5400, // 90秒
+    duration: 2700, // 45秒
     icon: BellRing,
-    desc: '【警報】コスト+1.2/秒＋敵感知警告 [90秒]',
+    desc: '【警報】コスト+1.2/秒＋敵感知警告 [45秒]',
     rangeType: 'self',
     effect: 'economy',
     value: 1.2,
@@ -122,9 +122,9 @@ export const ALL_CARDS = {
     tier: 3,
     type: 'yellow',
     cost: 100,
-    duration: 7200, // 120秒
+    duration: 3600, // 60秒
     icon: Radio,
-    desc: '【警報】コスト+2.0/秒＋避難+0.5人/秒 [120秒]',
+    desc: '【警報】コスト+2.0/秒＋避難+0.5人/秒 [60秒]',
     rangeType: 'self',
     effect: 'economyAndEvacuation',
     economyValue: 2.0,
@@ -187,9 +187,9 @@ export const ALL_CARDS = {
     tier: 2,
     type: 'green',
     cost: 80,
-    duration: 7200, // 120秒
+    duration: 3600, // 60秒
     icon: ChevronDown,
-    desc: '【避難】避難速度+1.0人/秒 [120秒]',
+    desc: '【避難】避難速度+1.0人/秒 [60秒]',
     rangeType: 'self',
     effect: 'evacuation',
     value: 1.0,
@@ -202,9 +202,9 @@ export const ALL_CARDS = {
     tier: 3,
     type: 'green',
     cost: 120,
-    duration: 5400, // 90秒
+    duration: 2700, // 45秒
     icon: Siren,
-    desc: '【避難】避難+1.5人/秒＋HP+0.2/秒＋攻撃速度+10% [90秒]',
+    desc: '【避難】避難+1.5人/秒＋HP+0.2/秒＋攻撃速度+10% [45秒]',
     rangeType: 'global',
     effect: 'evacuationWithRegenAndBuff',
     evacuationValue: 1.5,
@@ -235,9 +235,9 @@ export const ALL_CARDS = {
     tier: 2,
     type: 'blue',
     cost: 100,
-    duration: 7200, // 120秒
+    duration: 3600, // 60秒
     icon: Zap,
-    desc: '【施設】全攻撃速度+20%＋HP回復+0.15/秒 [120秒]',
+    desc: '【施設】全攻撃速度+20%＋HP回復+0.15/秒 [60秒]',
     rangeType: 'global',
     effect: 'globalSpeedBuffWithRegen',
     speedBuff: 0.2,
@@ -251,9 +251,9 @@ export const ALL_CARDS = {
     tier: 3,
     type: 'blue',
     cost: 150,
-    duration: 5400, // 90秒
+    duration: 2700, // 45秒
     icon: Wind,
-    desc: '【施設】全敵-15%速度＋避難+0.5人/秒 [90秒]',
+    desc: '【施設】全敵-15%速度＋避難+0.5人/秒 [45秒]',
     rangeType: 'global',
     effect: 'globalSlowWithEvacuation',
     slowValue: 0.15,
@@ -300,9 +300,9 @@ export const ALL_CARDS = {
     tier: 2,
     type: 'purple',
     cost: 120,
-    duration: 3600, // 60秒
+    duration: 1800, // 30秒
     icon: Package,
-    desc: '【特殊】周囲3×3にDoT1.0/秒＋移動-30% [60秒]',
+    desc: '【特殊】周囲3×3にDoT1.0/秒＋移動-30% [30秒]',
     rangeType: 'surround',
     effect: 'areaDotWithSlow',
     dotDamage: 1.0,
@@ -316,9 +316,9 @@ export const ALL_CARDS = {
     tier: 2,
     type: 'purple',
     cost: 50,
-    duration: 5400, // 90秒
+    duration: 2700, // 45秒
     icon: AlertTriangle,
-    desc: '【特殊】コスト回復+1.0/秒 [90秒]',
+    desc: '【特殊】コスト回復+1.0/秒 [45秒]',
     rangeType: 'self',
     effect: 'economy',
     value: 1.0,
@@ -331,9 +331,9 @@ export const ALL_CARDS = {
     tier: 3,
     type: 'purple',
     cost: 200,
-    duration: 7200, // 120秒
+    duration: 3600, // 60秒
     icon: Building,
-    desc: '【特殊】全能力+20%＋避難+1.0人/秒＋HP+0.3/秒 [120秒]',
+    desc: '【特殊】全能力+20%＋避難+1.0人/秒＋HP+0.3/秒 [60秒]',
     rangeType: 'global',
     effect: 'ultimateBuff',
     globalPowerBuff: 0.2,
@@ -352,8 +352,8 @@ export const ALL_CARDS = {
     cost: 0,
     duration: 300, // 5秒
     icon: Flame,
-    desc: '【召喚】縦1列を5秒間制圧',
-    rangeType: 'line',
+    desc: '【召喚】全敵を5秒間制圧',
+    rangeType: 'global',
     power: 10,
     speed: 10,
     knockback: 1.5,
