@@ -6,11 +6,13 @@ import GameOver from './components/GameOver';
 import BriefingPhase from './components/BriefingPhase';
 import DeckBuildPhase from './components/DeckBuildPhase';
 import BattleField from './components/BattleField';
+import HighScores from './components/HighScores';
 
 // 新しい定数のインポート
 import { ALL_CARDS } from './constants/cards';
 import { BRIEFING_REWARD_TABLE, OVERFLOW_BONUS } from './constants/equipment';
 import { QUIZ_QUESTIONS } from './constants/quizzes';
+import { MAX_COST } from './constants/game';
 
 // --- データ定義 ---
 
@@ -67,7 +69,7 @@ const DRAFT_MISSIONS = [
 const INITIAL_HP = 100;
 
 export default function BlazingDefense() {
-  const [phase, setPhase] = useState('MENU');
+  const [phase, setPhase] = useState('MENU'); // 'MENU' | 'HIGH_SCORES' | 'BRIEFING' | 'DECK_BUILD' | 'BATTLE' | 'GAMEOVER'
   const [isFirstLaunch, setIsFirstLaunch] = useState(true); // 初回起動判定
   const [difficulty, setDifficulty] = useState(DIFFICULTIES.EASY);
 
@@ -222,7 +224,7 @@ export default function BlazingDefense() {
     setGlobalCostReduction((prev) => (prev === globalCostReduction ? prev : globalCostReduction));
 
     // コスト回復適用
-    setCost((c) => Math.min(999, c + recovery));
+    setCost((c) => Math.min(MAX_COST, c + recovery));
 
     // HP回復適用（毎秒）
     if (frameRef.current % 60 === 0 && hpRegen > 0) {
@@ -539,7 +541,9 @@ export default function BlazingDefense() {
           if (e.fireType === 'C' && card.damageType === 'gas') {
             dmg *= 1.5;
           }
-          if (card.id === 'fireEngine') knockback = -card.knockback;
+          if (card.knockback) {
+            knockback = -card.knockback;
+          }
 
           const newProgress = Math.max(-e.size, e.progress + knockback);
           addEffect(e.c, Math.floor(e.progress), 'Hit', 'text-white text-xs');
@@ -553,7 +557,7 @@ export default function BlazingDefense() {
       const survivors = targets.filter((e) => e.hp > 0 || e.isAttacking);
       const killedCount = targets.length - survivors.length;
       if (killedCount > 0) {
-        setCost((c) => c + 15 * killedCount);
+        setCost((c) => Math.min(MAX_COST, c + 15 * killedCount));
         setDefeatedEnemies((count) => count + killedCount);
       }
       return survivors;
@@ -605,7 +609,10 @@ export default function BlazingDefense() {
         goal: evacuationGoal,
         hp: Math.floor(hp),
         timeBonus: Math.floor(timeBonus),
-        totalScore: totalScore
+        totalScore: totalScore,
+        clearTime: clearTime,
+        defeatedEnemies: defeatedEnemies,
+        cost: Math.floor(cost)
       }
     };
   };
@@ -830,7 +837,15 @@ export default function BlazingDefense() {
   return (
     <div className="w-full h-screen overflow-hidden font-sans select-none">
       {phase === 'MENU' && (
-        <Menu missions={DRAFT_MISSIONS} onStartBattle={startBattle} isFirstLaunch={isFirstLaunch} />
+        <Menu
+          missions={DRAFT_MISSIONS}
+          onStartBattle={startBattle}
+          onShowHighScores={() => setPhase('HIGH_SCORES')}
+          isFirstLaunch={isFirstLaunch}
+        />
+      )}
+      {phase === 'HIGH_SCORES' && (
+        <HighScores onBack={() => setPhase('MENU')} />
       )}
       {phase === 'BRIEFING' && (
         <BriefingPhase
@@ -891,6 +906,8 @@ export default function BlazingDefense() {
         <GameOver
           isVictory={isVictory}
           scoreData={calculateFinalScore()}
+          difficulty={selectedMission?.difficulty || 'NORMAL'}
+          deck={deck}
           onBackToMenu={() => setPhase('MENU')}
         />
       )}
