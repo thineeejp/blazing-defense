@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { Clock, Users, ShieldCheck, RefreshCw, ArrowRight, Trophy } from 'lucide-react';
+import { Clock, Users, ShieldCheck, RefreshCw, ArrowRight, Trophy, Award } from 'lucide-react';
 import { isHighScore, addHighScore, serializeDeck } from '../utils/highScores';
+import { checkAchievements, updateGameStats, analyzeDeck, trackUsedCards } from '../utils/achievements';
 
 /**
  * ゲームオーバー / ミッション完了画面
  * サンプル.jsxのデザインをベースに実装
  */
-export default function GameOver({ isVictory, scoreData, difficulty, deck, onBackToMenu }) {
+export default function GameOver({ isVictory, scoreData, difficulty, deck, cost, onBackToMenu }) {
   const [gameState, setGameState] = useState('finish'); // finish -> result
   const [highScoreInfo, setHighScoreInfo] = useState(null); // { isNewHighScore, rank }
+  const [newAchievements, setNewAchievements] = useState([]); // 新規解除実績
   const hasSaved = useRef(false); // 重複保存防止フラグ
 
   // ハイスコア判定と保存（初回レンダリング時のみ）
@@ -44,6 +46,34 @@ export default function GameOver({ isVictory, scoreData, difficulty, deck, onBac
       const result = addHighScore(scoreEntry);
       setHighScoreInfo(result);
     }
+
+    // 使用カード履歴を更新（デッキ分析の前に実行）
+    trackUsedCards(deck);
+
+    // デッキ分析
+    const deckAnalysis = analyzeDeck(deck);
+
+    // ゲーム結果オブジェクトを構築
+    const gameResult = {
+      isVictory: isVictory,
+      difficulty: difficulty,
+      stats: scoreData.stats,
+      score: totalScore,
+      cost: cost || 0,
+      deckSize: deckAnalysis.deckSize,
+      usedAllCards: deckAnalysis.usedAllCards,
+      noTier3Used: deckAnalysis.noTier3Used,
+    };
+
+    // 実績判定（統計更新の前に実行）
+    const unlocked = checkAchievements(gameResult);
+    setNewAchievements(unlocked);
+
+    // 統計更新（実績判定の後に実行）
+    if (isVictory) {
+      // 勝利時のみ統計を更新
+      updateGameStats(difficulty);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Finish演出が終わったらResult画面へ遷移
@@ -69,6 +99,7 @@ export default function GameOver({ isVictory, scoreData, difficulty, deck, onBac
           type={resultType}
           scoreData={scoreData}
           highScoreInfo={highScoreInfo}
+          newAchievements={newAchievements}
           onRetry={onBackToMenu} // 現状はメニューに戻る動作
         />
       )}
@@ -137,7 +168,7 @@ const FinishEffect = ({ type, onComplete }) => {
  * グラスモーフィズムを採用したリザルト表示
  * ------------------------------------------------------------------
  */
-const ResultScreen = ({ type, scoreData, highScoreInfo, onRetry }) => {
+const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry }) => {
   const isWin = type === 'win';
   const stats = scoreData.stats || {}; // App.jsxから渡される生データ
 
@@ -187,6 +218,23 @@ const ResultScreen = ({ type, scoreData, highScoreInfo, onRetry }) => {
                 <span className="text-yellow-300 font-bold text-lg">
                   NEW HIGH SCORE - RANK #{highScoreInfo.rank}
                 </span>
+              </div>
+            )}
+
+            {/* 新規実績通知 */}
+            {newAchievements && newAchievements.length > 0 && (
+              <div className="mb-3 space-y-2">
+                {newAchievements.map((ach) => (
+                  <div
+                    key={ach.id}
+                    className="flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-transparent border border-purple-500/50 rounded-lg px-4 py-2 animate-slideUpFade"
+                  >
+                    <Award size={20} className="text-purple-400" />
+                    <span className="text-purple-300 font-bold text-sm">
+                      実績解除: {ach.name}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
 
