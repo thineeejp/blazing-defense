@@ -1,4 +1,4 @@
-import { Trophy, Medal, ArrowLeft, Users, Clock, Shield } from 'lucide-react';
+import { Trophy, Medal, ArrowLeft, Users, Clock, Shield, Coins } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { loadHighScores } from '../utils/highScores';
 import GameBackground from './ui/GameBackground';
@@ -99,8 +99,16 @@ function HighScoreEntry({ entry, index }) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <StatItem icon={Users} label="Evacuated" value={`${entry.stats.evacuated}/${entry.stats.goal}`} />
             <StatItem icon={Shield} label="HP" value={`${entry.stats.hp}%`} />
-            <StatItem icon={Clock} label="Time Bonus" value={`+${entry.stats.timeBonus.toLocaleString()}`} />
-            <StatItem label="Defeated" value={`${entry.stats.defeatedEnemies}`} />
+            <StatItem
+              icon={Clock}
+              label="Remaining Time"
+              value={`${Math.floor((entry.stats.clearTime ? (5400 - entry.stats.clearTime) / 60 : 0))}s`}
+            />
+            <StatItem
+              icon={Coins}
+              label="Remaining Cost"
+              value={`${entry.stats.cost || 0}`}
+            />
           </div>
 
           {/* Used Deck */}

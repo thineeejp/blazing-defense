@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Clock, Users, ShieldCheck, RefreshCw, ArrowRight, Trophy, Award } from 'lucide-react';
+import { Clock, Users, ShieldCheck, RefreshCw, ArrowRight, Trophy, Award, Coins } from 'lucide-react';
 import { isHighScore, addHighScore, serializeDeck } from '../utils/highScores';
 import { checkAchievements, updateGameStats, analyzeDeck, trackUsedCards } from '../utils/achievements';
 
@@ -7,7 +7,7 @@ import { checkAchievements, updateGameStats, analyzeDeck, trackUsedCards } from 
  * ゲームオーバー / ミッション完了画面
  * サンプル.jsxのデザインをベースに実装
  */
-export default function GameOver({ isVictory, scoreData, difficulty, deck, cost, onBackToMenu }) {
+export default function GameOver({ isVictory, scoreData, difficulty, deck, cost, onBackToMenu, onRetry }) {
   const [gameState, setGameState] = useState('finish'); // finish -> result
   const [highScoreInfo, setHighScoreInfo] = useState(null); // { isNewHighScore, rank }
   const [newAchievements, setNewAchievements] = useState([]); // 新規解除実績
@@ -100,7 +100,8 @@ export default function GameOver({ isVictory, scoreData, difficulty, deck, cost,
           scoreData={scoreData}
           highScoreInfo={highScoreInfo}
           newAchievements={newAchievements}
-          onRetry={onBackToMenu} // 現状はメニューに戻る動作
+          onRetry={onRetry}
+          onBackToMenu={onBackToMenu}
         />
       )}
     </div>
@@ -168,7 +169,7 @@ const FinishEffect = ({ type, onComplete }) => {
  * グラスモーフィズムを採用したリザルト表示
  * ------------------------------------------------------------------
  */
-const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry }) => {
+const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry, onBackToMenu }) => {
   const isWin = type === 'win';
   const stats = scoreData.stats || {}; // App.jsxから渡される生データ
 
@@ -177,28 +178,10 @@ const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry
       {/* 完全に透明ではなく、うっすら背景が見えるオーバーレイ */}
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-fadeIn" />
 
-      <div className="relative w-full max-w-5xl flex flex-col md:flex-row gap-8 items-stretch md:h-[500px]">
+      <div className="relative w-full max-w-3xl flex flex-col items-center">
 
-        {/* 左側：キャラクター/イメージエリア */}
-        <div className="hidden md:flex flex-col w-1/3 opacity-0 animate-slideRightFade delay-100">
-          {/* キャラクター立ち絵風のボックス */}
-          <div className={`
-             h-full w-full rounded-2xl border bg-gradient-to-b flex items-end justify-center overflow-hidden relative
-             ${isWin ? 'from-cyan-900/40 to-slate-900/40 border-cyan-500/30' : 'from-rose-900/40 to-slate-900/40 border-rose-500/30'}
-           `}>
-            {/* キャラクターシルエット（ダミー） */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className={`w-32 h-32 rounded-full blur-3xl opacity-50 ${isWin ? 'bg-cyan-400' : 'bg-rose-500'}`} />
-            </div>
-            <div className="relative z-10 p-6 text-center">
-              <div className="text-white/80 font-['Orbitron'] text-sm tracking-widest mb-1">OPERATOR</div>
-              <div className="text-2xl font-bold text-white">YAMADA</div>
-            </div>
-          </div>
-        </div>
-
-        {/* 右側：リザルト詳細 */}
-        <div className="flex-1 flex flex-col justify-center">
+        {/* リザルト詳細（中央配置） */}
+        <div className="w-full flex flex-col justify-center">
 
           {/* ヘッダー */}
           <div className="mb-6 opacity-0 animate-slideUpFade delay-200">
@@ -237,24 +220,32 @@ const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry
                 ))}
               </div>
             )}
-
-            <div className="flex gap-2">
-              {isWin && stats.hp === 100 && (
-                <Badge text="NO DAMAGE" color="bg-yellow-500/20 text-yellow-300 border-yellow-500/50" />
-              )}
-              {isWin && scoreData.breakdown.speed > 0 && (
-                <Badge text="SPEED RUN" color="bg-cyan-500/20 text-cyan-300 border-cyan-500/50" />
-              )}
-            </div>
           </div>
 
           {/* スコアカード */}
-          <div className="grid grid-cols-2 gap-4 mb-8 opacity-0 animate-slideUpFade delay-300">
-            {/* グラスモーフィズムパネル */}
-            <div className="col-span-2 bg-slate-800/40 border border-white/10 rounded-xl p-6 backdrop-blur-md shadow-xl relative overflow-hidden group">
+          <div className="space-y-6 mb-8 opacity-0 animate-slideUpFade delay-300">
+            {/* Total Score（上部、大きく表示） */}
+            <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-white/20 rounded-2xl p-8 backdrop-blur-md shadow-2xl relative overflow-hidden">
               {/* 光の反射エフェクト */}
-              <div className="absolute top-0 -left-full w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 group-hover:animate-[shimmer_2s_infinite]" />
+              <div className="absolute top-0 -left-full w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 animate-[shimmer_3s_infinite]" />
 
+              <div className="relative z-10 text-center">
+                <div className="text-slate-400 text-sm uppercase tracking-[0.3em] mb-2 font-bold">
+                  Total Score
+                </div>
+                <div className={`text-6xl font-['Orbitron'] font-black mb-3 ${isWin ? 'text-cyan-300' : 'text-slate-500'} drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]`}>
+                  {scoreData.total.toLocaleString()}
+                </div>
+                {scoreData.breakdown.multiplier > 1.0 && (
+                  <div className="text-slate-400 text-sm font-mono">
+                    Base: {scoreData.breakdown.base.toLocaleString()} × {scoreData.breakdown.multiplier.toFixed(3)}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 4列グリッド（詳細スコア） */}
+            <div className="bg-slate-800/40 border border-white/10 rounded-xl p-6 backdrop-blur-md shadow-xl">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <ScoreItem
                   icon={Users}
@@ -262,30 +253,79 @@ const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry
                   value={`${stats.evacuated || 0}`}
                   sub={`/ ${stats.goal || 100}`}
                   color="text-green-400"
-                  delay={0}
                 />
                 <ScoreItem
                   icon={Clock}
-                  label="TIME BONUS"
-                  value={isWin ? `+${stats.timeBonus || 0}` : '0'}
+                  label="REMAINING"
+                  value={`${Math.floor((stats.clearTime ? (5400 - stats.clearTime) / 60 : 0))}s`}
+                  sub="TIME"
                   color="text-yellow-400"
-                  delay={100}
                 />
                 <ScoreItem
                   icon={ShieldCheck}
                   label="DEFENSE HP"
                   value={`${stats.hp || 0}%`}
                   color="text-blue-400"
-                  delay={200}
                 />
-                <div className="col-span-2 md:col-span-1 flex flex-col justify-center items-end md:items-start pl-4 border-l border-white/10">
-                  <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Total Score</div>
-                  <div className={`text-3xl font-['Orbitron'] font-bold ${isWin ? 'text-cyan-300' : 'text-slate-500'}`}>
-                    {scoreData.total.toLocaleString()}
-                  </div>
-                </div>
+                <ScoreItem
+                  icon={Coins}
+                  label="REMAINING"
+                  value={`${stats.cost || 0}`}
+                  sub="COST"
+                  color="text-orange-400"
+                />
               </div>
             </div>
+
+            {/* バッジセクション（効果を明示） */}
+            {isWin && (scoreData.badges.noDamage || scoreData.badges.evacuation || scoreData.badges.economy) && (
+              <div className="bg-gradient-to-br from-amber-900/20 to-slate-900/40 border border-amber-500/30 rounded-xl p-6 backdrop-blur-md shadow-xl">
+                <div className="text-amber-300 text-sm uppercase tracking-widest mb-4 font-bold flex items-center gap-2">
+                  <Trophy size={16} />
+                  Achievement Bonuses
+                </div>
+
+                <div className="space-y-3 mb-4">
+                  {scoreData.badges.noDamage && (
+                    <BadgeMultiplier
+                      text="NO DAMAGE"
+                      icon="🏅"
+                      color="text-cyan-300"
+                      multiplier="1.20"
+                    />
+                  )}
+                  {scoreData.badges.evacuation && (
+                    <BadgeMultiplier
+                      text="EVACUATION COMPLETE"
+                      icon="🚪"
+                      color="text-green-300"
+                      multiplier="1.20"
+                    />
+                  )}
+                  {scoreData.badges.economy && (
+                    <BadgeMultiplier
+                      text="ECONOMY RUN"
+                      icon="💎"
+                      color="text-amber-300"
+                      multiplier="1.20"
+                    />
+                  )}
+                </div>
+
+                {scoreData.breakdown.multiplier > 1.0 && (
+                  <div className="pt-4 border-t border-white/10">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400 text-sm font-bold tracking-wider">
+                        🎯 TOTAL MULTIPLIER
+                      </span>
+                      <span className="text-2xl font-['Orbitron'] font-black text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)] animate-pulse-glow">
+                        ×{scoreData.breakdown.multiplier.toFixed(3)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* アクションボタン */}
@@ -298,14 +338,14 @@ const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry
               RETRY
             </button>
             <button
-              onClick={onRetry}
+              onClick={onBackToMenu}
               className={`flex-1 py-4 px-6 rounded-full font-bold shadow-lg transition-all flex items-center justify-center gap-2 group
                 ${isWin
                   ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-900 shadow-cyan-500/30'
                   : 'bg-slate-600 hover:bg-slate-500 text-slate-200'
                 }`}
             >
-              <span className="group-hover:translate-x-1 transition-transform">NEXT MISSION</span>
+              <span className="group-hover:translate-x-1 transition-transform">BACK TO MENU</span>
               <ArrowRight size={20} />
             </button>
           </div>
@@ -330,9 +370,19 @@ const ScoreItem = ({ icon: Icon, label, value, sub, color }) => (
   </div>
 );
 
-// 小部品: バッジ
-const Badge = ({ text, color }) => (
-  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${color}`}>
-    {text}
-  </span>
+// 小部品: バッジ倍率表示
+const BadgeMultiplier = ({ text, icon, color, multiplier }) => (
+  <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-white/5 hover:border-white/20 transition-all group">
+    <div className="flex items-center gap-3">
+      <span className="text-2xl">{icon}</span>
+      <span className={`font-bold text-sm tracking-wider ${color}`}>
+        {text}
+      </span>
+    </div>
+    <div className="flex items-center gap-2">
+      <span className={`text-xl font-['Orbitron'] font-black ${color} drop-shadow-[0_0_8px_currentColor] group-hover:scale-110 transition-transform`}>
+        ×{multiplier}
+      </span>
+    </div>
+  </div>
 );

@@ -33,7 +33,7 @@ export const ALL_CARDS = {
     power: 4,
     speed: 50,
     damageType: 'water',
-    knockback: 0.3,
+    knockback: 0.1,
   },
 
   sprinkler: {
@@ -94,10 +94,10 @@ export const ALL_CARDS = {
     cost: 30,
     duration: 1800, // 30秒
     icon: Bell,
-    desc: '【警報】コスト回復+0.6/秒 [30秒]',
+    desc: '【警報】コスト回復+3.0/秒 [30秒]',
     rangeType: 'self',
     effect: 'economy',
-    value: 0.6,
+    value: 0.05,
   },
 
   autoFireAlarm: {
@@ -109,10 +109,10 @@ export const ALL_CARDS = {
     cost: 60,
     duration: 2700, // 45秒
     icon: BellRing,
-    desc: '【警報】コスト+1.2/秒＋敵感知警告 [45秒]',
+    desc: '【警報】コスト+6.0/秒＋敵感知警告 [45秒]',
     rangeType: 'self',
     effect: 'economy',
-    value: 1.2,
+    value: 0.1,
   },
 
   broadcastSystem: {
@@ -124,10 +124,10 @@ export const ALL_CARDS = {
     cost: 100,
     duration: 3600, // 60秒
     icon: Radio,
-    desc: '【警報】コスト+2.0/秒＋避難+0.5人/秒 [60秒]',
+    desc: '【警報】コスト+10.0/秒＋避難+0.5人/秒 [60秒]',
     rangeType: 'self',
     effect: 'economyAndEvacuation',
-    economyValue: 2.0,
+    economyValue: 0.167,
     evacuationValue: 0.5,
   },
 
@@ -140,10 +140,10 @@ export const ALL_CARDS = {
     cost: 120,
     duration: null, // 永続（変身まで）
     icon: AlertTriangle,
-    desc: '【警報】コスト+1.0/秒→10秒後ポンプ車に変身',
+    desc: '【警報】コスト+5.0/秒→10秒後ポンプ車に変身',
     rangeType: 'self',
     effect: 'economyWithTransform',
-    value: 1.0,
+    value: 0.083,
     transformDelay: 600, // 10秒
     transformInto: 'fireEngine',
   },
@@ -173,11 +173,11 @@ export const ALL_CARDS = {
     cost: 60,
     duration: null, // 永続
     icon: Lightbulb,
-    desc: '【避難】避難+0.8人/秒＋HP回復+0.1/秒 [永続]',
+    desc: '【避難】避難+0.8人/秒＋HP回復+0.3/秒 [永続]',
     rangeType: 'self',
     effect: 'evacuationWithRegen',
     evacuationValue: 0.8,
-    regenValue: 0.1,
+    regenValue: 0.3,
   },
 
   descentDevice: {
@@ -204,11 +204,11 @@ export const ALL_CARDS = {
     cost: 120,
     duration: 2700, // 45秒
     icon: Siren,
-    desc: '【避難】避難+1.5人/秒＋HP+0.2/秒＋攻撃速度+10% [45秒]',
+    desc: '【避難】避難+1.5人/秒＋HP+0.5/秒＋攻撃速度+10% [45秒]',
     rangeType: 'global',
     effect: 'evacuationWithRegenAndBuff',
     evacuationValue: 1.5,
-    regenValue: 0.2,
+    regenValue: 0.5,
     globalSpeedBuff: 0.1,
   },
 
@@ -237,11 +237,11 @@ export const ALL_CARDS = {
     cost: 100,
     duration: 3600, // 60秒
     icon: Zap,
-    desc: '【施設】全攻撃速度+20%＋HP回復+0.15/秒 [60秒]',
+    desc: '【施設】全攻撃速度+20%＋HP回復+0.4/秒 [60秒]',
     rangeType: 'global',
     effect: 'globalSpeedBuffWithRegen',
     speedBuff: 0.2,
-    regenValue: 0.15,
+    regenValue: 0.4,
   },
 
   smokeControl: {
@@ -318,10 +318,10 @@ export const ALL_CARDS = {
     cost: 50,
     duration: 2700, // 45秒
     icon: AlertTriangle,
-    desc: '【特殊】コスト回復+1.0/秒 [45秒]',
+    desc: '【特殊】コスト回復+5.0/秒 [45秒]',
     rangeType: 'self',
     effect: 'economy',
-    value: 1.0,
+    value: 0.083,
   },
 
   disasterControlCenter: {
@@ -333,13 +333,13 @@ export const ALL_CARDS = {
     cost: 200,
     duration: 3600, // 60秒
     icon: Building,
-    desc: '【特殊】全能力+20%＋避難+1.0人/秒＋HP+0.3/秒 [60秒]',
+    desc: '【特殊】全能力+20%＋避難+1.0人/秒＋HP+0.8/秒 [60秒]',
     rangeType: 'global',
     effect: 'ultimateBuff',
     globalPowerBuff: 0.2,
     globalSpeedBuff: 0.2,
     evacuationValue: 1.0,
-    regenValue: 0.3,
+    regenValue: 0.8,
   },
 
   // ポンプ車（消防機関通報から変身）

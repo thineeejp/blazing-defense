@@ -6,7 +6,7 @@ import GameOver from './components/GameOver';
 import BriefingPhase from './components/BriefingPhase';
 import DeckBuildPhase from './components/DeckBuildPhase';
 import BattleField from './components/BattleField';
-import HighScores from './components/HighScores';
+import Gallery from './components/Gallery';
 
 // 新しい定数のインポート
 import { ALL_CARDS } from './constants/cards';
@@ -49,7 +49,7 @@ const DRAFT_MISSIONS = [
       { id: 'B', text: '光電式スポット型感知器', correct: true },
     ],
     rewardCard: 'superSmoke',
-    evacuationGoal: 300,
+    evacuationGoal: 200,
   },
   {
     id: 'factory',
@@ -62,14 +62,14 @@ const DRAFT_MISSIONS = [
       { id: 'B', text: '泡による窒息', correct: true },
     ],
     rewardCard: 'foamHead',
-    evacuationGoal: 600,
+    evacuationGoal: 300,
   },
 ];
 
 const INITIAL_HP = 100;
 
 export default function BlazingDefense() {
-  const [phase, setPhase] = useState('MENU'); // 'MENU' | 'HIGH_SCORES' | 'BRIEFING' | 'DECK_BUILD' | 'BATTLE' | 'GAMEOVER'
+  const [phase, setPhase] = useState('MENU'); // 'MENU' | 'GALLERY' | 'BRIEFING' | 'DECK_BUILD' | 'BATTLE' | 'GAMEOVER'
   const [isFirstLaunch, setIsFirstLaunch] = useState(true); // 初回起動判定
   const [difficulty, setDifficulty] = useState(DIFFICULTIES.EASY);
 
@@ -105,12 +105,13 @@ export default function BlazingDefense() {
 
   const [briefingState, setBriefingState] = useState({
     round: 1,
-    phase: 'SELECT', // 'SELECT' | 'QUIZ' | 'RESULT'
+    phase: 'SELECT', // 'SELECT' | 'QUIZ' | 'FEEDBACK' | 'RESULT'
     selectedCategory: null,
     quizzes: [],
     currentQIndex: 0,
     correctCount: 0,
     totalCost: 0,
+    answerHistory: [], // 各問題の回答履歴
   });
 
   // DECK_BUILDフェーズの状態
@@ -133,6 +134,7 @@ export default function BlazingDefense() {
   const towersRef = useRef(towers);
   const difficultyRef = useRef(difficulty);
   const globalBuffsRef = useRef({ speed: 0 });
+  const evacuatedCountRef = useRef(0);
 
   useEffect(() => {
     towersRef.current = towers;
@@ -141,6 +143,10 @@ export default function BlazingDefense() {
   useEffect(() => {
     difficultyRef.current = difficulty;
   }, [difficulty]);
+
+  useEffect(() => {
+    evacuatedCountRef.current = evacuatedCount;
+  }, [evacuatedCount]);
 
   useEffect(() => {
     if (phase !== 'BATTLE' || isPaused) {
@@ -160,7 +166,7 @@ export default function BlazingDefense() {
 
   const updateBattleLogic = () => {
     // effect処理（全13種類に対応）
-    let recovery = 0.05;
+    let recovery = 0.083;
     let evacBoost = 0;
     let hpRegen = 0;
     let globalSpeedBuff = 0;
@@ -234,7 +240,11 @@ export default function BlazingDefense() {
     // 避難速度適用（基本1.0 + ブースト）
     const currentEvacSpeed = 1.0 + evacBoost;
     if (frameRef.current % 60 === 0) {
-      setEvacuatedCount((count) => Math.min(evacuationGoal, count + currentEvacSpeed));
+      setEvacuatedCount((count) => {
+        const newCount = Math.min(evacuationGoal, count + currentEvacSpeed);
+        evacuatedCountRef.current = newCount;  // refを即座に更新
+        return newCount;
+      });
     }
 
     const spawnRate = Math.max(30, difficultyRef.current.spawnRate - Math.floor(frameRef.current / 500));
@@ -322,7 +332,7 @@ export default function BlazingDefense() {
         }
 
         // 条件2: 避難目標達成
-        if (evacuatedCount >= evacuationGoal) {
+        if (evacuatedCountRef.current >= evacuationGoal) {
           setIsVictory(true);
           setClearTime(frameRef.current);
           setPhase('GAMEOVER');
@@ -573,7 +583,7 @@ export default function BlazingDefense() {
     const evacuationScore = evacuatedCount * 100;
 
     // 時間ボーナス（早いほど高い）
-    const timeBonus = isVictory ? Math.max(0, (timeLimit - clearTime) * 10) : 0;
+    const timeBonus = isVictory ? Math.max(0, (timeLimit - clearTime) * 5) : 0;
 
     // HP残量ボーナス
     const hpBonus = Math.floor(hp) * 20;
@@ -584,25 +594,32 @@ export default function BlazingDefense() {
     // 撃破ボーナス
     const defeatBonus = defeatedEnemies * 100;
 
-    // 特別ボーナス
-    const noDamageBonus = (hp === INITIAL_HP) ? 2000 : 0;
-    const speedBonus = (isVictory && clearTime <= timeLimit / 2) ? 1000 : 0;
-    const economyBonus = (cost >= 200) ? 500 : 0;
+    // 基本スコア合計
+    const baseScore = evacuationScore + timeBonus + hpBonus + costBonus + defeatBonus;
 
-    const totalScore = evacuationScore + timeBonus + hpBonus + costBonus + defeatBonus
-      + noDamageBonus + speedBonus + economyBonus;
+    // バッジ判定
+    const hasNoDamageBadge = (hp === INITIAL_HP);
+    const hasEvacuationBadge = (isVictory && evacuatedCount >= evacuationGoal);
+    const hasEconomyBadge = (cost >= 777);
+
+    // バッジ倍率適用（各バッジ×1.2）
+    let multiplier = 1.0;
+    if (hasNoDamageBadge) multiplier *= 1.2;
+    if (hasEvacuationBadge) multiplier *= 1.2;
+    if (hasEconomyBadge) multiplier *= 1.2;
+
+    const totalScore = Math.floor(baseScore * multiplier);
 
     return {
       total: totalScore,
       breakdown: {
+        base: baseScore,
+        multiplier: multiplier,
         evacuation: evacuationScore,
         time: timeBonus,
         hp: hpBonus,
         cost: costBonus,
         defeat: defeatBonus,
-        noDamage: noDamageBonus,
-        speed: speedBonus,
-        economy: economyBonus,
       },
       stats: {
         evacuated: Math.floor(evacuatedCount),
@@ -613,6 +630,11 @@ export default function BlazingDefense() {
         clearTime: clearTime,
         defeatedEnemies: defeatedEnemies,
         cost: Math.floor(cost)
+      },
+      badges: {
+        noDamage: hasNoDamageBadge,
+        evacuation: hasEvacuationBadge,
+        economy: hasEconomyBadge,
       }
     };
   };
@@ -686,6 +708,36 @@ export default function BlazingDefense() {
       currentQIndex: 0,
       correctCount: 0,
       totalCost: 0,
+      answerHistory: [],
+    });
+    setPhase('BRIEFING');
+  };
+
+  const handleRetry = () => {
+    // BRIEFINGシステムの初期化
+    setTiers({
+      fire: 1,
+      alarm: 1,
+      evacuation: 1,
+      facility: 1,
+      other: 1,
+    });
+    setCategoryBuffs({
+      fire: { costDiscount: 0, powerBuff: 0 },
+      alarm: { costDiscount: 0, powerBuff: 0 },
+      evacuation: { costDiscount: 0, powerBuff: 0 },
+      facility: { costDiscount: 0, powerBuff: 0 },
+      other: { costDiscount: 0, powerBuff: 0 },
+    });
+    setBriefingState({
+      round: 1,
+      phase: 'SELECT',
+      selectedCategory: null,
+      quizzes: [],
+      currentQIndex: 0,
+      correctCount: 0,
+      totalCost: 0,
+      answerHistory: [],
     });
     setPhase('BRIEFING');
   };
@@ -704,6 +756,7 @@ export default function BlazingDefense() {
       quizzes: selectedQuizzes,
       currentQIndex: 0,
       correctCount: 0,
+      answerHistory: [],
     }));
   };
 
@@ -713,16 +766,40 @@ export default function BlazingDefense() {
     const isCorrect = answerIndex === currentQuiz.answer;
     const newCorrectCount = briefingState.correctCount + (isCorrect ? 1 : 0);
 
+    // 回答履歴に記録
+    const newAnswerHistory = [
+      ...briefingState.answerHistory,
+      {
+        questionIndex: briefingState.currentQIndex,
+        selectedAnswer: answerIndex,
+        correctAnswer: currentQuiz.answer,
+        isCorrect: isCorrect,
+        question: currentQuiz.question,
+        options: currentQuiz.options,
+      }
+    ];
+
+    // FEEDBACKフェーズへ遷移
+    setBriefingState(prev => ({
+      ...prev,
+      phase: 'FEEDBACK',
+      correctCount: newCorrectCount,
+      answerHistory: newAnswerHistory,
+    }));
+  };
+
+  // BRIEFINGフェーズ: FEEDBACK終了後の遷移
+  const handleBriefingFeedbackNext = () => {
     if (briefingState.currentQIndex < briefingState.quizzes.length - 1) {
       // 次の問題へ
       setBriefingState(prev => ({
         ...prev,
+        phase: 'QUIZ',
         currentQIndex: prev.currentQIndex + 1,
-        correctCount: newCorrectCount,
       }));
     } else {
       // 全問終了 → 結果画面へ
-      const reward = BRIEFING_REWARD_TABLE[newCorrectCount] || 0;
+      const reward = BRIEFING_REWARD_TABLE[briefingState.correctCount] || 0;
       const newTotalCost = briefingState.totalCost + reward;
 
       // Tier更新
@@ -747,7 +824,6 @@ export default function BlazingDefense() {
       setBriefingState(prev => ({
         ...prev,
         phase: 'RESULT',
-        correctCount: newCorrectCount,
         totalCost: newTotalCost,
       }));
     }
@@ -763,6 +839,7 @@ export default function BlazingDefense() {
       quizzes: [],
       currentQIndex: 0,
       correctCount: 0,
+      answerHistory: [],
     }));
   };
 
@@ -825,6 +902,7 @@ export default function BlazingDefense() {
     // 勝利条件・スコアシステムの初期化
     setIsVictory(false);
     setEvacuatedCount(0);
+    evacuatedCountRef.current = 0;
     setDefeatedEnemies(0);
     setClearTime(0);
     if (selectedMission) {
@@ -840,12 +918,12 @@ export default function BlazingDefense() {
         <Menu
           missions={DRAFT_MISSIONS}
           onStartBattle={startBattle}
-          onShowHighScores={() => setPhase('HIGH_SCORES')}
+          onShowGallery={() => setPhase('GALLERY')}
           isFirstLaunch={isFirstLaunch}
         />
       )}
-      {phase === 'HIGH_SCORES' && (
-        <HighScores onBack={() => setPhase('MENU')} />
+      {phase === 'GALLERY' && (
+        <Gallery onBack={() => setPhase('MENU')} />
       )}
       {phase === 'BRIEFING' && (
         <BriefingPhase
@@ -856,9 +934,11 @@ export default function BlazingDefense() {
           currentQIndex={briefingState.currentQIndex}
           correctCount={briefingState.correctCount}
           totalCost={briefingState.totalCost}
+          answerHistory={briefingState.answerHistory}
           tiers={tiers}
           onSelectCategory={handleBriefingCategorySelect}
           onAnswerQuiz={handleBriefingAnswerQuiz}
+          onFeedbackNext={handleBriefingFeedbackNext}
           onFinishRound={handleBriefingFinishRound}
           onStartBattle={handleBriefingToDeckBuild}
         />
@@ -908,7 +988,9 @@ export default function BlazingDefense() {
           scoreData={calculateFinalScore()}
           difficulty={selectedMission?.difficulty || 'NORMAL'}
           deck={deck}
+          cost={cost}
           onBackToMenu={() => setPhase('MENU')}
+          onRetry={handleRetry}
         />
       )}
     </div>
