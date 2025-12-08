@@ -289,9 +289,10 @@ export default function BlazingDefense() {
           newProgress = e.progress;
         }
         let newSize = e.size;
-        const currentBottom = e.progress + e.size;
-        if (e.size === 1 && currentBottom > 3.0) newSize = 2;
-        if (e.size === 2 && currentBottom > 5.0) newSize = 3;
+        // サイズ1→3に直接変化（サイズ2を廃止、HP回復を1回のみに）
+        if (e.size === 1 && e.progress > 3.0) {
+          newSize = 3;
+        }
         // 成長時は中心を保ち、トップ/ボトムのワープ感を抑える
         if (newSize > e.size) {
           // 成長時に位置は据え置き（前フレームのtopを保持）してワープ感を排除
@@ -302,22 +303,40 @@ export default function BlazingDefense() {
         // グリッド外への大きな跳ねを抑制
         newProgress = Math.max(-1, newProgress);
 
-        const enemyBottom = newProgress + newSize;
-        // 中心が最終行を跨いだら到達とみなす（境界で一拍止めるイメージ）
-        if (enemyBottom - (newSize / 2) >= GRID_ROWS - 0.5) {
-          // 被ダメージを少し緩和
-          const damage = 20;
-          damageEvents.push({ damage, c: e.c });
+        // 到達判定の前に、既に到達済みの敵をスキップ（2重ダメージ防止）
+        if (e.isAttacking) {
           next.push({
             ...e,
             progress: newProgress,
             size: newSize,
             r: Math.floor(newProgress),
-            isAttacking: true,
-            attackAnimTimer: 30,
+            attackAnimTimer: e.attackAnimTimer > 0 ? e.attackAnimTimer - 1 : 0,
           });
         } else {
-          next.push({ ...e, progress: newProgress, size: newSize, r: Math.floor(newProgress) });
+          const enemyBottom = newProgress + newSize;
+          // 中心が最終行を跨いだら到達とみなす（境界で一拍止めるイメージ）
+          if (enemyBottom - (newSize / 2) >= GRID_ROWS - 0.5) {
+            // 火災タイプ別のダメージ設定
+            let damage = 20; // デフォルト
+            if (e.fireType === 'A') {
+              damage = 15; // A火災: 15固定
+            } else if (e.fireType === 'B') {
+              damage = 20; // B火災: 20固定
+            } else if (e.fireType === 'C') {
+              damage = 10; // C火災: 10固定
+            }
+            damageEvents.push({ damage, c: e.c });
+            next.push({
+              ...e,
+              progress: newProgress,
+              size: newSize,
+              r: Math.floor(newProgress),
+              isAttacking: true,
+              attackAnimTimer: 30,
+            });
+          } else {
+            next.push({ ...e, progress: newProgress, size: newSize, r: Math.floor(newProgress) });
+          }
         }
       });
 
@@ -443,7 +462,7 @@ export default function BlazingDefense() {
     const cols = difficultyRef.current.cols;
     const c = Math.floor(Math.random() * cols);
     const types = [
-      { hp: 20, speed: 0.02, color: 'text-red-500', name: 'A火災', fireType: 'A' },
+      { hp: 20, speed: 0.018, color: 'text-red-500', name: 'A火災', fireType: 'A' },
       { hp: 40, speed: 0.015, color: 'text-orange-500', name: 'B火災(油)', fireType: 'B' },
       { hp: 15, speed: 0.04, color: 'text-yellow-400', name: 'C火災(電気)', fireType: 'C' },
     ];
