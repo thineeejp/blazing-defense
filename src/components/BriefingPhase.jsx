@@ -30,6 +30,9 @@ export default function BriefingPhase({
             <h1 className="text-4xl md:text-5xl font-black font-orbitron text-white mb-2 tracking-wider">
               BRIEFING <span className="text-cyan-400">PHASE</span>
             </h1>
+            <div className="text-slate-300 text-sm mb-3">
+              強化したいカテゴリを選んでください ({round}/3)
+            </div>
             <div className="flex items-center justify-center gap-4 text-slate-400 font-mono">
               <span className="bg-slate-800 px-3 py-1 rounded border border-slate-700">ROUND {round} / 3</span>
               <span className="bg-slate-800 px-3 py-1 rounded border border-slate-700 text-yellow-400">COST: {totalCost}</span>
@@ -82,8 +85,13 @@ export default function BriefingPhase({
                       UPGRADE
                     </div>
                   ) : (
-                    <div className="mt-auto text-xs text-yellow-400 font-bold border border-yellow-500/30 px-2 py-1 rounded bg-yellow-900/20 flex items-center gap-1">
-                      <Star size={10} fill="currentColor" /> OVERFLOW
+                    <div className="mt-auto text-xs text-yellow-400 font-bold border border-yellow-500/30 px-2 py-1 rounded bg-yellow-900/20">
+                      <div className="flex items-center justify-center gap-1 mb-0.5">
+                        <Star size={10} fill="currentColor" /> 追加ボーナス
+                      </div>
+                      <div className="text-[9px] text-yellow-300/80 text-center">
+                        Tier3到達後も強化
+                      </div>
                     </div>
                   )}
                 </GlassCard>

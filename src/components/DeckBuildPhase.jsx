@@ -39,7 +39,7 @@ export default function DeckBuildPhase({
         <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
           <div>
             <h1 className="text-3xl font-black font-orbitron text-white tracking-wider">DECK BUILD</h1>
-            <p className="text-slate-400 text-sm">SELECT EQUIPMENT (1-6)</p>
+            <p className="text-slate-400 text-sm">ユニットを選んでください（最大６）</p>
           </div>
 
           <GlassCard className="px-6 py-3 flex items-center gap-4" hoverEffect={false}>

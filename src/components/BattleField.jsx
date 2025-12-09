@@ -225,7 +225,13 @@ export default function BattleField({
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-36 z-30 flex items-center justify-center gap-3 p-4 overflow-x-auto bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+      <div className="h-36 z-30 flex flex-col items-center justify-center p-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+        {/* 操作ガイダンス */}
+        <div className="text-xs text-center mb-2 text-slate-400 font-mono">
+          カードをクリック → グリッドをクリックで配置
+        </div>
+        {/* Deck Cards */}
+        <div className="flex items-center justify-center gap-3 overflow-x-auto w-full">
         {Object.values(deck).map((card) => {
           // オーバーフロー報酬 + グローバル割引を反映したコスト計算
           const discount = (categoryBuffs[card.category]?.costDiscount || 0) + (globalCostReduction || 0);
@@ -284,6 +290,7 @@ export default function BattleField({
             </button>
           );
         })}
+        </div>
       </div>
 
 
