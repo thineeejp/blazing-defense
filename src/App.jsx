@@ -27,7 +27,7 @@ const GRID_ROWS = 6;
 const DRAFT_MISSIONS = [
   {
     id: 'library',
-    title: '中央図書館 (EASY)',
+    title: '事務所 (EASY)',
     difficulty: 'EASY',
     desc: '延べ面積は小さめ。まずは水損を避ける消火から学ぶ。',
     question: '図書館や書庫に最も適した、水損を最小限にする消火設備は？',

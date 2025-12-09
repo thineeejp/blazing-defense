@@ -225,11 +225,13 @@ export default function BattleField({
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-36 z-30 flex flex-col items-center justify-center p-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+      <div className="h-36 z-30 flex flex-col p-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
         {/* 操作ガイダンス */}
-        <div className="text-xs text-center mb-2 text-slate-400 font-mono">
+        <div className="text-xs text-center mb-3 text-slate-400 font-mono pt-1">
           カードをクリック → グリッドをクリックで配置
         </div>
+        {/* Deck Cards Container */}
+        <div className="flex-1 flex items-center justify-center">
         {/* Deck Cards */}
         <div className="flex items-center justify-center gap-3 overflow-x-auto w-full">
         {Object.values(deck).map((card) => {
@@ -290,6 +292,7 @@ export default function BattleField({
             </button>
           );
         })}
+        </div>
         </div>
       </div>
 

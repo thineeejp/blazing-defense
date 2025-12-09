@@ -85,13 +85,8 @@ export default function BriefingPhase({
                       UPGRADE
                     </div>
                   ) : (
-                    <div className="mt-auto text-xs text-yellow-400 font-bold border border-yellow-500/30 px-2 py-1 rounded bg-yellow-900/20">
-                      <div className="flex items-center justify-center gap-1 mb-0.5">
-                        <Star size={10} fill="currentColor" /> 追加ボーナス
-                      </div>
-                      <div className="text-[9px] text-yellow-300/80 text-center">
-                        Tier3到達後も強化
-                      </div>
+                    <div className="mt-auto text-xs text-yellow-400 font-bold border border-yellow-500/30 px-2 py-1 rounded bg-yellow-900/20 flex items-center gap-1">
+                      <Star size={10} fill="currentColor" /> 追加ボーナス
                     </div>
                   )}
                 </GlassCard>
