@@ -61,8 +61,8 @@ export const ALL_CARDS = {
     cost: 90,
     duration: 3600, // 60秒
     icon: Zap,
-    desc: '【消火】横1列×縦3マスを高速散水 [60秒]',
-    rangeType: 'wide',
+    desc: '【消火】横3行×全列を高速散水 [60秒]',
+    rangeType: 'tripleRow',
     power: 1.5,
     speed: 30,
     damageType: 'water',
@@ -77,8 +77,8 @@ export const ALL_CARDS = {
     cost: 120,
     duration: 1800, // 30秒
     icon: ShieldAlert,
-    desc: '【特効】周囲1マスに大ダメージ（B火災2倍）[30秒]',
-    rangeType: 'surround',
+    desc: '【特効】周囲3×3＋横1行に大ダメージ（B火災2倍）[30秒]',
+    rangeType: 'surroundRow',
     power: 8,
     speed: 60,
     damageType: 'foam',

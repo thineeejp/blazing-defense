@@ -6,6 +6,8 @@ const GRID_ROWS = 6;
 const RANGE_LABEL = {
   surround: 'Surround',
   wide: 'Wide',
+  tripleRow: '3-Row',
+  surroundRow: 'Surround+Row',
   line: 'Line',
   global: 'Global',
 };

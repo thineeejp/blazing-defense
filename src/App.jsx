@@ -526,6 +526,28 @@ export default function BlazingDefense() {
         } else if (card.rangeType === 'wide') {
           const distR = Math.abs(eCenterR - tCenterR);
           if (distR < e.size / 2 + 1.2) inRange = true;
+        } else if (card.rangeType === 'tripleRow') {
+          // タワー行±1行（3行）× 全列
+          const distR = Math.abs(tCenterR - eCenterR);
+          if (distR <= 1.5) inRange = true;
+        } else if (card.rangeType === 'surroundRow') {
+          // 周囲3×3（surround）+ 横1列（タワー行全体）の複合
+          let inRangeSurround = false;
+          let inRangeRow = false;
+
+          // surround判定
+          const distR = Math.abs(eCenterR - tCenterR);
+          const distC = Math.abs(eCenterC - tCenterC);
+          if (distR < e.size / 2 + 1.2 && distC < e.size / 2 + 1.2) {
+            inRangeSurround = true;
+          }
+
+          // row判定（タワーと同じ行）
+          if (Math.abs(tCenterR - eCenterR) < e.size / 2 + 0.5) {
+            inRangeRow = true;
+          }
+
+          inRange = inRangeSurround || inRangeRow;
         } else if (card.rangeType === 'line') {
           if (tc >= e.c && tc < e.c + e.size && e.progress < tr) inRange = true;
         } else if (card.rangeType === 'global') {
