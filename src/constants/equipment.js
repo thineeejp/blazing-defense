@@ -9,7 +9,7 @@ export const EQUIPMENT_TREES = {
     color: 'red',
     initialUnlock: true,
     tiers: {
-      1: ['extinguisher'],
+      1: ['extinguisher', 'portablePowder'],
       2: ['indoorHydrant', 'sprinkler'],
       3: ['foamSystem', 'inertGasSystem'],
     },

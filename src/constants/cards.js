@@ -19,6 +19,22 @@ export const ALL_CARDS = {
     damageType: 'water',
   },
 
+  portablePowder: {
+    id: 'portablePowder',
+    name: '移動式粉末消火設備',
+    category: 'fire',
+    tier: 1,
+    type: 'red',
+    cost: 50,
+    duration: 1800, // 30秒
+    icon: Flame,
+    desc: '【特効】周囲1マス(3×3)に粉末散布（B火災2倍）[30秒]',
+    rangeType: 'surround',
+    power: 3,
+    speed: 45,
+    damageType: 'foam',
+  },
+
   indoorHydrant: {
     id: 'indoorHydrant',
     name: '屋内消火栓設備',
