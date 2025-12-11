@@ -90,7 +90,7 @@ export default function BattleField({
       </div>
 
       {/* Main 3D Grid Area */}
-      <div className={`flex-1 relative flex items-center justify-center p-4 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
+      <div className={`flex-1 relative flex items-center justify-center px-4 pt-4 pb-0 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
         <div className="absolute top-20 text-red-900/20 font-black text-6xl select-none z-0 font-orbitron tracking-widest pointer-events-none">
           DANGER ZONE
         </div>
@@ -222,18 +222,19 @@ export default function BattleField({
             );
           })}
         </div>
+
+        {/* 操作ガイダンス - グリッド下端に配置 */}
+        <div className="absolute bottom-0 left-0 right-0 text-xs text-center text-slate-400 font-mono pb-1">
+          カードをクリック → グリッドをクリックで配置
+        </div>
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-36 z-30 flex flex-col p-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
-        {/* 操作ガイダンス */}
-        <div className="text-xs text-center mb-3 text-slate-400 font-mono pt-1">
-          カードをクリック → グリッドをクリックで配置
-        </div>
+      <div className="h-40 z-30 flex flex-col px-4 py-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
         {/* Deck Cards Container */}
         <div className="flex-1 flex items-center justify-center">
         {/* Deck Cards */}
-        <div className="flex items-center justify-center gap-3 overflow-x-auto w-full">
+        <div className="flex items-center justify-center gap-3 overflow-x-auto overflow-y-visible w-full py-6">
         {Object.values(deck).map((card) => {
           // オーバーフロー報酬 + グローバル割引を反映したコスト計算
           const discount = (categoryBuffs[card.category]?.costDiscount || 0) + (globalCostReduction || 0);
@@ -248,7 +249,7 @@ export default function BattleField({
               className={`
                 relative flex-shrink-0 w-24 h-28 rounded-xl border border-white/10 flex flex-col items-center justify-center transition-all group
                 ${selectedCard?.id === card.id
-                  ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)] -translate-y-4 scale-110'
+                  ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)] scale-110'
                   : 'bg-slate-800/80 hover:bg-slate-700 hover:-translate-y-2'}
                 ${cost < actualCost ? 'opacity-40 grayscale cursor-not-allowed' : ''}
               `}
