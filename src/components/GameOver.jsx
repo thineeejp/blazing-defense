@@ -314,6 +314,15 @@ const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry
 
                 {scoreData.breakdown.multiplier > 1.0 && (
                   <div className="pt-4 border-t border-white/10">
+                    {/* 3つすべて達成時の特別メッセージ */}
+                    {scoreData.badges.noDamage && scoreData.badges.evacuation && scoreData.badges.economy && (
+                      <div className="mb-3 text-center">
+                        <div className="text-xs text-yellow-300 font-bold tracking-widest uppercase animate-pulse">
+                          ✨ PERFECT BONUS - All 3 badges achieved! ✨
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex items-center justify-between">
                       <span className="text-slate-400 text-sm font-bold tracking-wider">
                         🎯 TOTAL MULTIPLIER
