@@ -29,7 +29,7 @@ const DRAFT_MISSIONS = [
     id: 'library',
     title: '事務所 (EASY)',
     difficulty: 'EASY',
-    desc: '延べ面積は小さめ。まずは水損を避ける消火から学ぶ。',
+    desc: '延べ面積は小さめ。',
     question: '図書館や書庫に最も適した、水損を最小限にする消火設備は？',
     options: [
       { id: 'A', text: 'スプリンクラー', correct: false },
@@ -638,16 +638,23 @@ export default function BlazingDefense() {
     // 基本スコア合計
     const baseScore = evacuationScore + timeBonus + hpBonus + costBonus + defeatBonus;
 
-    // バッジ判定
-    const hasNoDamageBadge = (hp === INITIAL_HP);
+    // バッジ判定（勝利時のみ）
+    const hasNoDamageBadge = (isVictory && hp === INITIAL_HP);
     const hasEvacuationBadge = (isVictory && evacuatedCount >= evacuationGoal);
-    const hasEconomyBadge = (cost >= 777);
+    const hasEconomyBadge = (isVictory && cost >= 777);
 
-    // バッジ倍率適用（各バッジ×1.2）
+    // バッジ倍率適用
     let multiplier = 1.0;
-    if (hasNoDamageBadge) multiplier *= 1.2;
-    if (hasEvacuationBadge) multiplier *= 1.2;
-    if (hasEconomyBadge) multiplier *= 1.2;
+    const allBadgesAchieved = hasNoDamageBadge && hasEvacuationBadge && hasEconomyBadge;
+    if (allBadgesAchieved) {
+      // 3つすべて達成で特別ボーナス
+      multiplier = 2.0;
+    } else {
+      // 1-2つ達成時は従来通り各バッジ×1.2の累積
+      if (hasNoDamageBadge) multiplier *= 1.2;
+      if (hasEvacuationBadge) multiplier *= 1.2;
+      if (hasEconomyBadge) multiplier *= 1.2;
+    }
 
     const totalScore = Math.floor(baseScore * multiplier);
 
