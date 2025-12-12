@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { Flame, ShieldAlert, Zap, AlertTriangle, Skull, Users } from 'lucide-react';
 import GlassCard from './ui/GlassCard';
 
@@ -15,6 +15,7 @@ const RANGE_LABEL = {
 export default function BattleField({
   hp,
   cost,
+  prevCost = 0,
   evacuatedCount,
   evacuationGoal,
   frameCount,
@@ -22,6 +23,11 @@ export default function BattleField({
   towers,
   enemies,
   effects,
+  attackEffects = [],
+  hitEffects = [],
+  deathEffects = [],
+  placementEffects = [],
+  scorchMarks = [],
   difficulty,
   difficultyRef,
   deck,
@@ -35,6 +41,68 @@ export default function BattleField({
   confirmRemove,
   setRemoveModal,
 }) {
+  // HP遅延バー用
+  const [hpLag, setHpLag] = useState(hp);
+  const hpTargetRef = useRef(hp);
+
+  useEffect(() => {
+    hpTargetRef.current = hp;
+  }, [hp]);
+
+  useEffect(() => {
+    let frame;
+    const tick = () => {
+      setHpLag((prev) => {
+        const target = hpTargetRef.current;
+        const diff = target - prev;
+        if (Math.abs(diff) < 0.3) return target;
+        const step = Math.max(0.5, Math.abs(diff) * 0.12);
+        return diff > 0 ? Math.min(prev + step, target) : Math.max(prev - step, target);
+      });
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  // カード選択時ボトムバー輝き
+  const [deckFlash, setDeckFlash] = useState(false);
+  useEffect(() => {
+    if (selectedCard) {
+      setDeckFlash(true);
+      const t = setTimeout(() => setDeckFlash(false), 200);
+      return () => clearTimeout(t);
+    }
+  }, [selectedCard]);
+
+  // ジャックポット演出
+  const [jackpot, setJackpot] = useState(false);
+  useEffect(() => {
+    if (cost >= 777 && prevCost < 777) {
+      setJackpot(true);
+      const t = setTimeout(() => setJackpot(false), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [cost, prevCost]);
+
+  // 画面シェイク
+  const [shake, setShake] = useState(false);
+  useEffect(() => {
+    const hasCritical = effects.some((e) => e.size === 'large');
+    if (hasCritical) {
+      setShake(true);
+      const t = setTimeout(() => setShake(false), 120);
+      return () => clearTimeout(t);
+    }
+  }, [effects]);
+
+  // プレビュー用ホバーセル
+  const [hoverCell, setHoverCell] = useState(null);
+
+  // コスト変動検出
+  const costDelta = cost - prevCost;
+  const costIncreasing = costDelta > 0.5;
+  const costDecreasing = costDelta < -0.5;
   const gridStyle = {
     display: 'grid',
     gridTemplateColumns: `repeat(${difficulty.cols}, 1fr)`,
@@ -44,38 +112,73 @@ export default function BattleField({
   };
 
   return (
-    <div className={`w-full h-full flex flex-col bg-slate-950 overflow-hidden relative transition-colors duration-100 ${damaged ? 'bg-red-900/50' : ''}`}>
+    <div className={`w-full h-full flex flex-col bg-slate-950 overflow-hidden relative transition-colors duration-100 ${damaged ? 'bg-red-900/50' : ''} ${shake ? 'animate-screen-shake' : ''}`}>
       {damaged && <div className="absolute inset-0 bg-red-600/30 z-50 pointer-events-none animate-pulse"></div>}
 
       {/* Header (HUD) */}
       <div className="absolute top-0 left-0 right-0 p-4 z-20 flex justify-between items-start pointer-events-none">
         <div className="flex gap-4 pointer-events-auto">
           <GlassCard className="flex items-center gap-3 px-4 py-2" hoverEffect={false}>
-            <ShieldAlert size={20} className={damaged ? 'text-red-500 animate-pulse' : 'text-blue-400'} />
+            <ShieldAlert size={20} className={damaged ? 'text-red-500 animate-pulse' : hp < 30 ? 'text-orange-400 animate-pulse' : 'text-blue-400'} />
             <div>
               <div className="text-[10px] font-bold text-slate-400">DEFENSE HP</div>
-              <div className={`font-mono font-bold text-xl ${damaged ? 'text-red-500' : 'text-white'}`}>
+              <div className={`font-mono font-bold text-xl ${damaged ? 'text-red-500 animate-shake' : hp < 30 ? 'text-orange-400 animate-hp-danger' : 'text-white'}`}>
                 {Math.floor(hp)}%
+              </div>
+              {/* HPゲージ */}
+              <div className="relative w-24 h-2 bg-slate-800/70 rounded-full overflow-hidden mt-1 border border-white/5">
+                {/* 遅延バー */}
+                <div
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-600 to-orange-400 transition-all duration-500"
+                  style={{ width: `${Math.max(0, Math.min(100, hpLag))}%` }}
+                />
+                {/* 即時バー */}
+                <div
+                  className={`absolute inset-y-0 left-0 ${hp > 50 ? 'bg-gradient-to-r from-green-500 to-green-400' : hp > 30 ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' : 'bg-gradient-to-r from-red-600 to-red-400 animate-hp-danger'}`}
+                  style={{ width: `${Math.max(0, Math.min(100, hp))}%` }}
+                />
               </div>
             </div>
           </GlassCard>
 
-          <GlassCard className="flex items-center gap-3 px-4 py-2" hoverEffect={false}>
-            <Zap size={20} className="text-yellow-400" />
+          <GlassCard className={`relative flex items-center gap-3 px-4 py-2 ${jackpot ? 'animate-jackpot' : ''}`} hoverEffect={false}>
+            <Zap size={20} className={`text-yellow-400 ${costIncreasing ? 'animate-pulse' : ''}`} />
             <div>
               <div className="text-[10px] font-bold text-slate-400">COST</div>
-              <div className="font-mono font-bold text-xl text-yellow-400">
+              <div className={`font-mono font-bold text-xl transition-all duration-150 ${cost >= 777 ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]' : 'text-yellow-400'} ${costIncreasing ? 'animate-cost-pulse-up text-green-400' : ''} ${costDecreasing ? 'animate-cost-flash-down text-red-400' : ''}`}>
                 {Math.floor(cost)}
               </div>
             </div>
+            {jackpot && (
+              <div className="absolute inset-0 pointer-events-none">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-1 h-1 bg-amber-300 rounded-full animate-jackpot-sparkle"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      animationDelay: `${i * 0.05}s`,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </GlassCard>
 
           <GlassCard className="flex items-center gap-3 px-4 py-2" hoverEffect={false}>
-            <Users size={20} className="text-green-400" />
+            <Users size={20} className={`text-green-400 ${evacuatedCount >= evacuationGoal ? 'animate-pulse' : ''}`} />
             <div>
               <div className="text-[10px] font-bold text-slate-400">EVACUATED</div>
-              <div className="font-mono font-bold text-xl text-white">
+              <div className={`font-mono font-bold text-xl ${evacuatedCount >= evacuationGoal ? 'text-green-400' : 'text-white'}`}>
                 {Math.floor(evacuatedCount)} <span className="text-sm text-slate-500">/ {evacuationGoal}</span>
+              </div>
+              {/* 避難進捗ゲージ */}
+              <div className="w-20 h-1.5 bg-slate-700/50 rounded-full overflow-hidden mt-1">
+                <div
+                  className={`h-full transition-all duration-300 ${evacuatedCount >= evacuationGoal ? 'bg-gradient-to-r from-green-400 to-emerald-300' : 'bg-gradient-to-r from-green-600 to-green-500'}`}
+                  style={{ width: `${Math.min(100, (evacuatedCount / evacuationGoal) * 100)}%` }}
+                />
               </div>
             </div>
           </GlassCard>
@@ -83,7 +186,7 @@ export default function BattleField({
 
         <GlassCard className="px-6 py-2 pointer-events-auto" hoverEffect={false}>
           <div className="text-[10px] font-bold text-slate-400 text-center">TIME LIMIT</div>
-          <div className="font-mono font-bold text-2xl text-white w-24 text-center">
+          <div className={`font-mono font-bold text-2xl w-24 text-center ${(timeLimit - frameCount) / 60 < 15 ? 'text-red-400 animate-pulse' : (timeLimit - frameCount) / 60 < 30 ? 'text-orange-400' : 'text-white'}`}>
             {Math.floor((timeLimit - frameCount) / 60)}<span className="text-sm">s</span>
           </div>
         </GlassCard>
@@ -106,10 +209,13 @@ export default function BattleField({
               <div
                 key={i}
                 onClick={() => handleSlotClick(r, c)}
+                onMouseEnter={() => setHoverCell({ r, c })}
+                onMouseLeave={() => setHoverCell(null)}
                 className={`
                   relative border border-white/5 flex items-center justify-center
                   ${isDefenseLine ? 'bg-blue-900/10 border-b-2 border-b-blue-500/50' : 'bg-slate-800/20'}
                   hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-[1px]
+                  ${hoverCell && hoverCell.r === r && hoverCell.c === c && selectedCard ? 'ring-2 ring-cyan-300' : ''}
                 `}
               >
                 {/* Grid Glow */}
@@ -123,6 +229,8 @@ export default function BattleField({
                   <div
                     className={`relative z-10 flex flex-col items-center transform transition-transform duration-300 hover:scale-110
                       ${tower.card.type === 'red' ? 'text-red-400' : tower.card.type === 'green' ? 'text-green-400' : tower.card.type === 'purple' ? 'text-purple-400' : 'text-yellow-400'}
+                      ${tower.isNew ? 'animate-tower-drop drop-shadow-[0_0_14px_rgba(56,189,248,0.7)]' : ''}
+                      ${tower.isRemoving ? 'animate-shake opacity-70 invert scale-75' : ''}
                     `}
                   >
                     <div className="drop-shadow-[0_0_15px_rgba(0,0,0,0.5)] filter">
@@ -164,10 +272,33 @@ export default function BattleField({
             );
           })}
 
+          {/* Scorch marks on defense line */}
+          {scorchMarks.map((m) => {
+            const leftPct = ((m.c + 0.5) / difficulty.cols) * 100;
+            const widthPct = (1 / difficulty.cols) * 100;
+            const opacity = m.life / 90;
+            return (
+              <div
+                key={m.id}
+                className="absolute pointer-events-none"
+                style={{
+                  bottom: '-2%',
+                  left: `${leftPct}%`,
+                  width: `${widthPct}%`,
+                  height: '6%',
+                  transform: 'translateX(-50%)',
+                  background: 'radial-gradient(circle at 50% 50%, rgba(248,113,113,0.6), rgba(127,29,29,0.1))',
+                  filter: 'blur(2px)',
+                  opacity,
+                }}
+              />
+            );
+          })}
+
           {/* Enemies */}
           {enemies.map((e) => {
-            const topPct = (e.progress / GRID_ROWS) * 100;
-            const leftPct = (e.c / difficulty.cols) * 100;
+            const topPct = ((e.progress + e.size / 2) / GRID_ROWS) * 100;
+            const leftPct = ((e.c + e.size / 2) / difficulty.cols) * 100;
             const widthPct = (e.size / difficulty.cols) * 100;
             const heightPct = (e.size / GRID_ROWS) * 100;
 
@@ -180,10 +311,11 @@ export default function BattleField({
                   left: `${leftPct}%`,
                   width: `${widthPct}%`,
                   height: `${heightPct}%`,
+                  transform: 'translate(-50%, -50%)',
                 }}
               >
                 {/* 敵表示がマスへのクリックを阻害しないよう、子要素も pointer-events 無効化 */}
-                <div className={`relative w-full h-full flex items-center justify-center ${e.color} ${e.isAttacking ? 'scale-150 opacity-80' : ''} pointer-events-none`}>
+                <div className={`relative w-full h-full flex items-center justify-center ${e.color} ${e.isAttacking ? 'scale-150 opacity-80' : ''} ${e.isHit ? 'animate-hit-flash' : ''} pointer-events-none`}>
                   {e.isAttacking ? (
                     <Skull size={e.size * 32} className="animate-pulse text-white drop-shadow-[0_0_10px_red]" />
                   ) : (
@@ -203,22 +335,194 @@ export default function BattleField({
             );
           })}
 
-          {/* Effects */}
+          {/* Effects (ダメージ数値・テキスト) */}
           {effects.map((ef) => {
-            const topPct = (Math.floor(ef.r) / GRID_ROWS) * 100;
-            const leftPct = (ef.c / difficultyRef.current.cols) * 100;
+            const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
+            const leftPct = ((ef.c + 0.5) / difficultyRef.current.cols) * 100;
+            const sizeClass = ef.size === 'large' ? 'text-xl' : ef.size === 'small' ? 'text-xs' : 'text-sm';
             return (
               <div
                 key={ef.id}
-                className={`absolute z-30 pointer-events-none ${ef.color} whitespace-nowrap font-bold drop-shadow-md`}
+                className={`absolute z-30 pointer-events-none ${ef.color} ${sizeClass} whitespace-nowrap font-bold drop-shadow-md animate-damage-pop`}
                 style={{
                   top: `${topPct}%`,
                   left: `${leftPct}%`,
-                  transform: `translateY(${ef.y * 20}px)`,
+                  transform: `translate(-50%, -50%) translateY(${ef.y * 20}px)`,
+                  opacity: ef.life / 30,
                 }}
               >
                 {ef.text}
               </div>
+            );
+          })}
+
+          {/* Attack Effects (攻撃線) */}
+          {attackEffects.map((ef) => {
+            const fromTopPct = ((ef.fromR + 0.5) / GRID_ROWS) * 100;
+            const fromLeftPct = ((ef.fromC + 0.5) / difficulty.cols) * 100;
+            const toTopPct = ((ef.toR + 0.5) / GRID_ROWS) * 100;
+            const toLeftPct = ((ef.toC + 0.5) / difficulty.cols) * 100;
+
+            // 攻撃線の角度と長さを計算
+            const dx = toLeftPct - fromLeftPct;
+            const dy = toTopPct - fromTopPct;
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            const length = Math.sqrt(dx * dx + dy * dy);
+
+            return (
+              <React.Fragment key={ef.id}>
+                <div
+                  className={`absolute z-30 pointer-events-none ${ef.color} animate-attack-line`}
+                  style={{
+                    top: `${fromTopPct}%`,
+                    left: `${fromLeftPct}%`,
+                    width: `${length}%`,
+                    height: '3px',
+                    transformOrigin: 'left center',
+                    transform: `rotate(${angle}deg)`,
+                    opacity: ef.life / 18,
+                    boxShadow: '0 0 8px currentColor',
+                  }}
+                />
+                <div
+                  className="absolute pointer-events-none bg-white/90 animate-attack-core"
+                  style={{
+                    top: `${fromTopPct + dy * 0.5}%`,
+                    left: `${fromLeftPct + dx * 0.5}%`,
+                    width: `${length * 0.4}%`,
+                    height: '2px',
+                    transformOrigin: 'left center',
+                    transform: `rotate(${angle}deg)`,
+                    opacity: ef.life / 18,
+                    filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.8))',
+                    zIndex: 31,
+                  }}
+                />
+              </React.Fragment>
+            );
+          })}
+
+          {/* Hit Bursts */}
+          {hitEffects.map((ef) => {
+            const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
+            const leftPct = ((ef.c + 0.5) / difficulty.cols) * 100;
+            return (
+              <div
+                key={ef.id}
+                className={`absolute z-30 pointer-events-none ${ef.color} rounded-full animate-hit-burst`}
+                style={{
+                  top: `${topPct}%`,
+                  left: `${leftPct}%`,
+                  width: '14px',
+                  height: '14px',
+                  transform: 'translate(-50%, -50%)',
+                  opacity: ef.life / 24,
+                  boxShadow: '0 0 12px currentColor',
+                }}
+              />
+            );
+          })}
+
+          {/* Hit particles */}
+          {hitEffects.flatMap((ef) =>
+            (ef.particles || []).map((p, idx) => {
+              const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
+              const leftPct = ((ef.c + 0.5) / difficulty.cols) * 100;
+              return (
+                <div
+                  key={`${ef.id}-p${idx}`}
+                  className={`absolute z-29 pointer-events-none ${ef.color}`}
+                  style={{
+                    top: `${topPct}%`,
+                    left: `${leftPct}%`,
+                    width: `${p.size}px`,
+                    height: `${p.size}px`,
+                    borderRadius: '999px',
+                    transform: `translate(calc(-50% + ${p.dx}% / ${difficulty.cols}), calc(-50% + ${p.dy}% / ${GRID_ROWS}))`,
+                    opacity: ef.life / 24,
+                    boxShadow: '0 0 6px currentColor',
+                  }}
+                />
+              );
+            })
+          )}
+
+          {/* Death Effects (敵死亡パーティクル) */}
+          {deathEffects.map((ef) => {
+            const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
+            const leftPct = ((ef.c + 0.5) / difficulty.cols) * 100;
+            const progress = 1 - ef.life / 36;
+
+            return (
+              <div
+                key={ef.id}
+                className="absolute z-35 pointer-events-none"
+                style={{
+                  top: `${topPct}%`,
+                  left: `${leftPct}%`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+              >
+                {/* 中心のバースト */}
+                <div
+                  className={`absolute ${ef.color} rounded-full animate-death-burst`}
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                />
+                {/* パーティクル */}
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className={`absolute ${ef.color} rounded-full animate-death-particle-${i}`}
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      transform: 'translate(-50%, -50%)',
+                      opacity: 1 - progress,
+                    }}
+                  />
+                ))}
+              </div>
+            );
+          })}
+
+          {/* Placement Effects (設置衝撃波) */}
+          {placementEffects.map((ef) => {
+            const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
+            const leftPct = ((ef.c + 0.5) / difficulty.cols) * 100;
+
+            return (
+              <React.Fragment key={ef.id}>
+                <div
+                  className={`absolute z-15 pointer-events-none rounded-full border-4 ${ef.color} animate-place-ring`}
+                  style={{
+                    top: `${topPct}%`,
+                    left: `${leftPct}%`,
+                    width: '40px',
+                    height: '40px',
+                    transform: 'translate(-50%, -50%)',
+                    opacity: ef.life / 30,
+                  }}
+                />
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={`${ef.id}-dust-${i}`}
+                    className="absolute z-15 pointer-events-none bg-white/70 rounded-full"
+                    style={{
+                      top: `${topPct + (Math.random() - 0.5) * 6}%`,
+                      left: `${leftPct + (Math.random() - 0.5) * 6}%`,
+                      width: '6px',
+                      height: '6px',
+                      opacity: (ef.life / 30) * 0.8,
+                      animation: `fadeIn 0.2s ease-out ${i * 0.05}s`,
+                      transform: 'translate(-50%, -50%)',
+                    }}
+                  />
+                ))}
+              </React.Fragment>
             );
           })}
         </div>
@@ -230,7 +534,7 @@ export default function BattleField({
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-40 z-30 flex flex-col px-4 py-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+      <div className={`h-40 z-30 flex flex-col px-4 py-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent ${deckFlash ? 'ring-2 ring-cyan-400/60 rounded-xl' : ''}`}>
         {/* Deck Cards Container */}
         <div className="flex-1 flex items-center justify-center">
         {/* Deck Cards */}
@@ -252,6 +556,7 @@ export default function BattleField({
                   ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)] scale-110'
                   : 'bg-slate-800/80 hover:bg-slate-700 hover:-translate-y-2'}
                 ${cost < actualCost ? 'opacity-40 grayscale cursor-not-allowed' : ''}
+                ${selectedCard && selectedCard.id !== card.id ? 'opacity-60' : ''}
               `}
             >
               <div
@@ -326,3 +631,4 @@ export default function BattleField({
     </div>
   );
 }
+

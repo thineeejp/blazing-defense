@@ -82,6 +82,15 @@ export default function BlazingDefense() {
   const [effects, setEffects] = useState([]);
   const [damaged, setDamaged] = useState(false);
 
+  // 戦闘エフェクト用state
+  const [attackEffects, setAttackEffects] = useState([]);    // 攻撃線エフェクト
+  const [hitEffects, setHitEffects] = useState([]);          // ヒットバースト
+  const [deathEffects, setDeathEffects] = useState([]);      // 敵死亡エフェクト
+  const [placementEffects, setPlacementEffects] = useState([]); // タワー設置エフェクト
+  const [scorchMarks, setScorchMarks] = useState([]);        // 防衛ライン残留痕
+  const [prevCost, setPrevCost] = useState(0);               // コスト変動検出用
+  const lastCostRef = useRef(cost);                          // 直前コスト保持
+
   const [selectedMission, setSelectedMission] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
   const [removeModal, setRemoveModal] = useState(null);
@@ -147,6 +156,12 @@ export default function BlazingDefense() {
   useEffect(() => {
     evacuatedCountRef.current = evacuatedCount;
   }, [evacuatedCount]);
+
+  // コスト変動検出用（前フレーム値を保持）
+  useEffect(() => {
+    setPrevCost(lastCostRef.current);
+    lastCostRef.current = cost;
+  }, [cost]);
 
   useEffect(() => {
     if (phase !== 'BATTLE' || isPaused) {
@@ -270,6 +285,11 @@ export default function BlazingDefense() {
           if (e.slowTimer <= 0) e.slowValue = 0;
         }
 
+        // ヒットフラッシュをリセット
+        if (e.isHit) {
+          e = { ...e, isHit: false };
+        }
+
         if (e.isAttacking) {
           if (e.attackAnimTimer > 0) {
             next.push({ ...e, attackAnimTimer: e.attackAnimTimer - 1 });
@@ -325,7 +345,7 @@ export default function BlazingDefense() {
             } else if (e.fireType === 'C') {
               damage = 10; // C火災: 10固定
             }
-            damageEvents.push({ damage, c: e.c });
+            damageEvents.push({ damage, c: e.c + e.size / 2 });
             next.push({
               ...e,
               progress: newProgress,
@@ -373,7 +393,10 @@ export default function BlazingDefense() {
         setDamaged(true);
         setTimeout(() => setDamaged(false), 200);
         damageEvents.forEach((ev) => {
-          addEffect(ev.c, GRID_ROWS - 1, `BREAK! -${ev.damage}`, 'text-red-600 font-black text-2xl');
+          setScorchMarks((prev) => [...prev, { id: Math.random(), c: ev.c, life: 90 }]);
+        });
+        damageEvents.forEach((ev) => {
+          addEffect(ev.c, GRID_ROWS - 0.5, `BREAK! -${ev.damage}`, 'text-red-600 font-black text-2xl');
         });
       }
       return next;
@@ -388,19 +411,15 @@ export default function BlazingDefense() {
       t.timer += 1;
       t.lifeTime = (t.lifeTime || 0) + 1;
 
+      // 設置アニメーション終了後にisNewフラグをクリア（30フレーム = 0.5秒）
+      if (t.isNew && t.lifeTime > 30) {
+        t.isNew = false;
+      }
+
       // duration処理（nullは永続なのでスキップ）
       if (t.card.duration !== null && t.lifeTime >= t.card.duration) {
         delete newTowers[key];
-
-        // 種別ごとの消滅メッセージ
-        const category = t.card.category;
-        let message = '停止！';
-        if (category === 'fire') message = '薬剤切れ！';
-        else if (category === 'alarm') message = '電源ダウン！';
-        else if (category === 'evacuation') message = '疲労限界！';
-        else if (category === 'facility') message = '過負荷！';
-
-        addEffect(tc, tr, message, 'text-gray-400');
+        addEffect(tc, tr, '停止！', 'text-gray-400');
         return;
       }
 
@@ -456,6 +475,23 @@ export default function BlazingDefense() {
     setEffects((prev) =>
       prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1, y: e.y - 0.05 }))
     );
+
+    // 戦闘エフェクトのライフサイクル管理
+    setAttackEffects((prev) =>
+      prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1 }))
+    );
+    setHitEffects((prev) =>
+      prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1 }))
+    );
+    setDeathEffects((prev) =>
+      prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1 }))
+    );
+    setPlacementEffects((prev) =>
+      prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1 }))
+    );
+    setScorchMarks((prev) =>
+      prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1 }))
+    );
   };
 
   const spawnEnemy = () => {
@@ -505,10 +541,19 @@ export default function BlazingDefense() {
   };
 
   const fireAttack = (tower, tr, tc) => {
+    // 攻撃エフェクトの色を決定
+    const attackColors = {
+      water: 'bg-cyan-400',
+      foam: 'bg-yellow-300',
+      gas: 'bg-purple-400',
+    };
+    const attackColor = attackColors[tower.card.damageType] || 'bg-red-400';
+
     setEnemies((prev) => {
       let targets = [...prev];
-      let hit = false;
       const card = tower.card;
+      const hitEnemies = []; // ヒットした敵の情報を収集
+      const killedEnemies = []; // 倒された敵の情報を収集
 
       targets = targets.map((e) => {
         if (e.isAttacking) return e;
@@ -555,7 +600,6 @@ export default function BlazingDefense() {
         }
 
         if (inRange) {
-          hit = true;
           // オーバーフロー報酬の攻撃力バフを適用
           const powerBuff = categoryBuffs[card.category]?.powerBuff || 0;
 
@@ -578,32 +622,61 @@ export default function BlazingDefense() {
 
           let dmg = card.power * (1 + powerBuff + globalPowerBuff + localPowerBuff);
           let knockback = 0;
+          let effectSize = 'normal';
 
           if (e.fireType === 'B') {
             if (card.damageType === 'water') {
               dmg *= 0.5;
-              if (Math.random() > 0.8) addEffect(e.c, Math.floor(e.progress), 'Bad!', 'text-blue-300 text-xs');
+              if (Math.random() > 0.8) addEffect(e.c, Math.floor(e.progress), 'Bad!', 'text-blue-300', 'small');
             } else if (card.damageType === 'foam') {
               dmg *= 2.0;
+              effectSize = 'large';
               if (Math.random() > 0.7)
-                addEffect(e.c, Math.floor(e.progress), 'Effective!', 'text-yellow-300 text-xs');
+                addEffect(e.c, Math.floor(e.progress), 'Effective!', 'text-yellow-300 font-bold', 'large');
             }
           }
           if (e.fireType === 'C' && card.damageType === 'gas') {
             dmg *= 1.5;
+            effectSize = 'large';
           }
           if (card.knockback) {
             knockback = -card.knockback;
           }
 
+          // ヒット情報を収集（中心座標）
+          hitEnemies.push({ r: e.progress + e.size / 2, c: e.c + e.size / 2, fireType: e.fireType });
+
+          const newHp = e.hp - dmg;
           const newProgress = Math.max(-e.size, e.progress + knockback);
-          addEffect(e.c, Math.floor(e.progress), 'Hit', 'text-white text-xs');
-          return { ...e, hp: e.hp - dmg, progress: newProgress };
+
+          // 死亡判定
+          if (newHp <= 0 && !e.isAttacking) {
+            killedEnemies.push({ r: e.progress + e.size / 2, c: e.c + e.size / 2, fireType: e.fireType, size: e.size });
+          }
+
+          // ダメージ表示（最小1）
+          const displayDmg = Math.max(1, Math.floor(dmg));
+          addEffect(e.c + e.size / 2, e.progress + e.size / 2, displayDmg.toString(), 'text-white font-bold', effectSize);
+          return { ...e, hp: newHp, progress: newProgress, isHit: true };
         }
-        return e;
+        return e.isHit ? { ...e, isHit: false } : e;
       });
 
-      if (hit && Math.random() > 0.7) addEffect(tc, tr, '!', 'text-white');
+      // 攻撃エフェクトを追加（最初のヒット敵のみ）
+      if (hitEnemies.length > 0 && card.rangeType !== 'global') {
+        const firstHit = hitEnemies[0];
+        addAttackEffect(tr, tc, firstHit.r, firstHit.c, attackColor);
+      }
+
+      // ヒットバーストを追加（全ヒット対象）
+      hitEnemies.forEach((hit) => {
+        addHitEffect(hit.r, hit.c, attackColor);
+      });
+
+      // 死亡エフェクトを追加
+      killedEnemies.forEach((killed) => {
+        addDeathEffect(killed.r, killed.c, killed.fireType);
+      });
 
       const survivors = targets.filter((e) => e.hp > 0 || e.isAttacking);
       const killedCount = targets.length - survivors.length;
@@ -615,8 +688,38 @@ export default function BlazingDefense() {
     });
   };
 
-  const addEffect = (c, r, text, color) => {
-    setEffects((prev) => [...prev, { id: Math.random(), c, r, y: 0, text, color, life: 30 }]);
+  const addEffect = (c, r, text, color, size = 'normal') => {
+    setEffects((prev) => [...prev, { id: Math.random(), c, r, y: 0, text, color, life: 30, size }]);
+  };
+
+  // 攻撃エフェクト追加（タワー→敵への攻撃線）
+  const addAttackEffect = (fromR, fromC, toR, toC, color) => {
+    const id = Math.random();
+    setAttackEffects((prev) => [...prev, { id, fromR, fromC, toR, toC, color, life: 18 }]);
+  };
+
+  // ヒットエフェクト追加（命中地点のバースト）
+  const addHitEffect = (r, c, color) => {
+    const id = Math.random();
+    const particles = Array.from({ length: 5 + Math.floor(Math.random() * 3) }).map(() => ({
+      dx: (Math.random() - 0.5) * 20,
+      dy: (Math.random() - 0.5) * 20,
+      size: 4 + Math.random() * 4,
+    }));
+    setHitEffects((prev) => [...prev, { id, r, c, color, life: 24, particles }]);
+  };
+
+  // 死亡エフェクト追加（敵撃破時のパーティクル）
+  const addDeathEffect = (r, c, fireType) => {
+    const colors = { A: 'bg-red-500', B: 'bg-orange-500', C: 'bg-yellow-400' };
+    const id = Math.random();
+    setDeathEffects((prev) => [...prev, { id, r, c, color: colors[fireType] || 'bg-red-500', life: 36 }]);
+  };
+
+  // 設置エフェクト追加（タワー配置時の衝撃波）
+  const addPlacementEffect = (r, c, color) => {
+    const id = Math.random();
+    setPlacementEffects((prev) => [...prev, { id, r, c, color, life: 30 }]);
   };
 
   const calculateFinalScore = () => {
@@ -712,8 +815,11 @@ export default function BlazingDefense() {
 
       if (cost >= actualCost) {
         setCost((val) => val - actualCost);
-        setTowers((prev) => ({ ...prev, [key]: { card: selectedCard, timer: 0 } }));
-        addEffect(c, r, '設置', 'text-white');
+        setTowers((prev) => ({ ...prev, [key]: { card: selectedCard, timer: 0, isNew: true } }));
+        // 設置エフェクトを追加
+        const placeColors = { red: 'border-red-400', yellow: 'border-yellow-400', green: 'border-green-400', blue: 'border-blue-400', purple: 'border-purple-400' };
+        addPlacementEffect(r, c, placeColors[selectedCard.type] || 'border-cyan-400');
+        addEffect(c, r, '設置!', 'text-cyan-300 font-bold', 'large');
         // カード選択を維持（連続配置を可能にする）
       }
     }
@@ -721,9 +827,19 @@ export default function BlazingDefense() {
 
   const confirmRemove = () => {
     if (removeModal) {
-      const newTowers = { ...towers };
-      delete newTowers[removeModal.key];
-      setTowers(newTowers);
+      const key = removeModal.key;
+      // 簡易アニメ: isRemovingフラグを立て、少し遅れて削除
+      setTowers((prev) => ({
+        ...prev,
+        [key]: prev[key] ? { ...prev[key], isRemoving: true } : prev[key],
+      }));
+      setTimeout(() => {
+        setTowers((prev) => {
+          const copy = { ...prev };
+          delete copy[key];
+          return copy;
+        });
+      }, 300);
       addEffect(removeModal.c, removeModal.r, '撤去', 'text-gray-400');
     }
     setRemoveModal(null);
@@ -939,10 +1055,17 @@ export default function BlazingDefense() {
 
     setDeck(newDeck);
     setCost(deckBuildState.remainingCost);
+    setPrevCost(deckBuildState.remainingCost);
+    lastCostRef.current = deckBuildState.remainingCost;
     setHp(INITIAL_HP);
     setTowers({});
     setEnemies([]);
     setEffects([]);
+    setAttackEffects([]);
+    setHitEffects([]);
+    setDeathEffects([]);
+    setPlacementEffects([]);
+    setScorchMarks([]);
     setSelectedCard(null);
     setIsPaused(false);
     frameRef.current = 0;
@@ -1009,6 +1132,7 @@ export default function BlazingDefense() {
         <BattleField
           hp={hp}
           cost={cost}
+          prevCost={prevCost}
           evacuatedCount={evacuatedCount}
           evacuationGoal={evacuationGoal}
           frameCount={frameRef.current}
@@ -1016,6 +1140,11 @@ export default function BlazingDefense() {
           towers={towers}
           enemies={enemies}
           effects={effects}
+          attackEffects={attackEffects}
+          hitEffects={hitEffects}
+          deathEffects={deathEffects}
+          placementEffects={placementEffects}
+          scorchMarks={scorchMarks}
           difficulty={difficulty}
           difficultyRef={difficultyRef}
           deck={deck}
