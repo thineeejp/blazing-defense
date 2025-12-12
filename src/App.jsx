@@ -318,7 +318,9 @@ export default function BlazingDefense() {
           // 成長時に位置は据え置き（前フレームのtopを保持）してワープ感を排除
           newProgress = e.progress;
           // HPは全回復、maxHpは据え置き（耐久インフレを防ぐ）
-          e = { ...e, hp: e.maxHp };
+          const centerC = e.c + e.size / 2;
+          const newC = centerC - newSize / 2; // 中心を維持、はみ出しを許容
+          e = { ...e, hp: e.maxHp, c: newC };
         }
         // グリッド外への大きな跳ねを抑制
         newProgress = Math.max(-1, newProgress);
