@@ -274,7 +274,7 @@ export default function BattleField({
 
           {/* Scorch marks on defense line */}
           {scorchMarks.map((m) => {
-            const leftPct = ((m.c + 0.5) / difficulty.cols) * 100;
+            const leftPct = (m.c / difficulty.cols) * 100;
             const widthPct = (1 / difficulty.cols) * 100;
             const opacity = m.life / 90;
             return (
@@ -337,8 +337,8 @@ export default function BattleField({
 
           {/* Effects (ダメージ数値・テキスト) */}
           {effects.map((ef) => {
-            const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
-            const leftPct = ((ef.c + 0.5) / difficultyRef.current.cols) * 100;
+            const topPct = (ef.r / GRID_ROWS) * 100;
+            const leftPct = (ef.c / difficultyRef.current.cols) * 100;
             const sizeClass = ef.size === 'large' ? 'text-xl' : ef.size === 'small' ? 'text-xs' : 'text-sm';
             return (
               <div
@@ -358,10 +358,10 @@ export default function BattleField({
 
           {/* Attack Effects (攻撃線) */}
           {attackEffects.map((ef) => {
-            const fromTopPct = ((ef.fromR + 0.5) / GRID_ROWS) * 100;
-            const fromLeftPct = ((ef.fromC + 0.5) / difficulty.cols) * 100;
-            const toTopPct = ((ef.toR + 0.5) / GRID_ROWS) * 100;
-            const toLeftPct = ((ef.toC + 0.5) / difficulty.cols) * 100;
+            const fromTopPct = (ef.fromR / GRID_ROWS) * 100;
+            const fromLeftPct = (ef.fromC / difficulty.cols) * 100;
+            const toTopPct = (ef.toR / GRID_ROWS) * 100;
+            const toLeftPct = (ef.toC / difficulty.cols) * 100;
 
             // 攻撃線の角度と長さを計算
             const dx = toLeftPct - fromLeftPct;
@@ -404,8 +404,8 @@ export default function BattleField({
 
           {/* Hit Bursts */}
           {hitEffects.map((ef) => {
-            const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
-            const leftPct = ((ef.c + 0.5) / difficulty.cols) * 100;
+            const topPct = (ef.r / GRID_ROWS) * 100;
+            const leftPct = (ef.c / difficulty.cols) * 100;
             return (
               <div
                 key={ef.id}
@@ -426,8 +426,8 @@ export default function BattleField({
           {/* Hit particles */}
           {hitEffects.flatMap((ef) =>
             (ef.particles || []).map((p, idx) => {
-              const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
-              const leftPct = ((ef.c + 0.5) / difficulty.cols) * 100;
+              const topPct = (ef.r / GRID_ROWS) * 100;
+              const leftPct = (ef.c / difficulty.cols) * 100;
               return (
                 <div
                   key={`${ef.id}-p${idx}`}
@@ -449,8 +449,8 @@ export default function BattleField({
 
           {/* Death Effects (敵死亡パーティクル) */}
           {deathEffects.map((ef) => {
-            const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
-            const leftPct = ((ef.c + 0.5) / difficulty.cols) * 100;
+            const topPct = (ef.r / GRID_ROWS) * 100;
+            const leftPct = (ef.c / difficulty.cols) * 100;
             const progress = 1 - ef.life / 36;
 
             return (
@@ -491,8 +491,8 @@ export default function BattleField({
 
           {/* Placement Effects (設置衝撃波) */}
           {placementEffects.map((ef) => {
-            const topPct = ((ef.r + 0.5) / GRID_ROWS) * 100;
-            const leftPct = ((ef.c + 0.5) / difficulty.cols) * 100;
+            const topPct = (ef.r / GRID_ROWS) * 100;
+            const leftPct = (ef.c / difficulty.cols) * 100;
 
             return (
               <React.Fragment key={ef.id}>

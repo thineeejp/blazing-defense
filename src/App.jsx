@@ -419,7 +419,7 @@ export default function BlazingDefense() {
       // duration処理（nullは永続なのでスキップ）
       if (t.card.duration !== null && t.lifeTime >= t.card.duration) {
         delete newTowers[key];
-        addEffect(tc, tr, '停止！', 'text-gray-400');
+        addEffect(tc + 0.5, tr + 0.5, '停止！', 'text-gray-400');
         return;
       }
 
@@ -627,12 +627,12 @@ export default function BlazingDefense() {
           if (e.fireType === 'B') {
             if (card.damageType === 'water') {
               dmg *= 0.5;
-              if (Math.random() > 0.8) addEffect(e.c, Math.floor(e.progress), 'Bad!', 'text-blue-300', 'small');
+              if (Math.random() > 0.8) addEffect(e.c + e.size / 2, e.progress + e.size / 2, 'Bad!', 'text-blue-300', 'small');
             } else if (card.damageType === 'foam') {
               dmg *= 2.0;
               effectSize = 'large';
               if (Math.random() > 0.7)
-                addEffect(e.c, Math.floor(e.progress), 'Effective!', 'text-yellow-300 font-bold', 'large');
+                addEffect(e.c + e.size / 2, e.progress + e.size / 2, 'Effective!', 'text-yellow-300 font-bold', 'large');
             }
           }
           if (e.fireType === 'C' && card.damageType === 'gas') {
@@ -665,7 +665,7 @@ export default function BlazingDefense() {
       // 攻撃エフェクトを追加（最初のヒット敵のみ）
       if (hitEnemies.length > 0 && card.rangeType !== 'global') {
         const firstHit = hitEnemies[0];
-        addAttackEffect(tr, tc, firstHit.r, firstHit.c, attackColor);
+        addAttackEffect(tr + 0.5, tc + 0.5, firstHit.r, firstHit.c, attackColor);
       }
 
       // ヒットバーストを追加（全ヒット対象）
@@ -816,10 +816,10 @@ export default function BlazingDefense() {
       if (cost >= actualCost) {
         setCost((val) => val - actualCost);
         setTowers((prev) => ({ ...prev, [key]: { card: selectedCard, timer: 0, isNew: true } }));
-        // 設置エフェクトを追加
+        // 設置エフェクトを追加（タワー中心座標）
         const placeColors = { red: 'border-red-400', yellow: 'border-yellow-400', green: 'border-green-400', blue: 'border-blue-400', purple: 'border-purple-400' };
-        addPlacementEffect(r, c, placeColors[selectedCard.type] || 'border-cyan-400');
-        addEffect(c, r, '設置!', 'text-cyan-300 font-bold', 'large');
+        addPlacementEffect(r + 0.5, c + 0.5, placeColors[selectedCard.type] || 'border-cyan-400');
+        addEffect(c + 0.5, r + 0.5, '設置!', 'text-cyan-300 font-bold', 'large');
         // カード選択を維持（連続配置を可能にする）
       }
     }
@@ -840,7 +840,7 @@ export default function BlazingDefense() {
           return copy;
         });
       }, 300);
-      addEffect(removeModal.c, removeModal.r, '撤去', 'text-gray-400');
+      addEffect(removeModal.c + 0.5, removeModal.r + 0.5, '撤去', 'text-gray-400');
     }
     setRemoveModal(null);
   };
