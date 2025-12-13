@@ -20,13 +20,20 @@ export default function BriefingPhase({
   onFeedbackNext,
   onFinishRound,
   onStartBattle,
+  onBackToTitle,
 }) {
   // CategorySelect: 5種別の選択画面
   if (phase === 'SELECT') {
     return (
       <GameBackground className="flex flex-col items-center justify-center p-8">
         <div className="max-w-6xl w-full animate-fadeIn">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 relative">
+            <button
+              onClick={onBackToTitle}
+              className="absolute left-0 top-1/2 -translate-y-1/2 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors"
+            >
+              ← RETURN TO TITLE
+            </button>
             <h1 className="text-4xl md:text-5xl font-black font-orbitron text-white mb-2 tracking-wider">
               BRIEFING <span className="text-cyan-400">PHASE</span>
             </h1>
@@ -68,9 +75,9 @@ export default function BriefingPhase({
                   <div className="w-full bg-slate-800 h-2 rounded-full mb-2 overflow-hidden">
                     <div
                       className={`h-full transition-all duration-500 ${tree.color === 'red' ? 'bg-red-500' :
-                          tree.color === 'yellow' ? 'bg-yellow-500' :
-                            tree.color === 'green' ? 'bg-green-500' :
-                              tree.color === 'blue' ? 'bg-blue-500' : 'bg-purple-500'
+                        tree.color === 'yellow' ? 'bg-yellow-500' :
+                          tree.color === 'green' ? 'bg-green-500' :
+                            tree.color === 'blue' ? 'bg-blue-500' : 'bg-purple-500'
                         }`}
                       style={{ width: `${(currentTier / 3) * 100}%` }}
                     />

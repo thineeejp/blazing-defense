@@ -87,6 +87,7 @@ export default function BlazingDefense() {
   const [hitEffects, setHitEffects] = useState([]);          // ヒットバースト
   const [deathEffects, setDeathEffects] = useState([]);      // 敵死亡エフェクト
   const [placementEffects, setPlacementEffects] = useState([]); // タワー設置エフェクト
+  const [areaEffects, setAreaEffects] = useState([]);        // 範囲攻撃エフェクト（新規）
   const [scorchMarks, setScorchMarks] = useState([]);        // 防衛ライン残留痕
   const [prevCost, setPrevCost] = useState(0);               // コスト変動検出用
   const lastCostRef = useRef(cost);                          // 直前コスト保持
@@ -144,6 +145,19 @@ export default function BlazingDefense() {
   const difficultyRef = useRef(difficulty);
   const globalBuffsRef = useRef({ speed: 0 });
   const evacuatedCountRef = useRef(0);
+
+  // --- Handlers ---
+
+  const handleBackToTitle = () => {
+    // Reset minimal state for a fresh start from menu
+    setPhase('MENU');
+    setIsPaused(false);
+  };
+
+  const handleSurrender = () => {
+    setIsVictory(false);
+    setPhase('GAMEOVER');
+  };
 
   useEffect(() => {
     towersRef.current = towers;
@@ -491,6 +505,9 @@ export default function BlazingDefense() {
     setPlacementEffects((prev) =>
       prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1 }))
     );
+    setAreaEffects((prev) =>
+      prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1 }))
+    );
     setScorchMarks((prev) =>
       prev.filter((e) => e.life > 0).map((e) => ({ ...e, life: e.life - 1 }))
     );
@@ -508,8 +525,8 @@ export default function BlazingDefense() {
     // 難易度ごとの出現率（重み付け）
     const weights =
       difficultyRef.current.name === 'EASY' ? [90, 5, 5] :    // A多め、BC極少
-      difficultyRef.current.name === 'NORMAL' ? [90, 5, 5] :  // A多め、BC極少（列数でバランス）
-      [40, 35, 25];                                            // HARD: BCの比率アップ
+        difficultyRef.current.name === 'NORMAL' ? [90, 5, 5] :  // A多め、BC極少（列数でバランス）
+          [40, 35, 25];                                            // HARD: BCの比率アップ
 
     // 重み付けランダム選択
     const totalWeight = weights.reduce((sum, w) => sum + w, 0);
@@ -646,7 +663,7 @@ export default function BlazingDefense() {
           }
 
           // ヒット情報を収集（中心座標）
-          hitEnemies.push({ r: e.progress + e.size / 2, c: e.c + e.size / 2, fireType: e.fireType });
+          hitEnemies.push({ id: e.id, r: e.progress + e.size / 2, c: e.c + e.size / 2, fireType: e.fireType });
 
           const newHp = e.hp - dmg;
           const newProgress = Math.max(-e.size, e.progress + knockback);
@@ -664,10 +681,17 @@ export default function BlazingDefense() {
         return e.isHit ? { ...e, isHit: false } : e;
       });
 
-      // 攻撃エフェクトを追加（最初のヒット敵のみ）
-      if (hitEnemies.length > 0 && card.rangeType !== 'global') {
-        const firstHit = hitEnemies[0];
-        addAttackEffect(tr + 0.5, tc + 0.5, firstHit.r, firstHit.c, attackColor);
+      // エフェクト分岐
+      const areaEffectCards = ['sprinkler', 'foamSystem', 'packageFireSystem'];
+      if (areaEffectCards.includes(card.id)) {
+        // AoE: タワー中心に範囲エフェクトを表示（敵への線は出さない）
+        addAreaEffect(tr + 0.5, tc + 0.5, card.id, card.damageType);
+      } else {
+        // Projectile: 攻撃エフェクトを追加（最初のヒット敵のみ）
+        if (hitEnemies.length > 0 && card.rangeType !== 'global') {
+          const firstHit = hitEnemies[0];
+          addAttackEffect(tr + 0.5, tc + 0.5, firstHit.r, firstHit.c, attackColor, firstHit.id, card.damageType);
+        }
       }
 
       // ヒットバーストを追加（全ヒット対象）
@@ -694,10 +718,16 @@ export default function BlazingDefense() {
     setEffects((prev) => [...prev, { id: Math.random(), c, r, y: 0, text, color, life: 30, size }]);
   };
 
-  // 攻撃エフェクト追加（タワー→敵への攻撃線）
-  const addAttackEffect = (fromR, fromC, toR, toC, color) => {
+  // 範囲攻撃エフェクト追加
+  const addAreaEffect = (r, c, cardId, damageType) => {
     const id = Math.random();
-    setAttackEffects((prev) => [...prev, { id, fromR, fromC, toR, toC, color, life: 18 }]);
+    setAreaEffects((prev) => [...prev, { id, r, c, cardId, damageType, life: 30 }]);
+  }
+
+  // 攻撃エフェクト追加（タワー→敵への攻撃線）
+  const addAttackEffect = (fromR, fromC, toR, toC, color, targetId = null, damageType = 'normal') => {
+    const id = Math.random();
+    setAttackEffects((prev) => [...prev, { id, fromR, fromC, toR, toC, color, life: 18, targetId, damageType }]);
   };
 
   // ヒットエフェクト追加（命中地点のバースト）
@@ -1114,6 +1144,7 @@ export default function BlazingDefense() {
           onFeedbackNext={handleBriefingFeedbackNext}
           onFinishRound={handleBriefingFinishRound}
           onStartBattle={handleBriefingToDeckBuild}
+          onBackToTitle={handleBackToTitle}
         />
       )}
       {phase === 'DECK_BUILD' && (
@@ -1128,6 +1159,7 @@ export default function BlazingDefense() {
           categoryBuffs={categoryBuffs}
           onSelectCard={handleDeckCardSelect}
           onStartBattle={handleDeckBuildStartBattle}
+          onBackToTitle={handleBackToTitle}
         />
       )}
       {phase === 'BATTLE' && (
@@ -1146,6 +1178,7 @@ export default function BlazingDefense() {
           hitEffects={hitEffects}
           deathEffects={deathEffects}
           placementEffects={placementEffects}
+          areaEffects={areaEffects}
           scorchMarks={scorchMarks}
           difficulty={difficulty}
           difficultyRef={difficultyRef}
@@ -1159,6 +1192,7 @@ export default function BlazingDefense() {
           setSelectedCard={setSelectedCard}
           confirmRemove={confirmRemove}
           setRemoveModal={setRemoveModal}
+          onSurrender={handleSurrender}
         />
       )}
       {phase === 'GAMEOVER' && (

@@ -1,4 +1,4 @@
-import { Shield, Droplets, Zap, Wind, ShieldAlert, Bell, BellRing, Radio, AlertTriangle, ArrowDown, Lightbulb, ChevronDown, Siren, Waves, DoorClosed, MoveVertical, Package, Building, Flame } from 'lucide-react';
+import { Shield, Droplets, Zap, Wind, ShieldAlert, Bell, BellRing, Radio, AlertTriangle, ArrowDown, Lightbulb, ChevronDown, Siren, Waves, DoorClosed, MoveVertical, Package, Building, Flame, ShowerHead, Circle, Phone, Fan, CloudFog, ArrowDownFromLine } from 'lucide-react';
 
 // 全カード定義（22種類）
 export const ALL_CARDS = {
@@ -27,7 +27,7 @@ export const ALL_CARDS = {
     type: 'red',
     cost: 50,
     duration: 1800, // 30秒
-    icon: Flame,
+    icon: ShieldAlert,
     desc: '【特効】周囲1マス(3×3)に粉末散布（B火災2倍）[30秒]',
     rangeType: 'surround',
     power: 3,
@@ -60,7 +60,7 @@ export const ALL_CARDS = {
     type: 'red',
     cost: 90,
     duration: 3600, // 60秒
-    icon: Zap,
+    icon: ShowerHead,
     desc: '【消火】横3行×全列を高速散水 [60秒]',
     rangeType: 'tripleRow',
     power: 1.5,
@@ -76,7 +76,7 @@ export const ALL_CARDS = {
     type: 'red',
     cost: 120,
     duration: 1800, // 30秒
-    icon: ShieldAlert,
+    icon: Circle,
     desc: '【特効】周囲3×3＋横1行に大ダメージ（B火災2倍）[30秒]',
     rangeType: 'surroundRow',
     power: 8,
@@ -92,7 +92,7 @@ export const ALL_CARDS = {
     type: 'red',
     cost: 100,
     duration: 1500, // 25秒
-    icon: Wind,
+    icon: CloudFog,
     desc: '【特効】全画面へ持続ダメージ（C火災1.5倍）[25秒]',
     rangeType: 'global',
     power: 0.4,
@@ -155,7 +155,7 @@ export const ALL_CARDS = {
     type: 'yellow',
     cost: 120,
     duration: null, // 永続（変身まで）
-    icon: AlertTriangle,
+    icon: Phone,
     desc: '【警報】コスト+5.0/秒→10秒後ポンプ車に変身',
     rangeType: 'self',
     effect: 'economyWithTransform',
@@ -219,7 +219,7 @@ export const ALL_CARDS = {
     type: 'green',
     cost: 120,
     duration: 2700, // 45秒
-    icon: Siren,
+    icon: ArrowDownFromLine,
     desc: '【避難】避難+1.5人/秒＋HP+0.5/秒＋攻撃速度+10% [45秒]',
     rangeType: 'global',
     effect: 'evacuationWithRegenAndBuff',
@@ -268,7 +268,7 @@ export const ALL_CARDS = {
     type: 'blue',
     cost: 150,
     duration: 2700, // 45秒
-    icon: Wind,
+    icon: Fan,
     desc: '【施設】全敵-15%速度＋避難+0.5人/秒 [45秒]',
     rangeType: 'global',
     effect: 'globalSlowWithEvacuation',

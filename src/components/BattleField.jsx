@@ -27,6 +27,7 @@ export default function BattleField({
   hitEffects = [],
   deathEffects = [],
   placementEffects = [],
+  areaEffects = [],
   scorchMarks = [],
   difficulty,
   difficultyRef,
@@ -40,6 +41,7 @@ export default function BattleField({
   setSelectedCard,
   confirmRemove,
   setRemoveModal,
+  onSurrender,
 }) {
   // HP遅延バー用
   const [hpLag, setHpLag] = useState(hp);
@@ -184,17 +186,26 @@ export default function BattleField({
           </GlassCard>
         </div>
 
-        <GlassCard className="px-6 py-2 pointer-events-auto" hoverEffect={false}>
-          <div className="text-[10px] font-bold text-slate-400 text-center">TIME LIMIT</div>
-          <div className={`font-mono font-bold text-2xl w-24 text-center ${(timeLimit - frameCount) / 60 < 15 ? 'text-red-400 animate-pulse' : (timeLimit - frameCount) / 60 < 30 ? 'text-orange-400' : 'text-white'}`}>
-            {Math.floor((timeLimit - frameCount) / 60)}<span className="text-sm">s</span>
-          </div>
-        </GlassCard>
+        <div className="flex gap-4 pointer-events-auto">
+          <GlassCard className="px-6 py-2" hoverEffect={false}>
+            <div className="text-[10px] font-bold text-slate-400 text-center">TIME LIMIT</div>
+            <div className={`font-mono font-bold text-2xl w-24 text-center ${(timeLimit - frameCount) / 60 < 15 ? 'text-red-400 animate-pulse' : (timeLimit - frameCount) / 60 < 30 ? 'text-orange-400' : 'text-white'}`}>
+              {Math.floor((timeLimit - frameCount) / 60)}<span className="text-sm">s</span>
+            </div>
+          </GlassCard>
+
+          <button
+            onClick={onSurrender}
+            className="h-full px-4 bg-red-900/40 border border-red-500/50 rounded-xl text-red-400 font-bold hover:bg-red-500 hover:text-white transition-all shadow-[0_0_10px_rgba(239,68,68,0.2)]"
+          >
+            降参
+          </button>
+        </div>
       </div>
 
       {/* Main 3D Grid Area */}
       <div className={`flex-1 relative flex items-center justify-center px-4 pt-4 pb-0 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
-        <div className="absolute top-20 text-red-900/20 font-black text-6xl select-none z-0 font-orbitron tracking-widest pointer-events-none">
+        <div className="absolute top-20 text-red-600/40 font-black text-6xl select-none z-0 font-orbitron tracking-widest pointer-events-none animate-neon-pulse blur-[1px] drop-shadow-lg">
           DANGER ZONE
         </div>
 
@@ -267,6 +278,45 @@ export default function BattleField({
                       })()
                     )}
                   </div>
+                )}
+              </div>
+            );
+          })}
+
+          {areaEffects.map((ef) => {
+            const topPct = (ef.r / GRID_ROWS) * 100;
+            const leftPct = (ef.c / difficulty.cols) * 100;
+            return (
+              <div
+                key={ef.id}
+                className="absolute z-50 pointer-events-none overflow-visible"
+                style={{
+                  top: `${topPct}%`,
+                  left: `${leftPct}%`,
+                  width: '0px',
+                  height: '0px',
+                  transformStyle: 'preserve-3d',
+                  transform: 'translateZ(10px)',
+                }}
+              >
+                {ef.cardId === 'sprinkler' && (
+                  <div
+                    className="absolute -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] animate-sprinkle-spin opacity-80"
+                    style={{
+                      background: 'conic-gradient(from 0deg, transparent 0deg, rgba(34,211,238,0.5) 20deg, transparent 40deg, rgba(34,211,238,0.5) 60deg, transparent 80deg)',
+                    }}
+                  />
+                )}
+                {ef.cardId === 'foamSystem' && (
+                  <div
+                    className="absolute -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border-4 border-yellow-200/80 animate-shockwave-ring"
+                    style={{ animationDuration: '0.6s' }}
+                  />
+                )}
+                {ef.cardId === 'packageFireSystem' && (
+                  <div
+                    className="absolute -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-purple-500/40 animate-radar-pulse"
+                  />
                 )}
               </div>
             );
@@ -357,11 +407,23 @@ export default function BattleField({
           })}
 
           {/* Attack Effects (攻撃線) */}
+          {/* Attack Effects (攻撃線) */}
           {attackEffects.map((ef) => {
+            // ターゲット追従ロジック
+            let targetR = ef.toR;
+            let targetC = ef.toC;
+            if (ef.targetId) {
+              const targetEnemy = enemies.find((e) => e.id === ef.targetId);
+              if (targetEnemy) {
+                targetR = targetEnemy.progress + targetEnemy.size / 2;
+                targetC = targetEnemy.c + targetEnemy.size / 2;
+              }
+            }
+
             const fromTopPct = (ef.fromR / GRID_ROWS) * 100;
             const fromLeftPct = (ef.fromC / difficulty.cols) * 100;
-            const toTopPct = (ef.toR / GRID_ROWS) * 100;
-            const toLeftPct = (ef.toC / difficulty.cols) * 100;
+            const toTopPct = (targetR / GRID_ROWS) * 100;
+            const toLeftPct = (targetC / difficulty.cols) * 100;
 
             // 攻撃線の角度と長さを計算
             const dx = toLeftPct - fromLeftPct;
@@ -369,8 +431,91 @@ export default function BattleField({
             const angle = Math.atan2(dy, dx) * (180 / Math.PI);
             const length = Math.sqrt(dx * dx + dy * dy);
 
+            // ダメージタイプごとの演出分岐
+            if (ef.damageType === 'water') {
+              return (
+                <div
+                  key={ef.id}
+                  className="absolute z-30 pointer-events-none animate-stream-flow"
+                  style={{
+                    top: `${fromTopPct}%`,
+                    left: `${fromLeftPct}%`,
+                    width: `${length}%`,
+                    height: '8px',
+                    transformOrigin: 'left center',
+                    transform: `rotate(${angle}deg) translateY(-50%)`,
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.6) 20%, rgba(147,197,253,0.9) 50%, rgba(59,130,246,0.6) 80%, transparent 100%)',
+                    backgroundSize: '50% 100%',
+                    opacity: ef.life / 18,
+                    filter: 'drop-shadow(0 0 5px rgba(59,130,246,0.8))',
+                  }}
+                />
+              );
+            } else if (ef.damageType === 'foam') {
+              return (
+                <div
+                  key={ef.id}
+                  className="absolute z-30 pointer-events-none"
+                  style={{
+                    top: `${fromTopPct}%`,
+                    left: `${fromLeftPct}%`,
+                    width: `${length}%`,
+                    height: '20px',
+                    transformOrigin: 'left center',
+                    transform: `rotate(${angle}deg) translateY(-50%)`,
+                  }}
+                >
+                  {/* 泡の粒を表現 */}
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute rounded-full bg-white animate-foam-spray"
+                      style={{
+                        left: `${i * 20}%`,
+                        top: '50%',
+                        width: '10px',
+                        height: '10px',
+                        animationDelay: `${i * 0.05}s`,
+                        opacity: ef.life / 20,
+                      }}
+                    />
+                  ))}
+                </div>
+              );
+            } else if (ef.damageType === 'gas') {
+              return (
+                <React.Fragment key={ef.id}>
+                  {/* ガスは発射線は薄く、着弾点の拡散を強調 */}
+                  <div
+                    className="absolute z-30 pointer-events-none bg-purple-500/20"
+                    style={{
+                      top: `${fromTopPct}%`,
+                      left: `${fromLeftPct}%`,
+                      width: `${length}%`,
+                      height: '2px',
+                      transformOrigin: 'left center',
+                      transform: `rotate(${angle}deg)`,
+                      opacity: ef.life / 30,
+                    }}
+                  />
+                  <div
+                    className="absolute z-30 pointer-events-none rounded-full animate-gas-expand bg-gradient-radial from-purple-600/60 to-transparent"
+                    style={{
+                      top: `${toTopPct}%`,
+                      left: `${toLeftPct}%`,
+                      width: '80px',
+                      height: '80px',
+                      transform: 'translate(-50%, -50%)',
+                    }}
+                  />
+                </React.Fragment>
+              );
+            }
+
+            // Normal / Default Beam
             return (
               <React.Fragment key={ef.id}>
+                {/* Core Beam */}
                 <div
                   className={`absolute z-30 pointer-events-none ${ef.color} animate-attack-line`}
                   style={{
@@ -381,21 +526,21 @@ export default function BattleField({
                     transformOrigin: 'left center',
                     transform: `rotate(${angle}deg)`,
                     opacity: ef.life / 18,
-                    boxShadow: '0 0 8px currentColor',
+                    boxShadow: '0 0 10px currentColor, 0 0 5px white',
                   }}
                 />
+                {/* Glow Aura */}
                 <div
-                  className="absolute pointer-events-none bg-white/90 animate-attack-core"
+                  className={`absolute z-29 pointer-events-none ${ef.color}`}
                   style={{
-                    top: `${fromTopPct + dy * 0.5}%`,
-                    left: `${fromLeftPct + dx * 0.5}%`,
-                    width: `${length * 0.4}%`,
-                    height: '2px',
+                    top: `${fromTopPct}%`,
+                    left: `${fromLeftPct}%`,
+                    width: `${length}%`,
+                    height: '8px',
                     transformOrigin: 'left center',
-                    transform: `rotate(${angle}deg)`,
-                    opacity: ef.life / 18,
-                    filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.8))',
-                    zIndex: 31,
+                    transform: `rotate(${angle}deg) translateY(-2.5px)`, // Center the thicker line
+                    opacity: (ef.life / 18) * 0.5,
+                    filter: 'blur(4px)',
                   }}
                 />
               </React.Fragment>
@@ -537,68 +682,68 @@ export default function BattleField({
       <div className={`h-40 z-30 flex flex-col px-4 py-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent ${deckFlash ? 'ring-2 ring-cyan-400/60 rounded-xl' : ''}`}>
         {/* Deck Cards Container */}
         <div className="flex-1 flex items-center justify-center">
-        {/* Deck Cards */}
-        <div className="flex items-center justify-center gap-3 overflow-x-auto overflow-y-visible w-full py-6">
-        {Object.values(deck).map((card) => {
-          // オーバーフロー報酬 + グローバル割引を反映したコスト計算
-          const discount = (categoryBuffs[card.category]?.costDiscount || 0) + (globalCostReduction || 0);
-          const actualCost = Math.floor(card.cost * (1 - discount));
-          const hasDiscount = discount > 0;
+          {/* Deck Cards */}
+          <div className="flex items-center justify-center gap-3 overflow-x-auto overflow-y-visible w-full py-6">
+            {Object.values(deck).map((card) => {
+              // オーバーフロー報酬 + グローバル割引を反映したコスト計算
+              const discount = (categoryBuffs[card.category]?.costDiscount || 0) + (globalCostReduction || 0);
+              const actualCost = Math.floor(card.cost * (1 - discount));
+              const hasDiscount = discount > 0;
 
-          return (
-            <button
-              key={card.id}
-              onClick={() => cost >= actualCost && setSelectedCard(card)}
-              disabled={cost < actualCost}
-              className={`
+              return (
+                <button
+                  key={card.id}
+                  onClick={() => cost >= actualCost && setSelectedCard(card)}
+                  disabled={cost < actualCost}
+                  className={`
                 relative flex-shrink-0 w-24 h-28 rounded-xl border border-white/10 flex flex-col items-center justify-center transition-all group
                 ${selectedCard?.id === card.id
-                  ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)] scale-110'
-                  : 'bg-slate-800/80 hover:bg-slate-700 hover:-translate-y-2'}
+                      ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)] scale-110'
+                      : 'bg-slate-800/80 hover:bg-slate-700 hover:-translate-y-2'}
                 ${cost < actualCost ? 'opacity-40 grayscale cursor-not-allowed' : ''}
                 ${selectedCard && selectedCard.id !== card.id ? 'opacity-60' : ''}
               `}
-            >
-              <div
-                className={`mb-1 transition-transform group-hover:scale-110 ${card.type === 'red'
-                  ? 'text-red-400'
-                  : card.type === 'green'
-                    ? 'text-green-400'
-                    : card.type === 'purple'
-                      ? 'text-purple-400'
-                      : 'text-yellow-400'
-                  }`}
-              >
-                {React.createElement(card.icon, { size: 36 })}
-              </div>
+                >
+                  <div
+                    className={`mb-1 transition-transform group-hover:scale-110 ${card.type === 'red'
+                      ? 'text-red-400'
+                      : card.type === 'green'
+                        ? 'text-green-400'
+                        : card.type === 'purple'
+                          ? 'text-purple-400'
+                          : 'text-yellow-400'
+                      }`}
+                  >
+                    {React.createElement(card.icon, { size: 36 })}
+                  </div>
 
-              <div className="text-[10px] font-bold text-gray-300 mb-1 text-center leading-tight px-1">{card.name}</div>
+                  <div className="text-[10px] font-bold text-gray-300 mb-1 text-center leading-tight px-1">{card.name}</div>
 
-              <div className="flex items-baseline gap-1 bg-black/40 px-2 py-0.5 rounded">
-                {hasDiscount && (
-                  <div className="text-[10px] line-through text-gray-500">{card.cost}</div>
-                )}
-                <div className={`text-lg font-black font-mono ${hasDiscount ? 'text-yellow-300' : 'text-white'}`}>
-                  {actualCost}
-                </div>
-              </div>
+                  <div className="flex items-baseline gap-1 bg-black/40 px-2 py-0.5 rounded">
+                    {hasDiscount && (
+                      <div className="text-[10px] line-through text-gray-500">{card.cost}</div>
+                    )}
+                    <div className={`text-lg font-black font-mono ${hasDiscount ? 'text-yellow-300' : 'text-white'}`}>
+                      {actualCost}
+                    </div>
+                  </div>
 
-              {/* Badges */}
-              <div className="absolute top-1 right-1 text-[8px] text-slate-300 bg-slate-700/80 px-1 rounded border border-white/10">
-                {card.rangeType ? RANGE_LABEL[card.rangeType] : 'SUP'}
-              </div>
-              <div className="absolute top-1 left-1 text-[8px] font-bold text-cyan-300 bg-slate-700/80 px-1 rounded border border-white/10">
-                {card.duration === null ? 'INF' : `${Math.floor(card.duration / 60)}s`}
-              </div>
-              {hasDiscount && (
-                <div className="absolute -top-2 -right-2 text-[8px] font-bold text-slate-900 bg-yellow-400 px-1.5 py-0.5 rounded-full shadow-sm">
-                  -{Math.floor(discount * 100)}%
-                </div>
-              )}
-            </button>
-          );
-        })}
-        </div>
+                  {/* Badges */}
+                  <div className="absolute top-1 right-1 text-[8px] text-slate-300 bg-slate-700/80 px-1 rounded border border-white/10">
+                    {card.rangeType ? RANGE_LABEL[card.rangeType] : 'SUP'}
+                  </div>
+                  <div className="absolute top-1 left-1 text-[8px] font-bold text-cyan-300 bg-slate-700/80 px-1 rounded border border-white/10">
+                    {card.duration === null ? 'INF' : `${Math.floor(card.duration / 60)}s`}
+                  </div>
+                  {hasDiscount && (
+                    <div className="absolute -top-2 -right-2 text-[8px] font-bold text-slate-900 bg-yellow-400 px-1.5 py-0.5 rounded-full shadow-sm">
+                      -{Math.floor(discount * 100)}%
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
