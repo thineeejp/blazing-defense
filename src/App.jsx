@@ -682,10 +682,14 @@ export default function BlazingDefense() {
       });
 
       // エフェクト分岐
-      const areaEffectCards = ['sprinkler', 'foamSystem', 'packageFireSystem'];
+      // エフェクト分岐
+      const areaEffectCards = ['sprinkler', 'foamSystem', 'packageFireSystem', 'inertGasSystem'];
       if (areaEffectCards.includes(card.id)) {
         // AoE: タワー中心に範囲エフェクトを表示（敵への線は出さない）
-        addAreaEffect(tr + 0.5, tc + 0.5, card.id, card.damageType);
+        // 敵が範囲内にいてヒットした場合のみエフェクト再生
+        if (hitEnemies.length > 0) {
+          addAreaEffect(tr + 0.5, tc + 0.5, card.id, card.damageType);
+        }
       } else {
         // Projectile: 攻撃エフェクトを追加（最初のヒット敵のみ）
         if (hitEnemies.length > 0 && card.rangeType !== 'global') {

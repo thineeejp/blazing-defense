@@ -300,23 +300,42 @@ export default function BattleField({
                 }}
               >
                 {ef.cardId === 'sprinkler' && (
-                  <div
-                    className="absolute -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] animate-sprinkle-spin opacity-80"
-                    style={{
-                      background: 'conic-gradient(from 0deg, transparent 0deg, rgba(34,211,238,0.5) 20deg, transparent 40deg, rgba(34,211,238,0.5) 60deg, transparent 80deg)',
-                    }}
-                  />
+                  <div className="absolute -translate-x-1/2 -translate-y-1/2 w-[80px] h-[80px]">
+                    <div className="absolute inset-0 rounded-full border-4 border-cyan-400 opacity-60 animate-ping" />
+                    <div className="absolute inset-2 rounded-full border-2 border-cyan-200 opacity-80 animate-ping" style={{ animationDelay: '0.1s' }} />
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className="absolute bg-cyan-300 rounded-full w-1.5 h-1.5 top-1/2 left-1/2"
+                        style={{ transform: `rotate(${i * 120 + Math.random() * 60}deg) translate(25px)`, opacity: 0, animation: 'ping 0.5s ease-out forwards' }} />
+                    ))}
+                  </div>
                 )}
                 {ef.cardId === 'foamSystem' && (
-                  <div
-                    className="absolute -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border-4 border-yellow-200/80 animate-shockwave-ring"
-                    style={{ animationDuration: '0.6s' }}
-                  />
+                  <div className="absolute -translate-x-1/2 -translate-y-1/2 w-[70px] h-[70px]">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="absolute bg-white rounded-full animate-foam-spray"
+                        style={{
+                          left: `${50 + (Math.random() - 0.5) * 60}%`,
+                          top: `${50 + (Math.random() - 0.5) * 60}%`,
+                          width: `${8 + Math.random() * 8}px`,
+                          height: `${8 + Math.random() * 8}px`,
+                          opacity: 0.8,
+                          animationDuration: '0.8s',
+                          animationDelay: `${Math.random() * 0.2}s`
+                        }} />
+                    ))}
+                  </div>
                 )}
                 {ef.cardId === 'packageFireSystem' && (
                   <div
                     className="absolute -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-purple-500/40 animate-radar-pulse"
                   />
+                )}
+                {ef.cardId === 'inertGasSystem' && (
+                  <div className="absolute -translate-x-1/2 -translate-y-1/2 w-[60px] h-[60px] pointer-events-none">
+                    {/* B案改: コンパクトでゆっくり (Steady Compact Pulse) */}
+                    <div className="absolute inset-0 bg-purple-500/10 border border-purple-400/30 rounded-full animate-pulse"
+                      style={{ animationDuration: '3s' }} />
+                  </div>
                 )}
               </div>
             );
@@ -753,21 +772,21 @@ export default function BattleField({
         <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-6">
           <div className="bg-slate-800 border-2 border-red-500 p-6 rounded-xl w-full max-w-md animate-in zoom-in">
             <h3 className="text-red-400 font-bold text-xl mb-4 flex items-center gap-2">
-              <AlertTriangle /> Remove Equipment
+              <AlertTriangle /> 装備を撤去
             </h3>
-            <p className="text-white text-lg mb-6">Do you want to remove this equipment?</p>
+            <p className="text-white text-lg mb-6">この設備を撤去しますか？</p>
             <div className="flex gap-3">
               <button
                 onClick={confirmRemove}
                 className="flex-1 p-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded transition-colors"
               >
-                Remove
+                撤去する
               </button>
               <button
                 onClick={() => setRemoveModal(null)}
                 className="flex-1 p-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded transition-colors"
               >
-                Cancel
+                キャンセル
               </button>
             </div>
           </div>
