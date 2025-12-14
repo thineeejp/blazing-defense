@@ -411,8 +411,9 @@ export default function BattleField({
                 style={{
                   top: `${topPct}%`,
                   left: `${leftPct}%`,
-                  transform: `translate(-50%, -50%) translateY(${ef.y * 20}px)`,
+                  transform: `translate(-50%, -120%) translateY(${ef.y * 20}px)`,
                   opacity: ef.life / 30,
+                  textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, -2px 0 0 #000, 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, 0 0 8px rgba(0,0,0,0.9)',
                 }}
               >
                 {ef.text}
