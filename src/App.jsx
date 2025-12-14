@@ -406,6 +406,7 @@ export default function BlazingDefense() {
             ...e,
             progress: newProgress,
             size: newSize,
+            displaySize: newDisplaySize,  // 明示的に追加（2重表示バグ対策）
             r: Math.floor(newProgress),
             attackAnimTimer: e.attackAnimTimer > 0 ? e.attackAnimTimer - 1 : 0,
           });
@@ -427,12 +428,13 @@ export default function BlazingDefense() {
               ...e,
               progress: newProgress,
               size: newSize,
+              displaySize: newDisplaySize,  // 明示的に追加（2重表示バグ対策）
               r: Math.floor(newProgress),
               isAttacking: true,
               attackAnimTimer: 30,
             });
           } else {
-            next.push({ ...e, progress: newProgress, size: newSize, r: Math.floor(newProgress) });
+            next.push({ ...e, progress: newProgress, size: newSize, displaySize: newDisplaySize, r: Math.floor(newProgress) });
           }
         }
       });

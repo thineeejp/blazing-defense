@@ -368,7 +368,7 @@ export default function BattleField({
             const widthPct = (1 / difficulty.cols) * 100;  // 常に1マス分
             const heightPct = (1 / GRID_ROWS) * 100;       // 常に1マス分
             const barWidth = 36 + Math.max(0, displaySize - 1) * 10; // px
-            const barTop = -10; // サイズによらず一定の近さに保つ
+            const barTop = -18; // アイコンとの距離を調整（-10 → -18）
             const iconLift = 8 + Math.max(0, displaySize - 1) * 8;   // 大型ほど上に持ち上げる
 
             return (
@@ -387,13 +387,13 @@ export default function BattleField({
                 <div className={`relative w-full h-full flex items-center justify-center ${e.color} ${e.isAttacking ? 'scale-150 opacity-80' : ''} ${e.isHit ? 'animate-hit-flash' : ''} pointer-events-none`}>
                   {e.isAttacking ? (
                     <Skull
-                      size={displaySize * 32}
+                      size={displaySize * 28}
                       className="animate-pulse text-white drop-shadow-[0_0_10px_red]"
                       style={{ transform: `translateY(-${iconLift}px)` }}
                     />
                   ) : (
                     <Flame
-                      size={displaySize * 32}
+                      size={displaySize * 28}
                       className="filter drop-shadow-[0_0_15px_rgba(255,100,0,0.8)] animate-pulse"
                       style={{ transform: `translateY(-${iconLift}px)` }}
                       fill="currentColor"
