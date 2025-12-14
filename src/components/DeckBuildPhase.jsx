@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { EQUIPMENT_TREES } from '../constants/equipment';
 import { Check, X, Info, Zap, Shield, Crosshair, Activity, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameBackground from './ui/GameBackground';
@@ -16,13 +15,7 @@ export default function DeckBuildPhase({
   onStartBattle,
   onBackToTitle,
 }) {
-  const [filter, setFilter] = useState('all');
   const [detailCard, setDetailCard] = useState(null);
-
-  // フィルタリング
-  const filteredCards = filter === 'all'
-    ? availableCards
-    : availableCards.filter(c => c.category === filter);
 
   // カードのコスト計算（Tier1は無料）
   const getSelectCost = (card) => card.tier === 1 ? 0 : card.cost;
@@ -44,7 +37,7 @@ export default function DeckBuildPhase({
   return (
     <GameBackground className="flex flex-col h-screen overflow-hidden">
       {/* Header */}
-      <header className="flex-none pt-12 pb-4 px-4 z-10">
+      <header className="flex-none pt-20 pb-4 px-4 z-10">
         <div className="max-w-7xl mx-auto w-full relative">
           {/* Back Button (Absolute Left) */}
           <button
@@ -80,27 +73,6 @@ export default function DeckBuildPhase({
         </div>
       </header>
 
-      {/* Category Filter */}
-      <div className="flex-none px-4 pb-4 z-10">
-        <div className="flex justify-center gap-2 max-w-7xl mx-auto flex-wrap">
-          <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>
-            全て
-          </FilterButton>
-          {Object.entries(EQUIPMENT_TREES).map(([catId, tree]) => {
-            return (
-              <FilterButton
-                key={catId}
-                active={filter === catId}
-                onClick={() => setFilter(catId)}
-                category={catId}
-              >
-                {tree.name}
-              </FilterButton>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Card Grid */}
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
         <div className="max-w-7xl mx-auto pb-40">
@@ -109,7 +81,7 @@ export default function DeckBuildPhase({
             className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4 mt-4"
           >
             <AnimatePresence>
-              {filteredCards.map(card => (
+              {availableCards.map(card => (
                 <CardItemThumbnail
                   key={card.id}
                   card={card}
@@ -119,7 +91,7 @@ export default function DeckBuildPhase({
               ))}
             </AnimatePresence>
           </motion.div>
-          {filteredCards.length === 0 && (
+          {availableCards.length === 0 && (
             <div className="text-center text-slate-500 mt-20 font-orbitron text-xl animate-pulse">
               NO UNITS FOUND IN SECTOR
             </div>
@@ -194,7 +166,7 @@ export default function DeckBuildPhase({
             onClick={onStartBattle}
             disabled={selectedCards.length === 0}
             className={`
-              w-full max-w-md py-4 rounded-lg font-black text-xl font-orbitron tracking-[0.2em] transition-all shadow-xl
+              w-full max-w-md py-4 mb-8 rounded-lg font-black text-xl font-orbitron tracking-[0.2em] transition-all shadow-xl
               flex items-center justify-center gap-4 group overflow-hidden relative
               ${selectedCards.length > 0
                 ? 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-500/30'
@@ -216,35 +188,6 @@ export default function DeckBuildPhase({
 // ----------------------------------------------------------------------------
 // Sub Components
 // ----------------------------------------------------------------------------
-
-// Filter Button
-function FilterButton({ active, onClick, category, children }) {
-  const categoryColors = {
-    fire: 'from-red-600 to-red-800 border-red-500',
-    alarm: 'from-yellow-600 to-yellow-800 border-yellow-500',
-    evacuation: 'from-green-600 to-green-800 border-green-500',
-    facility: 'from-blue-600 to-blue-800 border-blue-500',
-    other: 'from-purple-600 to-purple-800 border-purple-500',
-  };
-
-  const activeStyle = category
-    ? `bg-gradient-to-br ${categoryColors[category]} text-white shadow-lg scale-105`
-    : 'bg-slate-500 text-white';
-
-  const inactiveStyle = 'bg-slate-800/50 text-slate-400 hover:bg-slate-700 hover:text-slate-200 border-transparent';
-
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        px-4 py-2 rounded font-bold text-sm tracking-wide transition-all border
-        ${active ? activeStyle : inactiveStyle}
-      `}
-    >
-      {children}
-    </button>
-  );
-}
 
 // Thumbnail Card in Grid
 function CardItemThumbnail({ card, isSelected, onClick }) {
