@@ -361,13 +361,14 @@ export default function BattleField({
 
           {/* Enemies */}
           {enemies.map((e) => {
-            const topPct = ((e.progress + e.size / 2) / GRID_ROWS) * 100;
-            const leftPct = ((e.c + e.size / 2) / difficulty.cols) * 100;
-            const widthPct = (e.size / difficulty.cols) * 100;
-            const heightPct = (e.size / GRID_ROWS) * 100;
-            const barWidth = 36 + Math.max(0, e.size - 1) * 10; // px
+            const displaySize = e.displaySize ?? 1.0; // 見た目サイズ
+            const topPct = ((e.progress + displaySize / 2) / GRID_ROWS) * 100;
+            const leftPct = ((e.c + displaySize / 2) / difficulty.cols) * 100;
+            const widthPct = (displaySize / difficulty.cols) * 100;
+            const heightPct = (displaySize / GRID_ROWS) * 100;
+            const barWidth = 36 + Math.max(0, displaySize - 1) * 10; // px
             const barTop = -10; // サイズによらず一定の近さに保つ
-            const iconLift = 8 + Math.max(0, e.size - 1) * 8;   // 大型ほど上に持ち上げる
+            const iconLift = 8 + Math.max(0, displaySize - 1) * 8;   // 大型ほど上に持ち上げる
 
             return (
               <div
@@ -385,13 +386,13 @@ export default function BattleField({
                 <div className={`relative w-full h-full flex items-center justify-center ${e.color} ${e.isAttacking ? 'scale-150 opacity-80' : ''} ${e.isHit ? 'animate-hit-flash' : ''} pointer-events-none`}>
                   {e.isAttacking ? (
                     <Skull
-                      size={e.size * 32}
+                      size={displaySize * 32}
                       className="animate-pulse text-white drop-shadow-[0_0_10px_red]"
                       style={{ transform: `translateY(-${iconLift}px)` }}
                     />
                   ) : (
                     <Flame
-                      size={e.size * 32}
+                      size={displaySize * 32}
                       className="filter drop-shadow-[0_0_15px_rgba(255,100,0,0.8)] animate-pulse"
                       style={{ transform: `translateY(-${iconLift}px)` }}
                       fill="currentColor"

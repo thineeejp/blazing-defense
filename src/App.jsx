@@ -372,27 +372,30 @@ export default function BlazingDefense() {
         // サイズが大きくなるほど移動速度をわずかに減速させる
         // サイズが大きいほど減速。特にサイズ3は強めにブレーキをかける。
         // 安全ガード: sizeが異常値でも0除算を防ぐ
-        const sizeSlow = e.size >= 3 ? 2.0 : Math.max(0.1, 1 + (e.size - 1) * 0.6);
+        const displaySize = e.displaySize ?? 1.0;
+        const sizeSlow = displaySize >= 3 ? 2.0 : Math.max(0.1, 1 + (displaySize - 1) * 0.6);
         // globalSlowDebuff適用（smokeControl等の減速効果）
         const actualSpeed = e.speed * (1 - staticBuffsRef.current.globalSlowDebuff) * (1 - (e.slowValue || 0));
         let newProgress = isNaN(e.progress) || !isFinite(e.progress) ? -1 : e.progress + actualSpeed / sizeSlow;
-        const enemyRow = Math.floor(e.progress + e.size / 2);
+        const enemyRow = Math.floor(e.progress + 0.5); // 判定範囲は常に1マス
         if (blockedRows.has(enemyRow)) {
           newProgress = e.progress;
         }
-        let newSize = e.size;
-        // サイズ1→3に直接変化（サイズ2を廃止、HP回復を1回のみに）
-        if (e.size === 1 && e.progress > 3.0) {
-          newSize = 3;
+        let newSize = e.size; // 常に1のまま
+        let newDisplaySize = e.displaySize ?? 1.0;
+
+        // 見た目サイズの成長のみ（サイズ1→3の視覚的変化、HP回復を1回のみに）
+        if ((e.displaySize ?? 1.0) === 1.0 && e.progress > 3.0) {
+          newDisplaySize = 3.0; // 見た目だけ成長
         }
-        // 成長時は中心を保ち、トップ/ボトムのワープ感を抑える
-        if (newSize > e.size) {
+
+        // 成長時はc座標を変更せず、HP回復のみ（ワープ感を完全に排除）
+        if (newDisplaySize > (e.displaySize ?? 1.0)) {
           // 成長時に位置は据え置き（前フレームのtopを保持）してワープ感を排除
           newProgress = e.progress;
           // HPは全回復、maxHpは据え置き（耐久インフレを防ぐ）
-          const centerC = e.c + e.size / 2;
-          const newC = centerC - newSize / 2; // 中心を維持、はみ出しを許容
-          e = { ...e, hp: e.maxHp, c: newC };
+          // sizeは変わらないのでc座標の調整は不要
+          e = { ...e, hp: e.maxHp, displaySize: newDisplaySize };
         }
         // グリッド外への大きな跳ねを抑制
         newProgress = Math.max(-1, newProgress);
@@ -407,9 +410,9 @@ export default function BlazingDefense() {
             attackAnimTimer: e.attackAnimTimer > 0 ? e.attackAnimTimer - 1 : 0,
           });
         } else {
-          const enemyBottom = newProgress + newSize;
+          const enemyBottom = newProgress + 1; // 判定範囲は常に1マス
           // 中心が最終行を跨いだら到達とみなす（境界で一拍止めるイメージ）
-          if (enemyBottom - (newSize / 2) >= GRID_ROWS - 0.5) {
+          if (enemyBottom - 0.5 >= GRID_ROWS - 0.5) {
             // 火災タイプ別のダメージ設定
             let damage = 20; // デフォルト
             if (e.fireType === 'A') {
@@ -419,7 +422,7 @@ export default function BlazingDefense() {
             } else if (e.fireType === 'C') {
               damage = 10; // C火災: 10固定
             }
-            damageEvents.push({ damage, c: e.c + newSize / 2 });
+            damageEvents.push({ damage, c: e.c + 0.5 }); // 判定範囲は常に1マス
             next.push({
               ...e,
               progress: newProgress,
@@ -589,7 +592,8 @@ export default function BlazingDefense() {
         r: -1,
         c,
         progress: -1,
-        size: 1,
+        size: 1,              // 判定範囲（常に1固定）
+        displaySize: 1.0,     // 見た目サイズ（1.0 → 3.0）
         maxHp: t.hp,
         hp: t.hp,
         slowValue: 0,
@@ -620,8 +624,8 @@ export default function BlazingDefense() {
       targets = targets.map((e) => {
         if (e.isAttacking) return e;
 
-        const eCenterR = e.progress + e.size / 2;
-        const eCenterC = e.c + e.size / 2;
+        const eCenterR = e.progress + 0.5; // 判定範囲は常に1マス
+        const eCenterC = e.c + 0.5; // 判定範囲は常に1マス
         const tCenterR = tr + 0.5;
         const tCenterC = tc + 0.5;
         let inRange = false;
@@ -629,10 +633,10 @@ export default function BlazingDefense() {
         if (card.rangeType === 'surround') {
           const distR = Math.abs(eCenterR - tCenterR);
           const distC = Math.abs(eCenterC - tCenterC);
-          if (distR < e.size / 2 + 1.2 && distC < e.size / 2 + 1.2) inRange = true;
+          if (distR < 1.7 && distC < 1.7) inRange = true; // 0.5 + 1.2 = 1.7（固定値）
         } else if (card.rangeType === 'wide') {
           const distR = Math.abs(eCenterR - tCenterR);
-          if (distR < e.size / 2 + 1.2) inRange = true;
+          if (distR < 1.7) inRange = true; // 0.5 + 1.2 = 1.7（固定値）
         } else if (card.rangeType === 'tripleRow') {
           // タワー行±1行（3行）× 全列
           const distR = Math.abs(tCenterR - eCenterR);
@@ -645,18 +649,18 @@ export default function BlazingDefense() {
           // surround判定
           const distR = Math.abs(eCenterR - tCenterR);
           const distC = Math.abs(eCenterC - tCenterC);
-          if (distR < e.size / 2 + 1.2 && distC < e.size / 2 + 1.2) {
+          if (distR < 1.7 && distC < 1.7) { // 0.5 + 1.2 = 1.7（固定値）
             inRangeSurround = true;
           }
 
           // row判定（タワーと同じ行）
-          if (Math.abs(tCenterR - eCenterR) < e.size / 2 + 0.5) {
+          if (Math.abs(tCenterR - eCenterR) < 1.0) { // 0.5 + 0.5 = 1.0（固定値）
             inRangeRow = true;
           }
 
           inRange = inRangeSurround || inRangeRow;
         } else if (card.rangeType === 'line') {
-          if (tc >= e.c && tc < e.c + e.size && e.progress < tr) inRange = true;
+          if (tc >= e.c && tc < e.c + 1 && e.progress < tr) inRange = true; // 判定範囲は常に1マス
         } else if (card.rangeType === 'global') {
           inRange = true;
         }
