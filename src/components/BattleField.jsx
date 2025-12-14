@@ -362,10 +362,11 @@ export default function BattleField({
           {/* Enemies */}
           {enemies.map((e) => {
             const displaySize = e.displaySize ?? 1.0; // 見た目サイズ
-            const topPct = ((e.progress + displaySize / 2) / GRID_ROWS) * 100;
-            const leftPct = ((e.c + displaySize / 2) / difficulty.cols) * 100;
-            const widthPct = (displaySize / difficulty.cols) * 100;
-            const heightPct = (displaySize / GRID_ROWS) * 100;
+            // 親div要素は常に1×1マス分の領域（判定範囲と同じ）
+            const topPct = ((e.progress + 0.5) / GRID_ROWS) * 100;
+            const leftPct = ((e.c + 0.5) / difficulty.cols) * 100;
+            const widthPct = (1 / difficulty.cols) * 100;  // 常に1マス分
+            const heightPct = (1 / GRID_ROWS) * 100;       // 常に1マス分
             const barWidth = 36 + Math.max(0, displaySize - 1) * 10; // px
             const barTop = -10; // サイズによらず一定の近さに保つ
             const iconLift = 8 + Math.max(0, displaySize - 1) * 8;   // 大型ほど上に持ち上げる
