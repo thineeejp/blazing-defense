@@ -365,6 +365,9 @@ export default function BattleField({
             const leftPct = ((e.c + e.size / 2) / difficulty.cols) * 100;
             const widthPct = (e.size / difficulty.cols) * 100;
             const heightPct = (e.size / GRID_ROWS) * 100;
+            const barWidth = 36 + Math.max(0, e.size - 1) * 10; // px
+            const barTop = -10; // サイズによらず一定の近さに保つ
+            const iconLift = 8 + Math.max(0, e.size - 1) * 8;   // 大型ほど上に持ち上げる
 
             return (
               <div
@@ -381,16 +384,24 @@ export default function BattleField({
                 {/* 敵表示がマスへのクリックを阻害しないよう、子要素も pointer-events 無効化 */}
                 <div className={`relative w-full h-full flex items-center justify-center ${e.color} ${e.isAttacking ? 'scale-150 opacity-80' : ''} ${e.isHit ? 'animate-hit-flash' : ''} pointer-events-none`}>
                   {e.isAttacking ? (
-                    <Skull size={e.size * 32} className="animate-pulse text-white drop-shadow-[0_0_10px_red]" />
+                    <Skull
+                      size={e.size * 32}
+                      className="animate-pulse text-white drop-shadow-[0_0_10px_red]"
+                      style={{ transform: `translateY(-${iconLift}px)` }}
+                    />
                   ) : (
                     <Flame
                       size={e.size * 32}
                       className="filter drop-shadow-[0_0_15px_rgba(255,100,0,0.8)] animate-pulse"
+                      style={{ transform: `translateY(-${iconLift}px)` }}
                       fill="currentColor"
                     />
                   )}
                   {!e.isAttacking && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-1 bg-black/60 rounded overflow-hidden shadow border border-white/10 pointer-events-none">
+                    <div
+                      className="absolute left-1/2 -translate-x-1/2 h-1 bg-black/70 rounded overflow-hidden shadow border border-white/10 pointer-events-none"
+                      style={{ top: `${barTop}px`, width: `${barWidth}px` }}
+                    >
                       <div className="h-full bg-gradient-to-r from-red-600 to-red-400" style={{ width: `${(e.hp / e.maxHp) * 100}%` }} />
                     </div>
                   )}
@@ -411,7 +422,7 @@ export default function BattleField({
                 style={{
                   top: `${topPct}%`,
                   left: `${leftPct}%`,
-                  transform: `translate(-30%, -50%) translateY(${ef.y * 20}px)`,
+                  transform: `translate(-50%, -50%) translateY(${ef.y * 20}px)`,
                   opacity: ef.life / 30,
                   textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, -2px 0 0 #000, 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, 0 0 8px rgba(0,0,0,0.9)',
                 }}
@@ -791,4 +802,3 @@ export default function BattleField({
     </div>
   );
 }
-

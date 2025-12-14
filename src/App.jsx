@@ -419,7 +419,7 @@ export default function BlazingDefense() {
             } else if (e.fireType === 'C') {
               damage = 10; // C火災: 10固定
             }
-            damageEvents.push({ damage, c: e.c + e.size / 2 });
+            damageEvents.push({ damage, c: e.c + newSize / 2 });
             next.push({
               ...e,
               progress: newProgress,
@@ -608,6 +608,9 @@ export default function BlazingDefense() {
     };
     const attackColor = attackColors[tower.card.damageType] || 'bg-red-400';
 
+    // StrictMode の二重実行対策: 同一フレーム・同一敵への重複エフェクトを抑止
+    const seenDamage = new Set();   // `${frame}-${enemyId}-${cardId}`
+
     setEnemies((prev) => {
       let targets = [...prev];
       const card = tower.card;
@@ -680,20 +683,33 @@ export default function BlazingDefense() {
           let knockback = 0;
           let effectSize = 'normal';
 
-          if (e.fireType === 'B') {
-            if (card.damageType === 'water') {
-              dmg *= 0.5;
-              if (Math.random() > 0.8) addEffect(e.c + e.size / 2, e.progress + e.size / 2, 'Bad!', 'text-blue-300', 'small');
-            } else if (card.damageType === 'foam') {
-              dmg *= 2.0;
-              effectSize = 'large';
-              if (Math.random() > 0.7)
-                addEffect(e.c + e.size / 2, e.progress + e.size / 2, 'Effective!', 'text-yellow-300 font-bold', 'large');
-            }
-          }
-          if (e.fireType === 'C' && card.damageType === 'gas') {
-            dmg *= 1.5;
+        if (e.fireType === 'B') {
+          if (card.damageType === 'water') {
+            dmg *= 0.5;
+            if (Math.random() > 0.8)
+              addEffect(
+                e.c + e.size / 2,
+                e.progress + e.size / 2,
+                'Bad!',
+                'text-blue-300',
+                'small'
+              );
+          } else if (card.damageType === 'foam') {
+            dmg *= 2.0;
             effectSize = 'large';
+            if (Math.random() > 0.7)
+              addEffect(
+                e.c + e.size / 2,
+                e.progress + e.size / 2,
+                'Effective!',
+                'text-yellow-300 font-bold',
+                'large'
+              );
+          }
+        }
+        if (e.fireType === 'C' && card.damageType === 'gas') {
+          dmg *= 1.5;
+          effectSize = 'large';
           }
           if (card.knockback) {
             knockback = -card.knockback;
@@ -702,21 +718,31 @@ export default function BlazingDefense() {
           // ヒット情報を収集（中心座標）
           hitEnemies.push({ id: e.id, r: e.progress + e.size / 2, c: e.c + e.size / 2, fireType: e.fireType });
 
-          const newHp = e.hp - dmg;
-          const newProgress = Math.max(-e.size, e.progress + knockback);
+        const newHp = e.hp - dmg;
+        const newProgress = Math.max(-e.size, e.progress + knockback);
 
-          // 死亡判定
-          if (newHp <= 0 && !e.isAttacking) {
-            killedEnemies.push({ r: e.progress + e.size / 2, c: e.c + e.size / 2, fireType: e.fireType, size: e.size });
-          }
-
-          // ダメージ表示（最小1）
-          const displayDmg = Math.max(1, Math.floor(dmg));
-          addEffect(e.c + e.size / 2, e.progress + e.size / 2, displayDmg.toString(), 'text-white font-bold', effectSize);
-          return { ...e, hp: newHp, progress: newProgress, isHit: true };
+        // 死亡判定
+        if (newHp <= 0 && !e.isAttacking) {
+          killedEnemies.push({ r: e.progress + e.size / 2, c: e.c + e.size / 2, fireType: e.fireType, size: e.size });
         }
-        return e.isHit ? { ...e, isHit: false } : e;
-      });
+
+        // ダメージ表示（最小1）
+        const displayDmg = Math.max(1, Math.floor(dmg));
+        const dmgKey = `${frameRef.current}-${e.id}-${tr}-${tc}`;
+        if (!seenDamage.has(dmgKey)) {
+          seenDamage.add(dmgKey);
+          addEffect(
+            e.c + e.size / 2,
+            e.progress + e.size / 2,
+            displayDmg.toString(),
+            'text-white font-extrabold bg-black/70 px-1.5 py-0.5 rounded-md ring-1 ring-black/40',
+            effectSize
+          );
+        }
+        return { ...e, hp: newHp, progress: newProgress, isHit: true };
+      }
+      return e.isHit ? { ...e, isHit: false } : e;
+    });
 
       // エフェクト分岐
       // エフェクト分岐
@@ -756,7 +782,13 @@ export default function BlazingDefense() {
   };
 
   const addEffect = (c, r, text, color, size = 'normal') => {
-    setEffects((prev) => [...prev, { id: Math.random(), c, r, y: 0, text, color, life: 30, size }]);
+    // 乱数で位置を微調整し、重なりを軽減
+    const offsetX = (Math.random() - 0.5) * 0.6; // グリッド座標ベース
+    const offsetY = (Math.random() - 0.5) * 0.8 - 0.2; // やや上に寄せる
+    setEffects((prev) => [
+      ...prev,
+      { id: Math.random(), c: c + offsetX, r: r + offsetY, y: 0, text, color, life: 30, size, offsetX, offsetY },
+    ]);
   };
 
   // 範囲攻撃エフェクト追加
