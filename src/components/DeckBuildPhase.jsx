@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EQUIPMENT_TREES } from '../constants/equipment';
-import { Check, X, Info, Zap, Shield, Crosshair, Clock, Activity, BarChart3 } from 'lucide-react';
+import { Check, X, Info, Zap, Shield, Crosshair, Activity, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameBackground from './ui/GameBackground';
 import GlassCard from './ui/GlassCard';
@@ -57,7 +57,7 @@ export default function DeckBuildPhase({
           {/* Centered Title */}
           <div className="text-center w-full">
             <h1 className="text-4xl md:text-5xl font-black font-orbitron text-white tracking-wider mb-2">
-              <span className="text-cyan-400">///</span> DECK BUILD <span className="text-cyan-400">PHASE</span>
+              <span className="text-cyan-400">{'///'}</span> DECK BUILD <span className="text-cyan-400">PHASE</span>
             </h1>
             <p className="text-slate-400 text-sm font-mono tracking-widest">最大6つまで選択可能</p>
           </div>
@@ -331,14 +331,7 @@ function CardItemThumbnail({ card, isSelected, onClick }) {
 // Detailed Overlay (The "Rich" Part)
 // ----------------------------------------------------------------------------
 
-function CardDetailOverlay({ card, isSelected, canSelect, selectCost, onToggleSelect, onClose }) {
-  // Stats Normalization for Bars (Assume max roughly)
-  const stats = [
-    { label: '攻撃力', value: card.power || 0, max: 100, icon: SwordIcon, color: 'bg-red-500' },
-    { label: '攻撃速度', value: card.speed ? (60 / card.speed).toFixed(1) + '/s' : '-', isText: true, icon: Clock, color: 'bg-blue-500' },
-    { label: '範囲タイプ', value: card.rangeType || 'N/A', isText: true, icon: Crosshair, color: 'bg-green-500' },
-  ];
-
+function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCost, onToggleSelect, onClose }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -500,9 +493,6 @@ function StatBar({ label, value, max, color, formatValue }) {
     </div>
   );
 }
-
-// 簡易アイコン用ダミー
-const SwordIcon = () => <Shield size={16} />;
 
 function RangeVisualizer({ rangeType }) {
   // 5x5 Grid, Center is 2,2

@@ -1,4 +1,4 @@
-import { Shield, Droplets, Zap, Wind, ShieldAlert, Bell, BellRing, Radio, AlertTriangle, ArrowDown, Lightbulb, ChevronDown, Siren, Waves, DoorClosed, MoveVertical, Package, Building, Flame, ShowerHead, Circle, Phone, Fan, CloudFog, ArrowDownFromLine } from 'lucide-react';
+import { Shield, Droplets, Zap, ShieldAlert, Bell, BellRing, Radio, AlertTriangle, ArrowDown, Lightbulb, ChevronDown, Waves, DoorClosed, MoveVertical, Package, Building, Flame, ShowerHead, Circle, Phone, Fan, CloudFog, ArrowDownFromLine } from 'lucide-react';
 
 // 全カード定義（22種類）
 export const ALL_CARDS = {
@@ -125,7 +125,7 @@ export const ALL_CARDS = {
     cost: 60,
     duration: 2700, // 45秒
     icon: BellRing,
-    desc: '【警報】コスト+6.0/秒＋敵感知警告 [45秒]',
+    desc: '【警報】コスト+6.0/秒 [45秒]',
     rangeType: 'self',
     effect: 'economy',
     value: 0.1,
@@ -314,15 +314,15 @@ export const ALL_CARDS = {
     name: 'パッケージ型自動消火設備',
     category: 'other',
     tier: 2,
-    type: 'purple',
-    cost: 120,
-    duration: 1800, // 30秒
+    type: 'red',
+    cost: 60,
+    duration: 2400, // 40秒
     icon: Package,
-    desc: '【特殊】周囲3×3にDoT1.0/秒＋移動-30% [30秒]',
-    rangeType: 'surround',
-    effect: 'areaDotWithSlow',
-    dotDamage: 1.0,
-    slowValue: 0.3,
+    desc: '【消火】横3行×全列を散水 [40秒]',
+    rangeType: 'tripleRow',
+    power: 1.5,
+    speed: 35,
+    damageType: 'water',
   },
 
   compactFireAlarm: {

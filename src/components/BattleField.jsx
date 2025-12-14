@@ -299,7 +299,7 @@ export default function BattleField({
                   transform: 'translateZ(10px)',
                 }}
               >
-                {ef.cardId === 'sprinkler' && (
+                {(ef.cardId === 'sprinkler' || ef.cardId === 'packageFireSystem') && (
                   <div className="absolute -translate-x-1/2 -translate-y-1/2 w-[80px] h-[80px]">
                     <div className="absolute inset-0 rounded-full border-4 border-cyan-400 opacity-60 animate-ping" />
                     <div className="absolute inset-2 rounded-full border-2 border-cyan-200 opacity-80 animate-ping" style={{ animationDelay: '0.1s' }} />
@@ -324,11 +324,6 @@ export default function BattleField({
                         }} />
                     ))}
                   </div>
-                )}
-                {ef.cardId === 'packageFireSystem' && (
-                  <div
-                    className="absolute -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-purple-500/40 animate-radar-pulse"
-                  />
                 )}
                 {ef.cardId === 'inertGasSystem' && (
                   <div className="absolute -translate-x-1/2 -translate-y-1/2 w-[60px] h-[60px] pointer-events-none">

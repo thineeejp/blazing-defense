@@ -92,6 +92,17 @@ export default function BlazingDefense() {
   const [prevCost, setPrevCost] = useState(0);               // コスト変動検出用
   const lastCostRef = useRef(cost);                          // 直前コスト保持
 
+  // 戦闘エフェクトのクリア処理
+  const clearBattleFx = () => {
+    setEffects([]);
+    setAttackEffects([]);
+    setHitEffects([]);
+    setDeathEffects([]);
+    setPlacementEffects([]);
+    setAreaEffects([]);
+    setScorchMarks([]);
+  };
+
   const [selectedMission, setSelectedMission] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
   const [removeModal, setRemoveModal] = useState(null);
@@ -146,15 +157,104 @@ export default function BlazingDefense() {
   const globalBuffsRef = useRef({ speed: 0 });
   const evacuatedCountRef = useRef(0);
 
+  // グローバルバフのキャッシュ（タワー変更時のみ再計算）
+  const staticBuffsRef = useRef({
+    recovery: 0.083,      // 基本コスト回復
+    evacBoost: 0,         // 避難速度ブースト
+    hpRegen: 0,           // HP回復
+    globalSpeedBuff: 0,   // 攻撃速度バフ
+    globalSlowDebuff: 0,  // 敵速度デバフ
+    globalPowerBuff: 0,   // 攻撃力バフ
+    globalCostReduction: 0, // コスト割引
+  });
+
   // --- Handlers ---
 
+  // タワー配置/削除時に呼び出すグローバルバフ再計算関数
+  const recalculateStaticBuffs = (currentTowers) => {
+    let recovery = 0.083;
+    let evacBoost = 0;
+    let hpRegen = 0;
+    let globalSpeedBuff = 0;
+    let globalSlowDebuff = 0;
+    let globalPowerBuff = 0;
+    let globalCostReduction = 0;
+
+    Object.values(currentTowers).forEach((t) => {
+      const card = t.card;
+      if (!card.effect) return;
+
+      switch (card.effect) {
+        case 'economy':
+          recovery += card.value;
+          break;
+        case 'economyAndEvacuation':
+          recovery += card.economyValue;
+          evacBoost += card.evacuationValue;
+          break;
+        case 'economyWithTransform':
+          recovery += card.value;
+          break;
+        case 'evacuation':
+          evacBoost += card.value;
+          break;
+        case 'evacuationWithRegen':
+          evacBoost += card.evacuationValue;
+          hpRegen += card.regenValue;
+          break;
+        case 'evacuationWithRegenAndBuff':
+          evacBoost += card.evacuationValue;
+          hpRegen += card.regenValue;
+          globalSpeedBuff += card.globalSpeedBuff;
+          break;
+        case 'globalSpeedBuffWithRegen':
+          globalSpeedBuff += card.speedBuff;
+          hpRegen += card.regenValue;
+          break;
+        case 'globalSlowWithEvacuation':
+          globalSlowDebuff += card.slowValue;
+          evacBoost += card.evacuationValue;
+          break;
+        case 'firefighterSupport':
+          globalSpeedBuff += card.globalSpeedBuff;
+          globalCostReduction += card.costReduction;
+          break;
+        case 'ultimateBuff':
+          globalPowerBuff += card.globalPowerBuff;
+          globalSpeedBuff += card.globalSpeedBuff;
+          evacBoost += card.evacuationValue;
+          hpRegen += card.regenValue;
+          break;
+      }
+    });
+
+    // 上限チェック（敵が完全停止しないように）
+    globalSlowDebuff = Math.min(globalSlowDebuff, 0.75);
+
+    staticBuffsRef.current = {
+      recovery,
+      evacBoost,
+      hpRegen,
+      globalSpeedBuff,
+      globalSlowDebuff,
+      globalPowerBuff,
+      globalCostReduction,
+    };
+
+    // 既存のglobalBuffsRef更新
+    globalBuffsRef.current = { speed: globalSpeedBuff, power: globalPowerBuff };
+    setGlobalCostReduction((prev) => (prev === globalCostReduction ? prev : globalCostReduction));
+  };
+
   const handleBackToTitle = () => {
+    clearBattleFx();
     // Reset minimal state for a fresh start from menu
     setPhase('MENU');
     setIsPaused(false);
   };
 
   const handleSurrender = () => {
+    clearBattleFx();
     setIsVictory(false);
     setPhase('GAMEOVER');
   };
@@ -194,69 +294,12 @@ export default function BlazingDefense() {
   }, [phase, isPaused]);
 
   const updateBattleLogic = () => {
-    // effect処理（全13種類に対応）
-    let recovery = 0.083;
-    let evacBoost = 0;
-    let hpRegen = 0;
-    let globalSpeedBuff = 0;
-    let globalSlowDebuff = 0;
-    let globalPowerBuff = 0;
-    let globalCostReduction = 0;
-
-    Object.values(towersRef.current).forEach((t) => {
-      const card = t.card;
-      if (!card.effect) return;
-
-      switch (card.effect) {
-        case 'economy':
-          recovery += card.value;
-          break;
-        case 'economyAndEvacuation':
-          recovery += card.economyValue;
-          evacBoost += card.evacuationValue;
-          break;
-        case 'economyWithTransform':
-          recovery += card.value;
-          break;
-        case 'evacuation':
-          evacBoost += card.value;
-          break;
-        case 'evacuationWithRegen':
-          evacBoost += card.evacuationValue;
-          hpRegen += card.regenValue;
-          break;
-        case 'evacuationWithRegenAndBuff':
-          evacBoost += card.evacuationValue;
-          hpRegen += card.regenValue;
-          globalSpeedBuff += card.globalSpeedBuff;
-          break;
-        case 'buffPower':
-          // 周囲バフは攻撃計算時に処理
-          break;
-        case 'globalSpeedBuffWithRegen':
-          globalSpeedBuff += card.speedBuff;
-          hpRegen += card.regenValue;
-          break;
-        case 'globalSlowWithEvacuation':
-          globalSlowDebuff += card.slowValue;
-          evacBoost += card.evacuationValue;
-          break;
-        case 'firefighterSupport':
-          globalSpeedBuff += card.globalSpeedBuff;
-          globalCostReduction += card.costReduction;
-          break;
-        case 'ultimateBuff':
-          globalPowerBuff += card.globalPowerBuff;
-          globalSpeedBuff += card.globalSpeedBuff;
-          evacBoost += card.evacuationValue;
-          hpRegen += card.regenValue;
-          break;
-      }
-    });
-
-    // グローバルバフを保存（攻撃間隔・UI用）
-    globalBuffsRef.current = { speed: globalSpeedBuff, power: globalPowerBuff };
-    setGlobalCostReduction((prev) => (prev === globalCostReduction ? prev : globalCostReduction));
+    // キャッシュから取得（毎フレームのタワーループを削除）
+    const {
+      recovery,
+      evacBoost,
+      hpRegen,
+    } = staticBuffsRef.current;
 
     // コスト回復適用
     setCost((c) => Math.min(MAX_COST, c + recovery));
@@ -316,7 +359,7 @@ export default function BlazingDefense() {
         // 安全ガード: sizeが異常値でも0除算を防ぐ
         const sizeSlow = e.size >= 3 ? 2.0 : Math.max(0.1, 1 + (e.size - 1) * 0.6);
         // globalSlowDebuff適用（smokeControl等の減速効果）
-        const actualSpeed = e.speed * (1 - globalSlowDebuff) * (1 - (e.slowValue || 0));
+        const actualSpeed = e.speed * (1 - staticBuffsRef.current.globalSlowDebuff) * (1 - (e.slowValue || 0));
         let newProgress = isNaN(e.progress) || !isFinite(e.progress) ? -1 : e.progress + actualSpeed / sizeSlow;
         const enemyRow = Math.floor(e.progress + e.size / 2);
         if (blockedRows.has(enemyRow)) {
@@ -419,6 +462,7 @@ export default function BlazingDefense() {
     });
 
     const newTowers = { ...towersRef.current };
+    let towerStructureChanged = false;
     Object.keys(newTowers).forEach((key) => {
       const t = { ...newTowers[key] };
       newTowers[key] = t;
@@ -436,6 +480,7 @@ export default function BlazingDefense() {
       if (t.card.duration !== null && t.lifeTime >= t.card.duration) {
         delete newTowers[key];
         addEffect(tc + 0.5, tr + 0.5, '停止！', 'text-gray-400');
+        towerStructureChanged = true;
         return;
       }
 
@@ -445,37 +490,11 @@ export default function BlazingDefense() {
         if (fireEngine) {
           newTowers[key] = { card: fireEngine, timer: 0, lifeTime: 0 };
           addEffect(tc, tr, '🚒 出動！', 'text-red-500 font-bold');
+          towerStructureChanged = true;
         }
       }
 
       // 攻撃可能カード（power定義あり）のみ攻撃処理
-      if (t.card.effect === 'areaDotWithSlow') {
-        t.aoeTimer = (t.aoeTimer || 0) + 1;
-        if (t.aoeTimer >= 60) {
-          t.aoeTimer = 0;
-          setEnemies((prev) =>
-            prev
-              .map((e) => {
-                const eCenterR = e.progress + e.size / 2;
-                const eCenterC = e.c + e.size / 2;
-                const distR = Math.abs(eCenterR - (tr + 0.5));
-                const distC = Math.abs(eCenterC - (tc + 0.5));
-                if (distR < e.size / 2 + 1.5 && distC < e.size / 2 + 1.5) {
-                  const newSlow = Math.max(e.slowValue || 0, t.card.slowValue || 0);
-                  return {
-                    ...e,
-                    hp: e.hp - t.card.dotDamage,
-                    slowValue: newSlow,
-                    slowTimer: Math.max(e.slowTimer || 0, 60),
-                  };
-                }
-                return e;
-              })
-              .filter((e) => e.hp > 0 || e.isAttacking)
-          );
-        }
-      }
-
       if (t.card.power !== undefined && t.card.power > 0) {
         const triggerTime = Math.max(1, t.card.speed / (1 + (globalBuffsRef.current.speed || 0)));
         t.lastInterval = triggerTime;
@@ -485,6 +504,12 @@ export default function BlazingDefense() {
         }
       }
     });
+
+    // タワー構造が変化した場合のみ再計算
+    if (towerStructureChanged) {
+      recalculateStaticBuffs(newTowers);
+    }
+
     // タイマー進行を反映させるため毎フレーム更新
     setTowers(newTowers);
     towersRef.current = newTowers;
@@ -622,13 +647,9 @@ export default function BlazingDefense() {
           // オーバーフロー報酬の攻撃力バフを適用
           const powerBuff = categoryBuffs[card.category]?.powerBuff || 0;
 
-          // globalPowerBuffとstandpipeの周囲バフを計算
-          let globalPowerBuff = 0;
+          // standpipeの周囲バフを計算（globalPowerBuffはキャッシュ済み）
           let localPowerBuff = 0;
           Object.entries(towersRef.current).forEach(([bKey, bTower]) => {
-            if (bTower.card.effect === 'ultimateBuff') {
-              globalPowerBuff += bTower.card.globalPowerBuff || 0;
-            }
             if (bTower.card.effect === 'buffPower') {
               const [br, bc] = bKey.split('-').map(Number);
               const distR = Math.abs(br - tr);
@@ -639,6 +660,7 @@ export default function BlazingDefense() {
             }
           });
 
+          const globalPowerBuff = staticBuffsRef.current.globalPowerBuff;
           let dmg = card.power * (1 + powerBuff + globalPowerBuff + localPowerBuff);
           let knockback = 0;
           let effectSize = 'normal';
@@ -851,7 +873,11 @@ export default function BlazingDefense() {
 
       if (cost >= actualCost) {
         setCost((val) => val - actualCost);
-        setTowers((prev) => ({ ...prev, [key]: { card: selectedCard, timer: 0, isNew: true } }));
+        setTowers((prev) => {
+          const newTowers = { ...prev, [key]: { card: selectedCard, timer: 0, isNew: true } };
+          recalculateStaticBuffs(newTowers);
+          return newTowers;
+        });
         // 設置エフェクトを追加（タワー中心座標）
         const placeColors = { red: 'border-red-400', yellow: 'border-yellow-400', green: 'border-green-400', blue: 'border-blue-400', purple: 'border-purple-400' };
         addPlacementEffect(r + 0.5, c + 0.5, placeColors[selectedCard.type] || 'border-cyan-400');
@@ -873,6 +899,7 @@ export default function BlazingDefense() {
         setTowers((prev) => {
           const copy = { ...prev };
           delete copy[key];
+          recalculateStaticBuffs(copy);
           return copy;
         });
       }, 300);
@@ -914,6 +941,7 @@ export default function BlazingDefense() {
   };
 
   const handleRetry = () => {
+    clearBattleFx();
     // BRIEFINGシステムの初期化
     setTiers({
       fire: 1,
@@ -1095,6 +1123,7 @@ export default function BlazingDefense() {
     lastCostRef.current = deckBuildState.remainingCost;
     setHp(INITIAL_HP);
     setTowers({});
+    recalculateStaticBuffs({});
     setEnemies([]);
     setEffects([]);
     setAttackEffects([]);

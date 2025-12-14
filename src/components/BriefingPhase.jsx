@@ -123,9 +123,6 @@ export default function BriefingPhase({
                   QUESTION {currentQIndex + 1} / 3
                 </div>
               </div>
-              <div className="bg-slate-800 px-3 py-1 rounded text-xs font-bold text-slate-300">
-                {currentQuiz.tag}
-              </div>
             </div>
 
             <p className="text-xl md:text-2xl font-bold mb-8 leading-relaxed">
@@ -170,9 +167,6 @@ export default function BriefingPhase({
                 <div className="text-sm text-slate-400 font-mono">
                   QUESTION {currentQIndex + 1} / 3
                 </div>
-              </div>
-              <div className="bg-slate-800 px-3 py-1 rounded text-xs font-bold text-slate-300">
-                {currentQuiz.tag}
               </div>
             </div>
 

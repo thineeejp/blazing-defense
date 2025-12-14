@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, AlertTriangle, Award, Sword, HelpCircle, X, ChevronRight } from 'lucide-react';
+import { Play, AlertTriangle, Award, Sword, HelpCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameBackground from './ui/GameBackground';
 import GlassCard from './ui/GlassCard';
