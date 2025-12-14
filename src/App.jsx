@@ -150,6 +150,7 @@ export default function BlazingDefense() {
   const [clearTime, setClearTime] = useState(0);
   const [globalCostReduction, setGlobalCostReduction] = useState(0);
 
+  const prevPhaseRef = useRef(phase);
   const frameRef = useRef(0);
   const gameLoopRef = useRef(null);
   const towersRef = useRef(towers);
@@ -253,6 +254,11 @@ export default function BlazingDefense() {
     setIsPaused(false);
   };
 
+  const handleBackToMenu = () => {
+    clearBattleFx();
+    setPhase('MENU');
+  };
+
   const handleSurrender = () => {
     clearBattleFx();
     setIsVictory(false);
@@ -276,6 +282,15 @@ export default function BlazingDefense() {
     setPrevCost(lastCostRef.current);
     lastCostRef.current = cost;
   }, [cost]);
+
+  // フェーズ遷移時のエフェクトクリア（BATTLE→他フェーズ）
+  useEffect(() => {
+    const prev = prevPhaseRef.current;
+    if (prev === 'BATTLE' && phase !== 'BATTLE') {
+      clearBattleFx();
+    }
+    prevPhaseRef.current = phase;
+  }, [phase]);
 
   useEffect(() => {
     if (phase !== 'BATTLE' || isPaused) {
@@ -1130,6 +1145,7 @@ export default function BlazingDefense() {
     setHitEffects([]);
     setDeathEffects([]);
     setPlacementEffects([]);
+    setAreaEffects([]);
     setScorchMarks([]);
     setSelectedCard(null);
     setIsPaused(false);
@@ -1235,7 +1251,7 @@ export default function BlazingDefense() {
           difficulty={selectedMission?.difficulty || 'NORMAL'}
           deck={deck}
           cost={cost}
-          onBackToMenu={() => setPhase('MENU')}
+          onBackToMenu={handleBackToMenu}
           onRetry={handleRetry}
         />
       )}
