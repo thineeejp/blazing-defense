@@ -158,6 +158,11 @@ export default function BlazingDefense() {
   const globalBuffsRef = useRef({ speed: 0 });
   const evacuatedCountRef = useRef(0);
 
+  // StrictMode対策: ゲームループ二重起動防止
+  const loopRunningRef = useRef(false);
+  // ダメージイベントの一時保存（副作用をsetEnemiesの外に出すため）
+  const pendingDamageEventsRef = useRef({ frame: -1, events: [] });
+
   // グローバルバフのキャッシュ（タワー変更時のみ再計算）
   const staticBuffsRef = useRef({
     recovery: 0.083,      // 基本コスト回復
@@ -295,8 +300,13 @@ export default function BlazingDefense() {
   useEffect(() => {
     if (phase !== 'BATTLE' || isPaused) {
       if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
+      loopRunningRef.current = false; // ループ停止時にリセット
       return;
     }
+
+    // StrictMode対策: 既にループが走っていたら何もしない
+    if (loopRunningRef.current) return;
+    loopRunningRef.current = true;
 
     const loop = () => {
       frameRef.current += 1;
@@ -304,7 +314,11 @@ export default function BlazingDefense() {
       gameLoopRef.current = requestAnimationFrame(loop);
     };
     gameLoopRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(gameLoopRef.current);
+
+    return () => {
+      loopRunningRef.current = false;
+      cancelAnimationFrame(gameLoopRef.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, isPaused]);
 
@@ -458,28 +472,39 @@ export default function BlazingDefense() {
         }
       }
 
-      // 敗北判定
+      // ダメージイベントをrefに保存（副作用はsetEnemiesの外で処理）
+      // 空の場合は上書きしない（2回目のsetEnemies実行で1回目のイベントが消えないように）
       if (damageEvents.length > 0) {
-        const totalDamage = damageEvents.reduce((acc, ev) => acc + ev.damage, 0);
-        setHp((h) => {
-          const val = h - totalDamage;
-          if (val <= 0) {
-            setIsVictory(false);
-            setPhase('GAMEOVER');
-          }
-          return val;
-        });
-        setDamaged(true);
-        setTimeout(() => setDamaged(false), 200);
-        damageEvents.forEach((ev) => {
-          setScorchMarks((prev) => [...prev, { id: Math.random(), c: ev.c, life: 90 }]);
-        });
-        damageEvents.forEach((ev) => {
-          addEffect(ev.c, GRID_ROWS - 0.5, `BREAK! -${ev.damage}`, 'text-red-600 font-black text-2xl');
-        });
+        pendingDamageEventsRef.current = { frame: frameRef.current, events: damageEvents };
       }
       return next;
     });
+
+    // ダメージイベントの処理（setEnemiesの外で副作用を実行）
+    const pending = pendingDamageEventsRef.current;
+    if (pending.events.length > 0) {
+      const damageEvents = pending.events;
+      // 処理後にクリア（次フレームで同じイベントを処理しないように）
+      pendingDamageEventsRef.current = { frame: -1, events: [] };
+
+      const totalDamage = damageEvents.reduce((acc, ev) => acc + ev.damage, 0);
+      setHp((h) => {
+        const val = h - totalDamage;
+        if (val <= 0) {
+          setIsVictory(false);
+          setPhase('GAMEOVER');
+        }
+        return val;
+      });
+      setDamaged(true);
+      setTimeout(() => setDamaged(false), 200);
+      damageEvents.forEach((ev) => {
+        setScorchMarks((prev) => [...prev, { id: Math.random(), c: ev.c, life: 90 }]);
+      });
+      damageEvents.forEach((ev) => {
+        addEffect(ev.c, GRID_ROWS - 0.5, `BREAK! -${ev.damage}`, 'text-red-600 font-black text-2xl');
+      });
+    }
 
     const newTowers = { ...towersRef.current };
     let towerStructureChanged = false;
@@ -563,8 +588,8 @@ export default function BlazingDefense() {
     const c = Math.floor(Math.random() * cols);
     const types = [
       { hp: 20, speed: 0.018, color: 'text-red-500', name: 'A火災', fireType: 'A' },
-      { hp: 40, speed: 0.015, color: 'text-orange-500', name: 'B火災(油)', fireType: 'B' },
-      { hp: 15, speed: 0.04, color: 'text-yellow-400', name: 'C火災(電気)', fireType: 'C' },
+      { hp: 40, speed: 0.015, color: 'text-yellow-400', name: 'B火災(油)', fireType: 'B' },
+      { hp: 15, speed: 0.04, color: 'text-blue-400', name: 'C火災(電気)', fireType: 'C' },
     ];
 
     // 難易度ごとの出現率（重み付け）
@@ -822,7 +847,7 @@ export default function BlazingDefense() {
 
   // 死亡エフェクト追加（敵撃破時のパーティクル）
   const addDeathEffect = (r, c, fireType) => {
-    const colors = { A: 'bg-red-500', B: 'bg-orange-500', C: 'bg-yellow-400' };
+    const colors = { A: 'bg-red-500', B: 'bg-yellow-400', C: 'bg-blue-400' };
     const id = Math.random();
     setDeathEffects((prev) => [...prev, { id, r, c, color: colors[fireType] || 'bg-red-500', life: 36 }]);
   };

@@ -49,7 +49,7 @@ export const ALL_CARDS = {
     power: 4,
     speed: 50,
     damageType: 'water',
-    knockback: 0.3,  // 0.1 → 0.3 に強化
+    knockback: 0.2,
   },
 
   sprinkler: {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, AlertTriangle, Award, Sword, HelpCircle, X } from 'lucide-react';
+import { Play, AlertTriangle, Award, Sword, HelpCircle, X, Flame, Bell, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameBackground from './ui/GameBackground';
 import GlassCard from './ui/GlassCard';
@@ -181,7 +181,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-6xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
             >
               <div className="flex justify-between items-center p-6 border-b border-slate-700 bg-slate-800">
                 <h2 className="text-2xl font-black font-orbitron text-white tracking-wider flex items-center gap-3">
@@ -229,17 +229,35 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                   </div>
                   <div className="flex-1 pb-8 border-b border-slate-800">
                     <h3 className="text-xl font-bold text-yellow-400 mb-2 font-orbitron">DECK BUILD PHASE</h3>
-                    <p className="text-slate-300 mb-4">
-                      現場に持ち込む装備（ユニット）を選定するフェーズです。<br />
-                      最大6つまで選択可能です。トータルコストの上限に注意してください。
-                    </p>
-                    <div className="bg-slate-950 p-4 rounded border border-slate-800 flex items-center gap-4">
-                      <div className="flex gap-2">
-                        {[1, 2, 3].map(i => <div key={i} className="w-8 h-10 bg-slate-800 rounded border border-slate-700" />)}
+                    <div className="flex gap-3">
+                      {/* 左側: 説明文 */}
+                      <div className="flex-1">
+                        <p className="text-slate-300 mb-4">
+                          現場に持ち込む装備（ユニット）を選定するフェーズです。<br />
+                          最大6つまで選択可能です。トータルコストの上限に注意してください。<br />
+                          <span className="text-slate-400">強力なユニットほどコストが高い</span>ため、<span className="text-yellow-400">予算内で最適な組み合わせ</span>を選びましょう。
+                        </p>
                       </div>
-                      <div className="text-sm text-slate-400">
-                        <p>強力なユニットほどコストが高い</p>
-                        <p className="text-yellow-400">予算内で最適な組み合わせを！</p>
+                      {/* 右側: カードスロット */}
+                      <div className="flex-none">
+                        <div className="flex gap-1.5">
+                          {[
+                            { id: 1, icon: Flame, color: 'text-red-400' },
+                            { id: 2, icon: Bell, color: 'text-yellow-400' },
+                            { id: 3, icon: Users, color: 'text-green-400' },
+                            { id: 4, icon: null, color: null },
+                            { id: 5, icon: null, color: null },
+                            { id: 6, icon: null, color: null },
+                          ].map(slot => (
+                            <div key={slot.id} className="w-10 h-14 bg-slate-800 rounded border border-slate-700 flex items-center justify-center">
+                              {slot.icon ? (
+                                <slot.icon size={16} className={slot.color} />
+                              ) : (
+                                <span className="text-slate-600 text-[10px]">{slot.id}</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -254,21 +272,47 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                     <h3 className="text-xl font-bold text-red-400 mb-2 font-orbitron">BATTLE PHASE</h3>
                     <p className="text-slate-300 mb-4">
                       迫りくる火災や危険から拠点を防衛し、避難完了を目指すフェーズです。<br />
-                      コストを使用してユニットを配置し、敵（炎）を撃退してください。
+                      コストを使用してユニットを配置し、敵（炎）を撃退してください。<br />
+                      <span className="text-red-400">HPが0になると敗北</span>、<span className="text-yellow-400">避難完了 または 制限時間経過で勝利</span>となります。
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="flex items-center gap-3 bg-slate-950 p-3 rounded border border-slate-800">
-                        <Sword size={20} className="text-red-500" />
-                        <div>
-                          <div className="text-white font-bold">防衛</div>
-                          <div className="text-slate-500 text-xs">HPが0になると敗北</div>
+
+                    {/* 敵のタイプと相性 */}
+                    <div className="mt-6 pt-6 border-t border-slate-800">
+                      <h4 className="text-lg font-bold text-cyan-300 mb-4">敵のタイプと相性</h4>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* A火災 */}
+                        <div className="p-3 bg-slate-800/50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <span className="font-bold text-red-400">A火災（標準火災）</span>
+                          </div>
+                          <p className="text-xs text-slate-300">
+                            最も一般的な火災。すべての消火設備が通常効果を発揮します。
+                          </p>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3 bg-slate-950 p-3 rounded border border-slate-800">
-                        <Award size={20} className="text-yellow-500" />
-                        <div>
-                          <div className="text-white font-bold">勝利条件</div>
-                          <div className="text-slate-500 text-xs">避難完了 または 制限時間経過</div>
+
+                        {/* B火災 */}
+                        <div className="p-3 bg-slate-800/50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                            <span className="font-bold text-yellow-400">B火災（油火災）</span>
+                          </div>
+                          <p className="text-xs text-slate-300">
+                            耐久力が高い。<span className="text-red-400 font-bold">水攻撃は効果半減</span>、
+                            <span className="text-green-400 font-bold">泡攻撃は2倍効果</span>
+                          </p>
+                        </div>
+
+                        {/* C火災 */}
+                        <div className="p-3 bg-slate-800/50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                            <span className="font-bold text-blue-400">C火災（電気火災）</span>
+                          </div>
+                          <p className="text-xs text-slate-300">
+                            移動速度が速い。<span className="text-green-400 font-bold">ガス攻撃は1.5倍効果</span>
+                          </p>
                         </div>
                       </div>
                     </div>
