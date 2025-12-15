@@ -1,4 +1,5 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Flame, ShieldAlert, Zap, AlertTriangle, Skull, Users } from 'lucide-react';
 import GlassCard from './ui/GlassCard';
 
