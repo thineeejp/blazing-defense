@@ -709,7 +709,7 @@ export default function BattleField({
       </div>
 
       {/* Deck (Bottom) */}
-      <div className={`h-40 z-30 flex flex-col px-4 py-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent ${deckFlash ? 'ring-2 ring-cyan-400/60 rounded-xl' : ''}`}>
+      <div className="h-40 z-30 flex flex-col px-4 py-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
         {/* Deck Cards Container */}
         <div className="flex-1 flex items-center justify-center">
           {/* Deck Cards */}
