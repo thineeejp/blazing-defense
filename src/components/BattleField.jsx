@@ -71,6 +71,7 @@ export default function BattleField({
   const [deckFlash, setDeckFlash] = useState(false);
   useEffect(() => {
     if (selectedCard) {
+      setHoverCell(null);  // カード選択時にホバー状態をクリア（シアン横線除去）
       setDeckFlash(true);
       const t = setTimeout(() => setDeckFlash(false), 200);
       return () => clearTimeout(t);
@@ -719,18 +720,37 @@ export default function BattleField({
               const hasDiscount = discount > 0;
 
               return (
-                <button
+                <motion.button
                   key={card.id}
                   onClick={() => cost >= actualCost && setSelectedCard(card)}
                   disabled={cost < actualCost}
                   className={`
-                relative flex-shrink-0 w-24 h-28 rounded-xl border border-white/10 flex flex-col items-center justify-center transition-all group
+                relative flex-shrink-0 w-24 h-28 rounded-xl border border-white/10 flex flex-col items-center justify-center group
                 ${selectedCard?.id === card.id
-                      ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)] scale-110'
-                      : 'bg-slate-800/80 hover:bg-slate-700 hover:-translate-y-2'}
+                      ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)]'
+                      : 'bg-slate-800/80'}
                 ${cost < actualCost ? 'opacity-40 grayscale cursor-not-allowed' : ''}
                 ${selectedCard && selectedCard.id !== card.id ? 'opacity-60' : ''}
               `}
+                  animate={{
+                    scale: selectedCard?.id === card.id ? 1.1 : 1,
+                    y: 0,
+                    rotateY: 0,
+                  }}
+                  whileHover={cost >= actualCost ? {
+                    y: -8,
+                    rotateY: 5,
+                    transition: { type: 'spring', stiffness: 300, damping: 20 }
+                  } : {}}
+                  whileTap={cost >= actualCost ? {
+                    scale: 0.95,
+                    transition: { duration: 0.1 }
+                  } : {}}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 260,
+                    damping: 20,
+                  }}
                 >
                   <div
                     className={`mb-1 transition-transform group-hover:scale-110 ${card.type === 'red'
@@ -768,7 +788,7 @@ export default function BattleField({
                       -{Math.floor(discount * 100)}%
                     </div>
                   )}
-                </button>
+                </motion.button>
               );
             })}
           </div>
