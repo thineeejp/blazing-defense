@@ -753,6 +753,16 @@ export default function BattleField({
                     damping: 20,
                   }}
                 >
+                  {/* 選択時のグロー効果 */}
+                  {selectedCard?.id === card.id && (
+                    <motion.div
+                      className="absolute inset-0 rounded-xl border-2 border-cyan-400"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: [0.5, 1, 0.5], scale: 1 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                  )}
+
                   <div
                     className={`mb-1 transition-transform group-hover:scale-110 ${card.type === 'red'
                       ? 'text-red-400'
