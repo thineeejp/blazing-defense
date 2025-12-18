@@ -15,9 +15,9 @@ export default function Achievements({ onBack }) {
   const progress = getAchievementProgress();
 
   return (
-    <GameBackground className="flex flex-col items-center justify-start p-8 overflow-y-auto">
+    <GameBackground className="flex flex-col items-center justify-start pt-6 px-6 pb-24 h-screen overflow-y-auto">
       {/* ヘッダー */}
-      <div className="w-full max-w-6xl mb-8">
+      <div className="w-full max-w-5xl mb-6">
         <button
           onClick={onBack}
           className="mb-4 px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-white font-bold rounded-lg transition-colors border border-white/10"
@@ -27,7 +27,7 @@ export default function Achievements({ onBack }) {
 
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="font-orbitron text-5xl font-black text-white mb-2">
+            <h1 className="font-orbitron text-4xl font-black text-white mb-2">
               ACHIEVEMENTS
             </h1>
             <p className="text-slate-400 text-sm">
@@ -37,7 +37,7 @@ export default function Achievements({ onBack }) {
 
           {/* 達成率表示 */}
           <div className="text-right">
-            <div className="text-4xl font-orbitron font-black text-cyan-300">
+            <div className="text-3xl font-orbitron font-black text-cyan-300">
               {progress.percentage}%
             </div>
             <div className="text-slate-400 text-sm">
@@ -56,7 +56,7 @@ export default function Achievements({ onBack }) {
       </div>
 
       {/* 実績グリッド */}
-      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {ACHIEVEMENTS.map((achievement, index) => {
           const isUnlocked = data.achievements[achievement.id]?.unlocked || false;
           const unlockedAt = data.achievements[achievement.id]?.unlockedAt;
@@ -86,16 +86,16 @@ function AchievementCard({ achievement, isUnlocked, unlockedAt, index }) {
   // 未解除の場合はロックアイコンと暗い表示
   const unlockDate = unlockedAt
     ? new Date(unlockedAt).toLocaleDateString('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      })
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
     : null;
 
   return (
     <GlassCard
       className={`
-        relative p-6 transition-all duration-300
+        relative p-5 transition-all duration-300
         ${isUnlocked ? `${rarity.border} ${rarity.glow} border-2` : 'border border-slate-700 opacity-60'}
         animate-slideUpFade
       `}
@@ -115,7 +115,7 @@ function AchievementCard({ achievement, isUnlocked, unlockedAt, index }) {
       <div className="flex items-center justify-center mb-4">
         <div
           className={`
-            w-20 h-20 rounded-full flex items-center justify-center
+            w-16 h-16 rounded-full flex items-center justify-center
             ${isUnlocked ? rarity.bg : 'bg-slate-800/50'}
             ${isUnlocked ? rarity.border : 'border-slate-700'}
             border-2
@@ -123,11 +123,11 @@ function AchievementCard({ achievement, isUnlocked, unlockedAt, index }) {
         >
           {isUnlocked ? (
             <Icon
-              size={40}
+              size={32}
               className={isUnlocked ? rarity.text : 'text-slate-600'}
             />
           ) : (
-            <Lock size={40} className="text-slate-600" />
+            <Lock size={32} className="text-slate-600" />
           )}
         </div>
       </div>
@@ -135,7 +135,7 @@ function AchievementCard({ achievement, isUnlocked, unlockedAt, index }) {
       {/* タイトル */}
       <h3
         className={`
-          text-xl font-bold text-center mb-2
+          text-lg font-bold text-center mb-2
           ${isUnlocked ? 'text-white' : 'text-slate-500'}
         `}
       >
@@ -145,7 +145,7 @@ function AchievementCard({ achievement, isUnlocked, unlockedAt, index }) {
       {/* 説明 */}
       <p
         className={`
-          text-sm text-center mb-3
+          text-xs text-center mb-3
           ${isUnlocked ? 'text-slate-300' : 'text-slate-600'}
         `}
       >

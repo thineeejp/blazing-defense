@@ -8,20 +8,20 @@ export default function HighScores({ onBack }) {
   const highScores = loadHighScores();
 
   return (
-    <GameBackground className="flex flex-col items-center justify-start p-8 overflow-y-auto">
+    <GameBackground className="flex flex-col items-center justify-start pt-6 px-6 pb-24 h-screen overflow-y-auto">
       {/* Header */}
-      <div className="w-full max-w-6xl mb-8">
+      <div className="w-full max-w-5xl mb-6">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors mb-4"
         >
-          <ArrowLeft size={20} />
-          <span className="font-bold">BACK TO MENU</span>
+          <ArrowLeft size={18} />
+          <span className="font-bold text-sm">BACK TO MENU</span>
         </button>
 
         <div className="flex items-center gap-4 mb-2">
-          <Trophy size={48} className="text-yellow-400" />
-          <h1 className="font-orbitron text-5xl font-black text-white">
+          <Trophy size={38} className="text-yellow-400" />
+          <h1 className="font-orbitron text-4xl font-black text-white">
             HIGH SCORES
           </h1>
         </div>
@@ -29,10 +29,10 @@ export default function HighScores({ onBack }) {
       </div>
 
       {/* High Score List */}
-      <div className="w-full max-w-6xl space-y-6">
+      <div className="w-full max-w-5xl space-y-5">
         {highScores.length === 0 ? (
-          <GlassCard className="p-12 text-center">
-            <Trophy size={64} className="text-slate-600 mx-auto mb-4" />
+          <GlassCard className="p-10 text-center">
+            <Trophy size={56} className="text-slate-600 mx-auto mb-4" />
             <p className="text-slate-400 text-xl">まだ記録がありません。最初のミッションをクリアしましょう！</p>
           </GlassCard>
         ) : (
@@ -59,20 +59,20 @@ function HighScoreEntry({ entry, index }) {
 
   const difficultyColor =
     entry.difficulty === 'EASY' ? 'text-green-400' :
-    entry.difficulty === 'NORMAL' ? 'text-yellow-400' : 'text-red-400';
+      entry.difficulty === 'NORMAL' ? 'text-yellow-400' : 'text-red-400';
 
   const date = new Date(entry.timestamp);
   const dateStr = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
   return (
-    <GlassCard className={`p-6 ${rankBorderColor} border-2 animate-slideUpFade`} style={{ animationDelay: `${index * 100}ms` }}>
-      <div className="flex items-start gap-6">
+    <GlassCard className={`p-5 ${rankBorderColor} border-2 animate-slideUpFade`} style={{ animationDelay: `${index * 100}ms` }}>
+      <div className="flex items-start gap-5">
         {/* Rank Badge */}
-        <div className={`flex-shrink-0 w-20 h-20 rounded-full ${rankBgColor} border-2 ${rankBorderColor} flex flex-col items-center justify-center`}>
+        <div className={`flex-shrink-0 w-16 h-16 rounded-full ${rankBgColor} border-2 ${rankBorderColor} flex flex-col items-center justify-center`}>
           {index === 0 ? (
-            <Trophy size={32} className={rankColor} />
+            <Trophy size={24} className={rankColor} />
           ) : (
-            <Medal size={32} className={rankColor} />
+            <Medal size={24} className={rankColor} />
           )}
           <span className={`text-xs font-bold ${rankColor} mt-1`}>RANK {entry.rank}</span>
         </div>
@@ -82,7 +82,7 @@ function HighScoreEntry({ entry, index }) {
           {/* Score & Difficulty */}
           <div className="flex items-baseline justify-between mb-3">
             <div className="flex items-baseline gap-3">
-              <h2 className="font-orbitron text-4xl font-black text-cyan-300">
+              <h2 className="font-orbitron text-3xl font-black text-cyan-300">
                 {entry.score.toLocaleString()}
               </h2>
               <span className={`text-sm font-bold px-2 py-1 rounded bg-slate-800/50 border border-white/10 ${difficultyColor}`}>
@@ -124,7 +124,7 @@ function HighScoreEntry({ entry, index }) {
                     key={idx}
                     className="flex items-center gap-1 bg-slate-800/50 border border-white/10 rounded px-2 py-1"
                   >
-                    <IconComponent size={14} className="text-cyan-400" />
+                    <IconComponent size={12} className="text-cyan-400" />
                     <span className="text-white text-xs">{card.name}</span>
                   </div>
                 );
@@ -147,7 +147,7 @@ function StatItem({ icon: Icon, label, value }) {
         {Icon && <Icon size={12} />}
         <span>{label}</span>
       </div>
-      <span className="text-white font-mono font-bold text-lg">{value}</span>
+      <span className="text-white font-mono font-bold text-base">{value}</span>
     </div>
   );
 }

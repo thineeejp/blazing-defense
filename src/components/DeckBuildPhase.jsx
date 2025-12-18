@@ -38,7 +38,7 @@ export default function DeckBuildPhase({
     <GameBackground className="flex flex-col h-screen overflow-hidden">
       {/* Header */}
       <header className="flex-none pt-20 pb-4 px-4 z-10">
-        <div className="max-w-7xl mx-auto w-full relative">
+        <div className="max-w-6xl mx-auto w-full relative">
           {/* Back Button (Absolute Left) */}
           <button
             onClick={onBackToTitle}
@@ -49,10 +49,10 @@ export default function DeckBuildPhase({
 
           {/* Centered Title */}
           <div className="text-center w-full">
-            <h1 className="text-4xl md:text-5xl font-black font-orbitron text-white tracking-wider mb-2">
+            <h1 className="text-3xl md:text-4xl font-black font-orbitron text-white tracking-wider mb-2">
               <span className="text-cyan-400">{'///'}</span> DECK BUILD <span className="text-cyan-400">PHASE</span>
             </h1>
-            <p className="text-slate-400 text-sm font-mono tracking-widest">最大6つまで選択可能</p>
+            <p className="text-slate-400 text-xs font-mono tracking-widest">最大6つまで選択可能</p>
           </div>
 
           {/* Stats Card (Absolute Right - Adjusted) */}
@@ -66,7 +66,7 @@ export default function DeckBuildPhase({
               </div>
               <div className="relative">
                 <div className="absolute inset-0 bg-yellow-400/30 blur-xl rounded-full animate-pulse" />
-                <Zap className="text-yellow-400 relative z-10" size={24} />
+                <Zap className="text-yellow-400 relative z-10" size={20} />
               </div>
             </GlassCard>
           </div>
@@ -75,7 +75,7 @@ export default function DeckBuildPhase({
 
       {/* Card Grid */}
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-        <div className="max-w-7xl mx-auto pb-40">
+        <div className="max-w-6xl mx-auto pb-32">
           <motion.div
             layout
             className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4 mt-4"
@@ -116,7 +116,7 @@ export default function DeckBuildPhase({
       {/* Footer (Selected Deck) - Fixed Bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-none">
         {/* Gradient Fade */}
-        <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent" />
 
         <div className="relative max-w-7xl mx-auto p-4 flex flex-col items-center pointer-events-auto">
           {/* Deck List */}
@@ -133,7 +133,7 @@ export default function DeckBuildPhase({
                     <div
                       key={i}
                       className={`
-                        w-12 h-12 rounded-lg border flex items-center justify-center transition-all relative group
+                        w-10 h-10 rounded-lg border flex items-center justify-center transition-all relative group
                         ${card
                           ? 'bg-slate-800 border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
                           : 'bg-slate-900/50 border-slate-800 border-dashed'}
@@ -148,11 +148,11 @@ export default function DeckBuildPhase({
                             onClick={() => onSelectCard(card.id)}
                             className="absolute -top-2 -right-2 bg-red-500 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <X size={12} className="text-white" />
+                            <X size={10} className="text-white" />
                           </button>
                         </>
                       ) : (
-                        <div className="w-2 h-2 rounded-full bg-slate-800" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-800" />
                       )}
                     </div>
                   );
@@ -166,7 +166,7 @@ export default function DeckBuildPhase({
             onClick={onStartBattle}
             disabled={selectedCards.length === 0}
             className={`
-              w-full max-w-md py-4 mb-8 rounded-lg font-black text-xl font-orbitron tracking-[0.2em] transition-all shadow-xl
+              w-full max-w-md py-3 mb-4 rounded-lg font-black text-xl font-orbitron tracking-[0.2em] transition-all shadow-xl
               flex items-center justify-center gap-4 group overflow-hidden relative
               ${selectedCards.length > 0
                 ? 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-500/30'
@@ -238,7 +238,7 @@ function CardItemThumbnail({ card, isSelected, onClick }) {
       {/* Content */}
       <div className="flex-1 flex flex-col items-center justify-center p-2 relative z-0">
         <div className="mb-2 drop-shadow-[0_0_10px_currentColor] text-slate-200 group-hover:scale-110 transition-transform duration-500">
-          {React.createElement(card.icon, { size: 42 })}
+          {React.createElement(card.icon, { size: 34 })}
         </div>
 
         <div className="text-center w-full px-1">
@@ -288,7 +288,7 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
         onClick={e => e.stopPropagation()}
-        className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row h-[80vh] md:h-[600px]"
+        className="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row h-[70vh] md:h-[500px]"
       >
         {/* Left Side: Visual & Identity */}
         <div className="md:w-5/12 relative bg-slate-800 p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700 overflow-hidden group">
@@ -299,10 +299,10 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
           <div
             className="relative z-10 mb-8 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
           >
-            {React.createElement(card.icon, { size: 120, className: "text-white" })}
+            {React.createElement(card.icon, { size: 100, className: "text-white" })}
           </div>
 
-          <h2 className="relative z-10 text-3xl font-black text-white text-center font-orbitron tracking-wide mb-2">
+          <h2 className="relative z-10 text-2xl font-black text-white text-center font-orbitron tracking-wide mb-2">
             {card.name}
           </h2>
           <div className="relative z-10 px-3 py-1 bg-slate-700 rounded text-xs font-mono text-cyan-400 border border-cyan-500/30">
@@ -486,8 +486,8 @@ function RangeVisualizer({ rangeType }) {
   };
 
   return (
-    <div className="bg-slate-950 p-2 rounded border border-slate-800 inline-block shadow-inner">
-      <div className="grid grid-cols-5 gap-1">
+    <div className="bg-slate-950 p-1.5 rounded border border-slate-800 inline-block shadow-inner">
+      <div className="grid grid-cols-5 gap-0.5">
         {[...Array(gridSize * gridSize)].map((_, i) => {
           const r = Math.floor(i / gridSize);
           const c = i % gridSize;
@@ -498,7 +498,7 @@ function RangeVisualizer({ rangeType }) {
             <div
               key={i}
               className={`
-                   w-3 h-3 rounded-sm transition-all duration-300
+                   w-2.5 h-2.5 rounded-sm transition-all duration-300
                    ${isCenter ? 'bg-white shadow-[0_0_8px_white] z-10 scale-110' : ''}
                    ${active && !isCenter ? 'bg-cyan-500/50 shadow-[0_0_5px_rgba(6,182,212,0.5)]' : 'bg-slate-900'}
                    ${!isCenter && !active ? 'opacity-20' : ''}

@@ -25,8 +25,8 @@ export default function BriefingPhase({
   // CategorySelect: 5種別の選択画面
   if (phase === 'SELECT') {
     return (
-      <GameBackground className="flex flex-col items-center justify-center p-8">
-        <div className="max-w-6xl w-full animate-fadeIn">
+      <GameBackground className="flex flex-col items-center justify-center p-6">
+        <div className="max-w-5xl w-full animate-fadeIn">
           <div className="text-center mb-12 relative">
             <button
               onClick={onBackToTitle}
@@ -34,7 +34,7 @@ export default function BriefingPhase({
             >
               ← RETURN TO TITLE
             </button>
-            <h1 className="text-4xl md:text-5xl font-black font-orbitron text-white mb-2 tracking-wider">
+            <h1 className="text-3xl md:text-4xl font-black font-orbitron text-white mb-2 tracking-wider">
               BRIEFING <span className="text-cyan-400">PHASE</span>
             </h1>
             <div className="text-slate-300 text-sm mb-3">
@@ -63,14 +63,14 @@ export default function BriefingPhase({
                 <GlassCard
                   key={categoryId}
                   onClick={() => onSelectCategory(categoryId)}
-                  className={`p-6 flex flex-col items-center text-center animate-slideUpFade`}
+                  className={`p-5 flex flex-col items-center text-center animate-slideUpFade`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className={`mb-4 transition-transform duration-300 group-hover:scale-110 ${colorClass}`}>
-                    <Icon size={48} />
+                    <Icon size={38} />
                   </div>
 
-                  <div className="text-lg font-bold mb-2 font-orbitron">{tree.name}</div>
+                  <div className="text-base font-bold mb-2 font-orbitron">{tree.name}</div>
 
                   <div className="w-full bg-slate-800 h-2 rounded-full mb-2 overflow-hidden">
                     <div
@@ -129,12 +129,12 @@ export default function BriefingPhase({
               {currentQuiz.question}
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {currentQuiz.options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => onAnswerQuiz(index)}
-                  className="w-full p-6 text-left rounded-xl bg-slate-800/50 border border-slate-600 hover:border-cyan-400 hover:bg-cyan-900/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all group flex items-center"
+                  className="w-full p-5 text-left rounded-xl bg-slate-800/50 border border-slate-600 hover:border-cyan-400 hover:bg-cyan-900/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all group flex items-center"
                 >
                   <span className="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-4 group-hover:bg-cyan-500 group-hover:text-slate-900 transition-colors">
                     {String.fromCharCode(65 + index)}
@@ -195,7 +195,7 @@ export default function BriefingPhase({
                 return (
                   <div
                     key={index}
-                    className={`w-full p-6 rounded-xl border transition-all duration-500 flex items-center ${bgClass}`}
+                    className={`w-full p-5 rounded-xl border transition-all duration-500 flex items-center ${bgClass}`}
                   >
                     <span className="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-4">
                       {String.fromCharCode(65 + index)}
@@ -246,11 +246,11 @@ export default function BriefingPhase({
     const reward = correctCount === 3 ? 400 : correctCount * 100;
 
     return (
-      <GameBackground className="flex flex-col items-center justify-center p-8">
-        <div className="max-w-2xl w-full animate-slam">
-          <GlassCard className="p-8 text-center border-t-4 border-t-cyan-500" hoverEffect={false}>
-            <div className="mb-8">
-              <h2 className="text-4xl font-black font-orbitron italic text-white mb-2">
+      <GameBackground className="flex flex-col items-center justify-center p-6">
+        <div className="max-w-xl w-full animate-slam">
+          <GlassCard className="p-6 text-center border-t-4 border-t-cyan-500" hoverEffect={false}>
+            <div className="mb-5">
+              <h2 className="text-3xl font-black font-orbitron italic text-white mb-2">
                 ROUND COMPLETE
               </h2>
               <div className="text-cyan-400 font-mono tracking-widest">
@@ -258,9 +258,9 @@ export default function BriefingPhase({
               </div>
             </div>
 
-            <div className="bg-slate-800/50 rounded-xl p-6 mb-8 border border-white/5">
+            <div className="bg-slate-800/50 rounded-xl p-4 mb-5 border border-white/5">
               <div className="flex items-center justify-center gap-4 mb-4">
-                {React.createElement(tree.icon, { size: 48, className: `text-${tree.color}-400` })}
+                {React.createElement(tree.icon, { size: 40, className: `text-${tree.color}-400` })}
                 <div className="text-left">
                   <div className="text-sm text-slate-400 font-bold">TIER UPGRADE</div>
                   <div className="text-2xl font-bold font-orbitron">
@@ -294,7 +294,7 @@ export default function BriefingPhase({
 
             {/* 問題別結果セクション */}
             {answerHistory && answerHistory.length > 0 && (
-              <div className="bg-slate-800/50 rounded-xl p-6 mb-6 border border-white/5">
+              <div className="bg-slate-800/50 rounded-xl p-4 mb-6 border border-white/5">
                 <div className="text-sm text-slate-400 font-bold mb-4">問題別結果</div>
                 <div className="space-y-3">
                   {answerHistory.map((answer, idx) => (
@@ -321,20 +321,20 @@ export default function BriefingPhase({
               </div>
             )}
 
-            <div className="flex justify-center gap-8 mb-8">
+            <div className="flex justify-center gap-8 mb-6">
               <div className="text-center">
                 <div className="text-xs text-slate-400 font-bold mb-1">CORRECT</div>
-                <div className="text-3xl font-black text-white">{correctCount} / 3</div>
+                <div className="text-2xl font-black text-white">{correctCount} / 3</div>
               </div>
               <div className="text-center">
                 <div className="text-xs text-slate-400 font-bold mb-1">REWARD</div>
-                <div className="text-3xl font-black text-yellow-400">+{reward}</div>
+                <div className="text-2xl font-black text-yellow-400">+{reward}</div>
               </div>
             </div>
 
             <button
               onClick={round < 3 ? onFinishRound : onStartBattle}
-              className="w-full py-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:shadow-[0_0_30px_rgba(8,145,178,0.6)] flex items-center justify-center gap-2 group"
+              className="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:shadow-[0_0_30px_rgba(8,145,178,0.6)] flex items-center justify-center gap-2 group"
             >
               <span>{round < 3 ? 'NEXT ROUND' : 'PROCEED TO DECK BUILD'}</span>
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
