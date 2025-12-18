@@ -705,7 +705,7 @@ export default function BattleField({
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-[clamp(140px,20vh,180px)] z-30 flex flex-col px-4 pt-4 pb-2 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+      <div className="h-[clamp(155px,22vh,195px)] z-30 flex flex-col px-4 pt-4 pb-2 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
         {/* Deck Cards Container */}
         <div className="flex-1 flex items-center justify-center overflow-visible">
           {/* Deck Cards */}
@@ -730,12 +730,12 @@ export default function BattleField({
                 ${selectedCard && selectedCard.id !== card.id ? 'opacity-60' : ''}
               `}
                   animate={{
-                    scale: selectedCard?.id === card.id ? 1.1 : 1,
+                    scale: selectedCard?.id === card.id ? 1.05 : 1,
                     y: 0,
                     rotateY: 0,
                   }}
                   whileHover={cost >= actualCost ? {
-                    y: -8,
+                    y: -4,
                     rotateY: 5,
                     transition: { type: 'spring', stiffness: 300, damping: 20 }
                   } : {}}
