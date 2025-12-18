@@ -705,11 +705,11 @@ export default function BattleField({
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-[clamp(155px,22vh,195px)] z-30 flex flex-col px-4 pt-4 pb-2 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+      <div className="h-[clamp(165px,24vh,205px)] z-30 flex flex-col px-4 pt-3 pb-2 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
         {/* Deck Cards Container */}
         <div className="flex-1 flex items-center justify-center overflow-visible">
           {/* Deck Cards */}
-          <div className="flex items-center justify-center gap-2 overflow-x-auto overflow-y-visible w-full py-2">
+          <div className="flex items-center justify-center gap-2 overflow-x-auto overflow-y-visible w-full py-1">
             {Object.values(deck).map((card) => {
               // オーバーフロー報酬 + グローバル割引を反映したコスト計算
               const discount = (categoryBuffs[card.category]?.costDiscount || 0) + (globalCostReduction || 0);
