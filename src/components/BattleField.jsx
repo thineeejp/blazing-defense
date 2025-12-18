@@ -206,12 +206,8 @@ export default function BattleField({
       </div>
 
       {/* Main 3D Grid Area */}
-      <div className={`flex-1 relative flex items-center justify-center px-4 pt-4 pb-0 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
-        <div className="absolute top-20 text-red-600/40 font-black text-6xl select-none z-0 font-orbitron tracking-widest pointer-events-none animate-neon-pulse blur-[1px] drop-shadow-lg">
-          DANGER ZONE
-        </div>
-
-        <div className="relative w-full max-w-lg aspect-[3/4] transition-all duration-500" style={gridStyle}>
+      <div className={`flex-1 relative flex items-center justify-center px-4 pt-0 pb-2 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
+        <div className="relative w-full max-w-[410px] aspect-[3/4] transition-all duration-500" style={gridStyle}>
           {Array.from({ length: GRID_ROWS * difficulty.cols }).map((_, i) => {
             const r = Math.floor(i / difficulty.cols);
             const c = i % difficulty.cols;
@@ -709,11 +705,11 @@ export default function BattleField({
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-40 z-30 flex flex-col px-4 py-4 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+      <div className="h-[clamp(140px,20vh,180px)] z-30 flex flex-col px-4 pt-4 pb-2 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
         {/* Deck Cards Container */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center overflow-visible">
           {/* Deck Cards */}
-          <div className="flex items-center justify-center gap-3 overflow-x-auto overflow-y-visible w-full py-6">
+          <div className="flex items-center justify-center gap-2 overflow-x-auto overflow-y-visible w-full py-2">
             {Object.values(deck).map((card) => {
               // オーバーフロー報酬 + グローバル割引を反映したコスト計算
               const discount = (categoryBuffs[card.category]?.costDiscount || 0) + (globalCostReduction || 0);
@@ -726,7 +722,7 @@ export default function BattleField({
                   onClick={() => cost >= actualCost && setSelectedCard(card)}
                   disabled={cost < actualCost}
                   className={`
-                relative flex-shrink-0 w-24 h-28 rounded-xl border border-white/10 flex flex-col items-center justify-center group
+                relative flex-shrink-0 w-20 h-24 rounded-xl border border-white/10 flex flex-col items-center justify-center group
                 ${selectedCard?.id === card.id
                       ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)]'
                       : 'bg-slate-800/80'}
