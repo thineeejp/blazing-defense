@@ -207,7 +207,7 @@ export default function BattleField({
 
       {/* Main 3D Grid Area */}
       <div className={`flex-1 relative flex items-center justify-center px-4 pt-0 pb-2 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
-        <div className="relative w-full max-w-[410px] aspect-[3/4] transition-all duration-500" style={gridStyle}>
+        <div className="relative w-full max-w-[410px] max-h-[calc(100vh-240px)] aspect-[3/4] transition-all duration-500 mt-8" style={gridStyle}>
           {Array.from({ length: GRID_ROWS * difficulty.cols }).map((_, i) => {
             const r = Math.floor(i / difficulty.cols);
             const c = i % difficulty.cols;
@@ -698,18 +698,19 @@ export default function BattleField({
           })}
         </div>
 
-        {/* 操作ガイダンス - グリッド下端に配置 */}
-        <div className="absolute bottom-0 left-0 right-0 text-xs text-center text-slate-400 font-mono pb-1">
-          カードをクリック → グリッドをクリックで配置
-        </div>
+
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-[clamp(165px,24vh,205px)] z-30 flex flex-col px-4 pt-3 pb-2 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+      <div className="h-[clamp(180px,26vh,220px)] z-30 flex flex-col px-4 pt-0 pb-0 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+        {/* 操作ガイダンス */}
+        <div className="text-xs text-center text-slate-400 font-mono pb-1 pt-2">
+          カードをクリック → グリッドをクリックで配置
+        </div>
         {/* Deck Cards Container */}
         <div className="flex-1 flex items-center justify-center overflow-visible">
           {/* Deck Cards */}
-          <div className="flex items-center justify-center gap-2 overflow-x-auto overflow-y-visible w-full py-1">
+          <div className="flex items-center justify-center gap-2 overflow-x-auto overflow-y-visible w-full pt-4 pb-2">
             {Object.values(deck).map((card) => {
               // オーバーフロー報酬 + グローバル割引を反映したコスト計算
               const discount = (categoryBuffs[card.category]?.costDiscount || 0) + (globalCostReduction || 0);
