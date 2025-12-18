@@ -116,7 +116,7 @@ export default function BattleField({
   };
 
   return (
-    <div className={`w-full h-full flex flex-col bg-slate-950 overflow-hidden relative transition-colors duration-100 ${damaged ? 'bg-red-900/50' : ''} ${shake ? 'animate-screen-shake' : ''}`}>
+    <div className={`w-full h-full flex flex-col bg-slate-950 overflow-x-hidden overflow-y-visible relative transition-colors duration-100 ${damaged ? 'bg-red-900/50' : ''} ${shake ? 'animate-screen-shake' : ''}`}>
       {damaged && <div className="absolute inset-0 bg-red-600/30 z-50 pointer-events-none animate-pulse"></div>}
 
       {/* Header (HUD) */}
