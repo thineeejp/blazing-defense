@@ -1228,7 +1228,7 @@ export default function BlazingDefense() {
   };
 
   return (
-    <div className="w-full h-screen overflow-hidden font-sans select-none">
+    <div className="w-full h-screen overflow-x-hidden overflow-y-visible font-sans select-none">
       {phase === 'MENU' && (
         <Menu
           missions={DRAFT_MISSIONS}
