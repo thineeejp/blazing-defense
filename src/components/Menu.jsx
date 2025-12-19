@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Play, AlertTriangle, Award, Sword, HelpCircle, X, Flame, Bell, Users, Shield, Activity } from 'lucide-react';
+import { Play, AlertTriangle, Award, Sword, HelpCircle, X, Flame, Bell, Users, Shield, Activity, Building, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameBackground from './ui/GameBackground';
 import GlassCard from './ui/GlassCard';
 import playImg from '../assets/play.png';
+import deckImg from '../assets/deck.png';
+import selectImg from '../assets/select.png';
 
 export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLaunch }) {
   const [showContent, setShowContent] = useState(!isFirstLaunch);
@@ -214,18 +216,54 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                       </div>
 
                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-                        <p className="text-slate-300 mb-6 text-sm leading-relaxed">
+                        <p className="text-slate-300 mb-4 text-sm leading-relaxed">
                           ミッション開始前の準備フェーズです。<br />
-                          5つの装備カテゴリから1つを選び、装備グレード(Tier)を上げたり、コストを獲得したりできます。
+                          5つの装備カテゴリから選び、装備グレード(Tier)を上げたり、コストを獲得したりできます。
                         </p>
-                        <div className="grid grid-cols-2 gap-4 text-xs">
-                          <div className="bg-slate-950 p-4 rounded border border-slate-800 text-slate-400">
-                            <strong className="text-white block mb-1 text-sm">カテゴリー選択</strong>
-                            特定の装備系統（スプリンクラー等）を選択すると、そのバトル中の<span className="text-cyan-400">性能が強化</span>されます。戦略に合わせて選びましょう。
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                          <div className="bg-slate-950 p-3 rounded border border-slate-800 text-slate-400">
+                            <strong className="text-white block mb-1 text-sm">アップグレード</strong>
+                            各設備は<span className="text-cyan-400">2段階アップグレード可能</span>（Tier1→2→3）。<br />
+                            同じ設備を<span className="text-orange-400">3回選択でオーバーフロー</span>（さらに強化）。<br />
+                            アップグレードは<span className="text-yellow-400">合計3回まで</span>。
                           </div>
-                          <div className="bg-slate-950 p-4 rounded border border-slate-800 text-slate-400">
+                          <div className="bg-slate-950 p-3 rounded border border-slate-800 text-slate-400">
                             <strong className="text-white block mb-1 text-sm">クイズ</strong>
-                            防災知識クイズに正解すると、<span className="text-yellow-400">初期コストボーナス</span>を獲得できます。開幕の展開が楽になります。
+                            消防設備クイズに正解すると、<span className="text-yellow-400">初期コストボーナス</span>を獲得できます。開幕の展開が楽になります。
+                          </div>
+                        </div>
+                        <div className="mt-3 bg-slate-900/50 p-3 rounded border border-slate-700 text-xs text-slate-400">
+                          <strong className="text-cyan-400">選択戦略:</strong><br />
+                          一つの設備を<span className="text-orange-400">集中して強化</span>するか、<span className="text-cyan-400">幅広く解放</span>するかを選択しましょう。<br />
+                          <span className="text-slate-300 mt-1 block">例: 消火×3でTier3+オーバーフロー（火力特化） / 消火・警報・避難×1ずつ（バランス型）</span>
+                        </div>
+
+                        {/* 設備種別の概要 */}
+                        <div className="mt-3 grid grid-cols-5 gap-1 text-[10px]">
+                          <div className="bg-red-950/50 p-2 rounded border border-red-900/50 text-center">
+                            <Flame size={14} className="text-red-400 mx-auto mb-1" />
+                            <span className="text-red-400 font-bold">消火</span>
+                            <p className="text-slate-400 mt-0.5">攻撃</p>
+                          </div>
+                          <div className="bg-yellow-950/50 p-2 rounded border border-yellow-900/50 text-center">
+                            <Bell size={14} className="text-yellow-400 mx-auto mb-1" />
+                            <span className="text-yellow-400 font-bold">警報</span>
+                            <p className="text-slate-400 mt-0.5">コスト回復</p>
+                          </div>
+                          <div className="bg-green-950/50 p-2 rounded border border-green-900/50 text-center">
+                            <Users size={14} className="text-green-400 mx-auto mb-1" />
+                            <span className="text-green-400 font-bold">避難</span>
+                            <p className="text-slate-400 mt-0.5">避難促進</p>
+                          </div>
+                          <div className="bg-blue-950/50 p-2 rounded border border-blue-900/50 text-center">
+                            <Building size={14} className="text-blue-400 mx-auto mb-1" />
+                            <span className="text-blue-400 font-bold">施設</span>
+                            <p className="text-slate-400 mt-0.5">バフ効果</p>
+                          </div>
+                          <div className="bg-purple-950/50 p-2 rounded border border-purple-900/50 text-center">
+                            <Zap size={14} className="text-purple-400 mx-auto mb-1" />
+                            <span className="text-purple-400 font-bold">その他</span>
+                            <p className="text-slate-400 mt-0.5">特殊効果</p>
                           </div>
                         </div>
                       </div>
@@ -246,35 +284,28 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                       </div>
 
                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-3">
                           <p className="text-slate-300 text-sm leading-relaxed">
                             現場に持ち込む装備（ユニット）を選定するフェーズです。<br />
-                            最大6つまで選択可能です。予算（トータルコスト）の上限に注意してください。<br />
-                            <span className="text-slate-400">高コスト = 強力だが少数精鋭</span><br />
-                            <span className="text-slate-400">低コスト = 展開力重視</span><br />
-                            バランス良く組み合わせて、<span className="text-yellow-400">あらゆる状況に対応できるデッキ</span>を構築しましょう。
+                            最大6つまで選択可能。<span className="text-orange-400">デッキ登録にもコストがかかります</span>。予算上限に注意！
                           </p>
 
-                          <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                            <div className="flex justify-center gap-2">
-                              {[
-                                { id: 1, icon: Flame, color: 'text-red-400' },
-                                { id: 2, icon: Bell, color: 'text-yellow-400' },
-                                { id: 3, icon: Users, color: 'text-green-400' },
-                                { id: 4, icon: null, color: null },
-                                { id: 5, icon: null, color: null },
-                                { id: 6, icon: null, color: null },
-                              ].map(slot => (
-                                <div key={slot.id} className="w-10 h-14 bg-slate-800 rounded border border-slate-700 flex items-center justify-center">
-                                  {slot.icon ? (
-                                    <slot.icon size={16} className={slot.color} />
-                                  ) : (
-                                    <span className="text-slate-600 text-[10px]">{slot.id}</span>
-                                  )}
-                                </div>
-                              ))}
+                          {/* デッキビルド画像 */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-slate-950 rounded-lg border border-slate-800 overflow-hidden">
+                              <img
+                                src={deckImg}
+                                alt="Deck Build Explanation"
+                                className="w-full h-auto block"
+                              />
                             </div>
-                            <p className="text-center text-xs text-slate-500 mt-2">デッキスロット例</p>
+                            <div className="bg-slate-950 rounded-lg border border-slate-800 overflow-hidden">
+                              <img
+                                src={selectImg}
+                                alt="Card Selection Explanation"
+                                className="w-full h-auto block"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -309,7 +340,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                                 <div>
                                   <strong className="text-white block mb-0.5">勝利条件</strong>
                                   <span className="text-slate-300">
-                                    制限時間を耐えきるか、指定数の敵を撃破して「避難完了」となれば勝利です。
+                                    制限時間の間、<span className="text-cyan-400 font-bold">建物を守り抜く</span>か、<span className="text-green-400 font-bold">避難目標</span>を達成すれば勝利です。
                                   </span>
                                 </div>
                               </div>
@@ -330,7 +361,8 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                                 <div>
                                   <strong className="text-white block mb-0.5">ユニット配置</strong>
                                   <span className="text-slate-300">
-                                    下部のカードをクリックして選択し、配置したいグリッド（マス）をクリックします。<span className="text-yellow-400">コスト</span>が必要です。
+                                    下部のカードをクリックして選択し、グリッド（マス）をクリックして配置。<span className="text-yellow-400">コスト</span>が必要です。<br />
+                                    <span className="text-cyan-400">選択中のユニットは連続配置できます。</span>
                                   </span>
                                 </div>
                               </div>
@@ -376,6 +408,75 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                       </div>
                     </motion.div>
                   )}
+
+                  {howToPlayStep === 3 && (
+                    <motion.div
+                      key="step4"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="h-full flex flex-col"
+                    >
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-purple-900/50 border border-purple-500 text-purple-400 flex items-center justify-center font-bold text-lg">4</div>
+                        <h3 className="text-xl font-bold text-purple-400 font-orbitron">RESULT & SCORE</h3>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-slate-950 p-3 rounded border border-slate-800 flex flex-col">
+                            <strong className="text-purple-400 block mb-2 text-sm">スコア計算</strong>
+                            <div className="space-y-1 text-xs text-slate-400 flex-1">
+                              <div className="flex justify-between"><span>避難スコア</span><span className="text-green-400">避難人数 × 100</span></div>
+                              <div className="flex justify-between"><span>時間ボーナス</span><span className="text-cyan-400">残り時間 × 5</span></div>
+                              <div className="flex justify-between"><span>HP残量ボーナス</span><span className="text-red-400">HP% × 20</span></div>
+                              <div className="flex justify-between"><span>コスト効率</span><span className="text-yellow-400">残りコスト × 5</span></div>
+                              <div className="flex justify-between"><span>撃破ボーナス</span><span className="text-orange-400">撃破数 × 100</span></div>
+                            </div>
+                            <div className="mt-2 pt-2 border-t border-slate-700 text-xs text-slate-300">
+                              <span className="text-purple-400">基本スコア</span> = 上記の合計
+                            </div>
+                          </div>
+
+                          <div className="bg-slate-950 p-3 rounded border border-slate-800 flex flex-col">
+                            <strong className="text-yellow-400 block mb-2 text-sm">バッジボーナス（倍率）</strong>
+                            <div className="space-y-1.5 text-xs flex-1">
+                              <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 bg-green-500/20 rounded flex items-center justify-center">
+                                  <Shield size={10} className="text-green-400" />
+                                </div>
+                                <span className="text-slate-400">NO DAMAGE</span>
+                                <span className="text-green-400 ml-auto">×1.2</span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 ml-6">HP 100%維持でクリア</p>
+                              <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 bg-cyan-500/20 rounded flex items-center justify-center">
+                                  <Users size={10} className="text-cyan-400" />
+                                </div>
+                                <span className="text-slate-400">EVACUATION</span>
+                                <span className="text-cyan-400 ml-auto">×1.2</span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 ml-6">避難目標達成</p>
+                              <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 bg-yellow-500/20 rounded flex items-center justify-center">
+                                  <Award size={10} className="text-yellow-400" />
+                                </div>
+                                <span className="text-slate-400">ECONOMY RUN</span>
+                                <span className="text-yellow-400 ml-auto">×1.2</span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 ml-6">コスト777以上保持</p>
+                            </div>
+                            <div className="mt-2 pt-2 border-t border-slate-700 text-xs">
+                              <div className="flex justify-between">
+                                <span className="text-yellow-400 font-bold">全バッジ達成</span>
+                                <span className="text-yellow-400 font-bold">×2.0</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </div>
 
@@ -391,7 +492,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                 </button>
 
                 <div className="flex gap-2">
-                  {[0, 1, 2].map(step => (
+                  {[0, 1, 2, 3].map(step => (
                     <div
                       key={step}
                       className={`w-2 h-2 rounded-full transition-colors ${howToPlayStep === step ? 'bg-cyan-400' : 'bg-slate-700'}`}
@@ -401,7 +502,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
 
                 <button
                   onClick={() => {
-                    if (howToPlayStep < 2) {
+                    if (howToPlayStep < 3) {
                       setHowToPlayStep(prev => prev + 1);
                     } else {
                       setShowHowToPlay(false);
@@ -409,7 +510,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                   }}
                   className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded text-sm transition-colors min-w-[100px]"
                 >
-                  {howToPlayStep < 2 ? 'NEXT' : 'CLOSE'}
+                  {howToPlayStep < 3 ? 'NEXT' : 'CLOSE'}
                 </button>
               </div>
             </motion.div>
