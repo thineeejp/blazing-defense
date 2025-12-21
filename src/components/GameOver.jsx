@@ -178,7 +178,7 @@ const ResultScreen = ({ type, scoreData, highScoreInfo, newAchievements, onRetry
       {/* 完全に透明ではなく、うっすら背景が見えるオーバーレイ */}
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-fadeIn" />
 
-      <div className="relative w-full max-w-3xl flex flex-col items-center">
+      <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col items-center">
 
         {/* リザルト詳細（中央配置） */}
         <div className="w-full flex flex-col justify-center">
