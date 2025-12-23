@@ -111,8 +111,6 @@ export default function BattleField({
     display: 'grid',
     gridTemplateColumns: `repeat(${difficulty.cols}, 1fr)`,
     gridTemplateRows: `repeat(${GRID_ROWS}, 1fr)`,
-    transform: 'perspective(600px) rotateX(20deg)',
-    transformStyle: 'preserve-3d',
   };
 
   return (
