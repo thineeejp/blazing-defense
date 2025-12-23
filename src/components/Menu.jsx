@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, AlertTriangle, Award, Sword, HelpCircle, X, Flame, Bell, Users, Shield, Activity, Building, Zap } from 'lucide-react';
+import { Play, AlertTriangle, Award, Sword, HelpCircle, X, Flame, Bell, Users, Shield, Activity, Building, Zap, Maximize2, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameBackground from './ui/GameBackground';
 import GlassCard from './ui/GlassCard';
@@ -12,6 +12,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
   const [menuMode, setMenuMode] = useState('main'); // 'main' | 'battle'
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [howToPlayStep, setHowToPlayStep] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (isFirstLaunch) {
@@ -19,6 +20,28 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
       return () => clearTimeout(timer);
     }
   }, [isFirstLaunch]);
+
+  // 全画面状態の監視
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  // 全画面切り替え関数
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.error('全画面表示の切り替えに失敗しました:', err);
+    }
+  };
 
   return (
     <GameBackground className="flex flex-col items-center justify-start pt-40 pb-4 px-4">
@@ -172,6 +195,19 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* 全画面表示ボタン（右上固定） */}
+          <button
+            onClick={toggleFullscreen}
+            className="fixed top-6 right-6 z-40 p-3 bg-slate-800/80 hover:bg-slate-700 backdrop-blur-md border border-white/10 rounded-lg transition-all duration-300 hover:scale-110 group"
+            title={isFullscreen ? '全画面モードを解除 (ESC)' : '全画面モードに切り替え'}
+          >
+            {isFullscreen ? (
+              <Minimize2 size={20} className="text-cyan-400 group-hover:text-cyan-300" />
+            ) : (
+              <Maximize2 size={20} className="text-cyan-400 group-hover:text-cyan-300" />
+            )}
+          </button>
 
           <div className="absolute bottom-4 left-0 right-0 text-center text-slate-600 text-xs font-mono">
             SYSTEM READY // WAITING FOR INPUT
