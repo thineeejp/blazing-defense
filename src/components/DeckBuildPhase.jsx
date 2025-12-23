@@ -349,7 +349,7 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
                 </h3>
                 <div className="space-y-4">
                   {/* Stats Bars */}
-                  <StatBar label="攻撃力" value={card.power} max={10} color="bg-red-500" />
+                  <StatBar label="攻撃力" value={card.power} max={100} color="bg-red-500" />
                   <StatBar
                     label="攻撃速度"
                     value={card.speed ? (60 / card.speed) : 0}

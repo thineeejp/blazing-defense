@@ -587,9 +587,9 @@ export default function BlazingDefense() {
     const cols = difficultyRef.current.cols;
     const c = Math.floor(Math.random() * cols);
     const types = [
-      { hp: 20, speed: 0.018, color: 'text-red-500', name: 'A火災', fireType: 'A' },
-      { hp: 40, speed: 0.015, color: 'text-yellow-400', name: 'B火災(油)', fireType: 'B' },
-      { hp: 15, speed: 0.04, color: 'text-blue-400', name: 'C火災(電気)', fireType: 'C' },
+      { hp: 200, speed: 0.018, color: 'text-red-500', name: 'A火災', fireType: 'A' },
+      { hp: 400, speed: 0.015, color: 'text-yellow-400', name: 'B火災(油)', fireType: 'B' },
+      { hp: 150, speed: 0.04, color: 'text-blue-400', name: 'C火災(電気)', fireType: 'C' },
     ];
 
     // 難易度ごとの出現率（重み付け）
