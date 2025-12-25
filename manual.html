@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLAZING DEFENSE MANUAL</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        sans: ['Noto Sans JP', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151f32',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons (Loading via script for simplicity in static file) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            /* Dark background for browser viewing */
+            font-family: 'Noto Sans JP', sans-serif;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .page {
+            width: 297mm;
+            height: 210mm;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto 20px auto;
+            /* Spacing for screen viewing */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            color: white;
+            box-sizing: border-box;
+            padding: 10mm;
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+            }
+        }
+
+        /* Glassmorphism Classes from index.css */
+        .glass-light {
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-medium {
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-gradient-fire {
+            background: linear-gradient(to bottom right, #fde047, #f97316, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-cyan {
+            background: linear-gradient(to bottom, #ffffff, #a5f3fc, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Utility */
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Slide 1: Game Overview -->
+    <div class="page flex flex-col relative overflow-hidden">
+        <!-- Background decoration -->
+        <div class="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-cyan-500/20 rounded-full blur-[100px]">
+        </div>
+        <div class="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[100px]">
+        </div>
+
+        <div class="flex items-center gap-4 mb-6 relative z-10 px-4 pt-4">
+            <h2 class="text-3xl font-black font-orbitron text-cyan-400">GAME OVERVIEW</h2>
+            <div class="h-1 bg-gradient-to-r from-cyan-500 to-transparent flex-1"></div>
+            <div class="text-slate-400 font-orbitron text-xs tracking-[0.2em]">MANUAL > 01</div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-3 gap-8 flex-1 z-10 px-4">
+
+            <!-- Genre -->
+            <div
+                class="glass-medium rounded-2xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden group border-t border-cyan-500/30">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                </div>
+
+                <!-- Icon Container -->
+                <div class="w-24 h-24 mb-6 relative mt-4">
+                    <div class="absolute inset-0 bg-cyan-500/20 rounded-full blur-xl animate-pulse"></div>
+                    <div
+                        class="relative w-full h-full rounded-2xl bg-slate-900/80 border border-cyan-400/50 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                        <i data-lucide="gamepad-2" class="w-12 h-12 text-cyan-400"></i>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-white mb-3 font-orbitron tracking-wider">GENRE</h3>
+                <div class="h-0.5 w-12 bg-cyan-500/50 mb-4"></div>
+
+                <p class="text-slate-300 text-lg">
+                    タワーディフェンス<br>
+                    <span class="text-xs text-slate-500 my-1 block">×</span>
+                    クイズ学習
+                </p>
+                <div class="mt-auto mb-4 text-xs text-cyan-300/70 border border-cyan-500/20 px-3 py-1 rounded-full">
+                    STRATEGY
+                </div>
+            </div>
+
+            <!-- Purpose -->
+            <div
+                class="glass-medium rounded-2xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden group border-t border-green-500/30">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                </div>
+
+                <!-- Icon Container -->
+                <div class="w-24 h-24 mb-6 relative mt-4">
+                    <div class="absolute inset-0 bg-green-500/20 rounded-full blur-xl animate-pulse"></div>
+                    <div
+                        class="relative w-full h-full rounded-2xl bg-slate-900/80 border border-green-400/50 flex items-center justify-center shadow-[0_0_15px_rgba(74,222,128,0.3)]">
+                        <i data-lucide="brain-circuit" class="w-12 h-12 text-green-400"></i>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-white mb-3 font-orbitron tracking-wider">PURPOSE</h3>
+                <div class="h-0.5 w-12 bg-green-500/50 mb-4"></div>
+
+                <p class="text-slate-300 text-lg">
+                    ゲーミフィケーションによる<br>
+                    消防設備知識の習得
+                </p>
+                <div class="mt-auto mb-4 text-xs text-green-300/70 border border-green-500/20 px-3 py-1 rounded-full">
+                    EDUCATION
+                </div>
+            </div>
+
+            <!-- Play Time -->
+            <div
+                class="glass-medium rounded-2xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden group border-t border-yellow-500/30">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                </div>
+
+                <!-- Icon Container -->
+                <div class="w-24 h-24 mb-6 relative mt-4">
+                    <div class="absolute inset-0 bg-yellow-500/20 rounded-full blur-xl animate-pulse"></div>
+                    <div
+                        class="relative w-full h-full rounded-2xl bg-slate-900/80 border border-yellow-400/50 flex items-center justify-center shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+                        <i data-lucide="timer" class="w-12 h-12 text-yellow-400"></i>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-white mb-3 font-orbitron tracking-wider">TIME</h3>
+                <div class="h-0.5 w-12 bg-yellow-500/50 mb-4"></div>
+
+                <p class="text-slate-300 text-lg">
+                    1ゲーム<br>
+                    <span class="text-3xl font-black text-yellow-400 italic font-orbitron">3 - 5</span> 分
+                </p>
+                <div class="mt-auto mb-4 text-xs text-yellow-300/70 border border-yellow-500/20 px-3 py-1 rounded-full">
+                    SHORT PLAY
+                </div>
+            </div>
+        </div>
+
+        <!-- Difficulty Section -->
+        <div class="mt-8 mb-4 z-10 px-4">
+            <h3 class="text-slate-400 font-bold mb-4 flex items-center gap-2">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i> MISSION DIFFICULTY
+            </h3>
+            <div class="grid grid-cols-3 gap-6">
+                <!-- Easy -->
+                <div
+                    class="relative bg-slate-800/40 border border-slate-700 rounded-xl p-4 flex items-center gap-4 overflow-hidden">
+                    <div class="absolute right-0 top-0 h-full w-1 bg-green-500"></div>
+                    <div
+                        class="w-12 h-12 rounded-lg bg-green-900/30 flex items-center justify-center border border-green-500/30">
+                        <strong class="text-green-500 font-orbitron text-lg">E</strong>
+                    </div>
+                    <div>
+                        <div class="text-xs text-green-400 font-bold tracking-wider">EASY</div>
+                        <div class="text-xl font-bold text-white">事務所</div>
+                        <div class="text-xs text-slate-500">OFFICE</div>
+                    </div>
+                </div>
+
+                <!-- Normal -->
+                <div
+                    class="relative bg-slate-800/40 border border-slate-700 rounded-xl p-4 flex items-center gap-4 overflow-hidden">
+                    <div class="absolute right-0 top-0 h-full w-1 bg-yellow-500"></div>
+                    <div
+                        class="w-12 h-12 rounded-lg bg-yellow-900/30 flex items-center justify-center border border-yellow-500/30">
+                        <strong class="text-yellow-500 font-orbitron text-lg">N</strong>
+                    </div>
+                    <div>
+                        <div class="text-xs text-yellow-400 font-bold tracking-wider">NORMAL</div>
+                        <div class="text-xl font-bold text-white">百貨店</div>
+                        <div class="text-xs text-slate-500">DEPARTMENT STORE</div>
+                    </div>
+                </div>
+
+                <!-- Hard -->
+                <div
+                    class="relative bg-slate-800/40 border border-slate-700 rounded-xl p-4 flex items-center gap-4 overflow-hidden">
+                    <div class="absolute right-0 top-0 h-full w-1 bg-red-500"></div>
+                    <div
+                        class="w-12 h-12 rounded-lg bg-red-900/30 flex items-center justify-center border border-red-500/30">
+                        <strong class="text-red-500 font-orbitron text-lg">H</strong>
+                    </div>
+                    <div>
+                        <div class="text-xs text-red-400 font-bold tracking-wider">HARD</div>
+                        <div class="text-xl font-bold text-white">化学工場</div>
+                        <div class="text-xs text-slate-500">CHEMICAL PLANT</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Game Flow -->
+    <div class="page flex flex-col relative overflow-hidden">
+        <div class="flex items-center gap-4 mb-6 relative z-10 px-4 pt-4">
+            <h2 class="text-3xl font-black font-orbitron text-white">GAME FLOW</h2>
+            <div class="h-1 bg-gradient-to-r from-cyan-500 to-transparent flex-1"></div>
+            <div class="text-slate-400 font-orbitron text-xs tracking-[0.2em]">MANUAL > 02</div>
+        </div>
+
+        <!-- Full Height Columns Grid -->
+        <div class="grid grid-cols-4 gap-4 flex-1 z-10 px-4 pb-4">
+
+            <!-- Phase 1: BRIEFING -->
+            <div
+                class="glass-light rounded-2xl p-5 border-t-4 border-cyan-500 flex flex-col items-center relative group h-full">
+                <div
+                    class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent opacity-50 group-hover:opacity-100 transition-opacity">
+                </div>
+
+                <div class="font-orbitron text-6xl font-black text-slate-800 absolute top-2 right-4 z-0 opacity-50">01
+                </div>
+
+                <div
+                    class="w-16 h-16 rounded-full bg-cyan-900/50 border border-cyan-500 flex items-center justify-center mb-6 z-10 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                    <i data-lucide="target" class="text-cyan-400 w-8 h-8"></i>
+                </div>
+
+                <h3 class="font-black text-xl text-cyan-400 font-orbitron mb-1 z-10 tracking-widest">BRIEFING</h3>
+                <div class="text-xs text-slate-400 mb-6 font-bold tracking-widest z-10">PREPARATION</div>
+
+                <div class="w-full space-y-4 z-10 flex-1">
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700">
+                        <strong class="text-white block mb-1 flex items-center gap-2"><i data-lucide="help-circle"
+                                class="w-4 h-4 text-cyan-400"></i> クイズ</strong>
+                        <div class="text-slate-300 text-sm">
+                            消防設備クイズに挑戦<br>
+                            <span class="text-cyan-400 font-bold">1ラウンド 3問</span>
+                        </div>
+                    </div>
+
+                    <ul class="text-sm text-slate-300 space-y-2 px-1">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-cyan-500 shrink-0 mt-0.5"></i>
+                            <span>正解で初期コスト獲得</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-cyan-500 shrink-0 mt-0.5"></i>
+                            <span>Tier強化で戦力UP</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phase 2: DECK BUILD -->
+            <div
+                class="glass-light rounded-2xl p-5 border-t-4 border-green-500 flex flex-col items-center relative group h-full">
+                <div
+                    class="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent opacity-50 group-hover:opacity-100 transition-opacity">
+                </div>
+
+                <div class="font-orbitron text-6xl font-black text-slate-800 absolute top-2 right-4 z-0 opacity-50">02
+                </div>
+
+                <div
+                    class="w-16 h-16 rounded-full bg-green-900/50 border border-green-500 flex items-center justify-center mb-6 z-10 shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                    <i data-lucide="layers" class="text-green-400 w-8 h-8"></i>
+                </div>
+
+                <h3 class="font-black text-xl text-green-400 font-orbitron mb-1 z-10 tracking-widest">DECK</h3>
+                <div class="text-xs text-slate-400 mb-6 font-bold tracking-widest z-10">SELECTION</div>
+
+                <div class="w-full space-y-4 z-10 flex-1">
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700">
+                        <strong class="text-white block mb-1 flex items-center gap-2"><i data-lucide="mouse-pointer-2"
+                                class="w-4 h-4 text-green-400"></i> 選定</strong>
+                        <div class="text-slate-300 text-sm">
+                            現場に持ち込む<br>
+                            最大6枚のカードを選択
+                        </div>
+                    </div>
+
+                    <ul class="text-sm text-slate-300 space-y-2 px-1">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-green-500 shrink-0 mt-0.5"></i>
+                            <span>コスト管理が重要</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-green-500 shrink-0 mt-0.5"></i>
+                            <span>Tier1カードは無料</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phase 3: BATTLE -->
+            <div
+                class="glass-light rounded-2xl p-5 border-t-4 border-orange-500 flex flex-col items-center relative group h-full">
+                <div
+                    class="absolute inset-0 bg-gradient-to-b from-orange-500/5 to-transparent opacity-50 group-hover:opacity-100 transition-opacity">
+                </div>
+
+                <div class="font-orbitron text-6xl font-black text-slate-800 absolute top-2 right-4 z-0 opacity-50">03
+                </div>
+
+                <div
+                    class="w-16 h-16 rounded-full bg-orange-900/50 border border-orange-500 flex items-center justify-center mb-6 z-10 shadow-[0_0_15px_rgba(249,115,22,0.4)]">
+                    <i data-lucide="sword" class="text-orange-400 w-8 h-8"></i>
+                </div>
+
+                <h3 class="font-black text-xl text-orange-400 font-orbitron mb-1 z-10 tracking-widest">BATTLE</h3>
+                <div class="text-xs text-slate-400 mb-6 font-bold tracking-widest z-10">DEFENSE</div>
+
+                <div class="w-full space-y-4 z-10 flex-1">
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700">
+                        <strong class="text-white block mb-1 flex items-center gap-2"><i data-lucide="shield"
+                                class="w-4 h-4 text-orange-400"></i> 防衛</strong>
+                        <div class="text-slate-300 text-sm">
+                            リアルタイムで<br>
+                            火災から拠点を防衛
+                        </div>
+                    </div>
+
+                    <ul class="text-sm text-slate-300 space-y-2 px-1">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-orange-500 shrink-0 mt-0.5"></i>
+                            <span>目標避難達成で勝利</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-orange-500 shrink-0 mt-0.5"></i>
+                            <span>HP維持と避難誘導</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phase 4: RESULT -->
+            <div
+                class="glass-light rounded-2xl p-5 border-t-4 border-purple-500 flex flex-col items-center relative group h-full">
+                <div
+                    class="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent opacity-50 group-hover:opacity-100 transition-opacity">
+                </div>
+
+                <div class="font-orbitron text-6xl font-black text-slate-800 absolute top-2 right-4 z-0 opacity-50">04
+                </div>
+
+                <div
+                    class="w-16 h-16 rounded-full bg-purple-900/50 border border-purple-500 flex items-center justify-center mb-6 z-10 shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+                    <i data-lucide="award" class="text-purple-400 w-8 h-8"></i>
+                </div>
+
+                <h3 class="font-black text-xl text-purple-400 font-orbitron mb-1 z-10 tracking-widest">RESULT</h3>
+                <div class="text-xs text-slate-400 mb-6 font-bold tracking-widest z-10">EVALUATION</div>
+
+                <div class="w-full space-y-4 z-10 flex-1">
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700">
+                        <strong class="text-white block mb-1 flex items-center gap-2"><i data-lucide="bar-chart"
+                                class="w-4 h-4 text-purple-400"></i> 評価</strong>
+                        <div class="text-slate-300 text-sm">
+                            スコア計算と<br>
+                            バッジによる評価
+                        </div>
+                    </div>
+
+                    <ul class="text-sm text-slate-300 space-y-2 px-1">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-purple-500 shrink-0 mt-0.5"></i>
+                            <span>ハイスコア記録</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-purple-500 shrink-0 mt-0.5"></i>
+                            <span>実績解除</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: BRIEFING -->
+    <div class="page flex flex-col relative overflow-hidden">
+        <div class="flex items-center gap-4 mb-6 relative z-10 px-4 pt-4">
+            <h2 class="text-3xl font-black font-orbitron text-cyan-400">1. BRIEFING PHASE</h2>
+            <div class="h-1 bg-gradient-to-r from-cyan-500 to-transparent flex-1"></div>
+            <div class="text-slate-400 font-orbitron text-xs tracking-[0.2em]">MANUAL > 03</div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-6 flex-1 px-4 pb-4">
+
+            <!-- Left: Selection Logic (4 cols) -->
+            <div class="col-span-5 flex flex-col gap-4">
+                <div class="glass-light p-5 rounded-xl border border-slate-700 flex-1 flex flex-col">
+                    <h3 class="font-bold text-white mb-4 border-b border-slate-600 pb-2 flex items-center gap-2">
+                        <i data-lucide="mouse-pointer-click" class="text-cyan-400"></i>
+                        選択プロセス
+                    </h3>
+
+                    <div class="flex items-center gap-2 mb-2 text-sm text-slate-300">
+                        <span
+                            class="bg-cyan-900/50 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/50 text-xs font-bold">RULE</span>
+                        <span>5つのカテゴリから<span class="text-yellow-400 font-bold">1つ選択</span> × 3ラウンド</span>
+                    </div>
+
+                    <!-- Categories List -->
+                    <div class="space-y-2 flex-1 overflow-y-auto">
+                        <div
+                            class="p-2 rounded bg-slate-800/50 border border-slate-700 hover:border-red-500/50 transition-colors flex items-center gap-3">
+                            <div class="p-1.5 bg-red-900/30 rounded"><i data-lucide="flame"
+                                    class="w-4 h-4 text-red-400"></i></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-bold text-red-300">消火 (Fire)</div>
+                                <div class="text-[10px] text-slate-500">攻撃・ダメージ</div>
+                            </div>
+                        </div>
+                        <div
+                            class="p-2 rounded bg-slate-800/50 border border-slate-700 hover:border-yellow-500/50 transition-colors flex items-center gap-3">
+                            <div class="p-1.5 bg-yellow-900/30 rounded"><i data-lucide="bell"
+                                    class="w-4 h-4 text-yellow-400"></i></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-bold text-yellow-300">警報 (Alarm)</div>
+                                <div class="text-[10px] text-slate-500">コスト回復</div>
+                            </div>
+                        </div>
+                        <div
+                            class="p-2 rounded bg-slate-800/50 border border-slate-700 hover:border-green-500/50 transition-colors flex items-center gap-3">
+                            <div class="p-1.5 bg-green-900/30 rounded"><i data-lucide="users"
+                                    class="w-4 h-4 text-green-400"></i></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-bold text-green-300">避難 (Evacuation)</div>
+                                <div class="text-[10px] text-slate-500">避難速度UP</div>
+                            </div>
+                        </div>
+                        <div
+                            class="p-2 rounded bg-slate-800/50 border border-slate-700 hover:border-blue-500/50 transition-colors flex items-center gap-3">
+                            <div class="p-1.5 bg-blue-900/30 rounded"><i data-lucide="building"
+                                    class="w-4 h-4 text-blue-400"></i></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-bold text-blue-300">施設 (Facility)</div>
+                                <div class="text-[10px] text-slate-500">バフ・サポート</div>
+                            </div>
+                        </div>
+                        <div
+                            class="p-2 rounded bg-slate-800/50 border border-slate-700 hover:border-purple-500/50 transition-colors flex items-center gap-3">
+                            <div class="p-1.5 bg-purple-900/30 rounded"><i data-lucide="zap"
+                                    class="w-4 h-4 text-purple-400"></i></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-bold text-purple-300">その他 (Other)</div>
+                                <div class="text-[10px] text-slate-500">特殊効果</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Info -->
+                <div class="glass-light p-5 rounded-xl border border-slate-700 h-1/3">
+                    <h3 class="font-bold text-white mb-2 flex items-center gap-2 text-sm">
+                        <i data-lucide="help-circle" class="text-yellow-400"></i> クイズ報酬 (初期コスト)
+                    </h3>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-slate-900 p-2 rounded border border-slate-700">
+                            <div class="text-[10px] text-slate-400">1問正解</div>
+                            <div class="text-lg font-bold text-white">+100</div>
+                        </div>
+                        <div class="bg-slate-900 p-2 rounded border border-slate-700">
+                            <div class="text-[10px] text-slate-400">2問正解</div>
+                            <div class="text-lg font-bold text-white">+200</div>
+                        </div>
+                        <div class="bg-slate-900 p-2 rounded border border-yellow-500/50 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-yellow-500/10 animate-pulse"></div>
+                            <div class="text-[10px] text-yellow-200 relative z-10">3問正解</div>
+                            <div class="text-xl font-black text-yellow-400 relative z-10 text-shadow">+400</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Tier Details (7 cols) -->
+            <div class="col-span-7 flex flex-col gap-4">
+                <!-- Tier Flow Visualization -->
+                <div class="glass-medium p-6 rounded-xl border border-cyan-500/30">
+                    <h3 class="font-bold text-white mb-6 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i data-lucide="arrow-up-circle"
+                                class="text-cyan-400"></i> Tierシステム <span
+                                class="text-xs text-slate-500 ml-2 font-normal">(例: 消火設備の場合)</span></span>
+                        <span class="text-xs text-slate-400 font-normal">同じカテゴリを選ぶたびに進化</span>
+                    </h3>
+
+                    <div class="relative flex items-center justify-between px-4 pb-8">
+                        <!-- Progress Line -->
+                        <div class="absolute top-[28px] left-0 w-full h-1 bg-slate-700 -z-10"></div>
+                        <div class="absolute top-[28px] left-0 w-[75%] h-1 bg-cyan-900/50 -z-10"></div>
+
+                        <!-- Tier 1 -->
+                        <div class="flex flex-col items-center gap-3">
+                            <div
+                                class="w-14 h-14 rounded-full bg-slate-800 border-2 border-slate-600 flex items-center justify-center text-slate-400 font-bold z-10">
+                                1
+                            </div>
+                            <div class="text-center">
+                                <div class="text-sm font-bold text-slate-300">初期装備</div>
+                                <div class="text-[10px] text-slate-500 mt-1 bg-slate-900 px-2 py-0.5 rounded">消火器</div>
+                            </div>
+                        </div>
+
+                        <!-- Tier 2 -->
+                        <div class="flex flex-col items-center gap-3">
+                            <div
+                                class="w-14 h-14 rounded-full bg-cyan-900/80 border-2 border-cyan-400 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(34,211,238,0.3)]">
+                                <i data-lucide="unlock" class="w-6 h-6 text-cyan-200"></i>
+                                <div
+                                    class="absolute -top-2 -right-2 bg-cyan-500 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                    UP</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-sm font-bold text-cyan-300">解放 (Unlock)</div>
+                                <div
+                                    class="text-[10px] text-slate-400 mt-1 bg-slate-900 px-2 py-0.5 rounded border border-cyan-900">
+                                    屋内消火栓</div>
+                            </div>
+                        </div>
+
+                        <!-- Tier 3 -->
+                        <div class="flex flex-col items-center gap-3">
+                            <div
+                                class="w-14 h-14 rounded-full bg-cyan-600 border-2 border-cyan-300 flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(34,211,238,0.5)]">
+                                <i data-lucide="unlock" class="w-6 h-6 text-white"></i>
+                                <div
+                                    class="absolute -top-2 -right-2 bg-cyan-300 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                    UP</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-sm font-bold text-cyan-200">解放 (Unlock)</div>
+                                <div
+                                    class="text-[10px] text-slate-400 mt-1 bg-slate-900 px-2 py-0.5 rounded border border-cyan-700">
+                                    スプリンクラー</div>
+                            </div>
+                        </div>
+
+                        <!-- Tier 4+ -->
+                        <div class="flex flex-col items-center gap-3 relative">
+                            <div
+                                class="w-16 h-16 rounded-full bg-yellow-500 border-4 border-yellow-200 flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(234,179,8,0.6)] animate-pulse">
+                                <i data-lucide="star" class="w-8 h-8 text-yellow-900 fill-current"></i>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-black text-yellow-500 italic font-orbitron tracking-tighter">
+                                    OVERFLOW</div>
+                                <div class="text-[10px] text-yellow-200/80 mt-1">コスト割引 & バフ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategy -->
+                <div class="flex flex-col gap-2 flex-1">
+                    <h3 class="font-bold text-white flex items-center gap-2 border-b border-slate-600/50 pb-1 mx-1">
+                        <i data-lucide="presentation" class="w-5 h-5 text-cyan-400"></i>
+                        アップグレード戦略 (Upgrade Strategy)
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 flex-1">
+                        <div class="glass-light p-4 rounded-xl border-l-4 border-red-500 flex flex-col">
+                            <h4 class="font-bold text-white mb-2 text-sm">🔥 特化型 (Specialized)</h4>
+                            <div class="text-xs text-slate-300 mb-3 flex-1">
+                                1つのカテゴリ(例:消火)を3回連続で選択。<br>
+                                <span class="text-yellow-400 font-bold">Tier3解放＆OVERFLOWにより、</span>強力なユニットで圧倒する戦略。
+                            </div>
+                            <!-- Visual -->
+                            <div class="flex justify-center gap-2 mt-auto">
+                                <div
+                                    class="w-8 h-8 rounded bg-red-900/40 border border-red-500 flex items-center justify-center">
+                                    <i data-lucide="flame" class="w-4 h-4 text-red-400"></i>
+                                </div>
+                                <div
+                                    class="w-8 h-8 rounded bg-red-900/40 border border-red-500 flex items-center justify-center">
+                                    <i data-lucide="flame" class="w-4 h-4 text-red-400"></i>
+                                </div>
+                                <div
+                                    class="w-8 h-8 rounded bg-red-900/40 border border-red-500 flex items-center justify-center relative">
+                                    <i data-lucide="flame" class="w-4 h-4 text-red-400"></i>
+                                    <div
+                                        class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse border border-yellow-200">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-light p-4 rounded-xl border-l-4 border-blue-500 flex flex-col">
+                            <h4 class="font-bold text-white mb-2 text-sm">⚖️ バランス型 (Balanced)</h4>
+                            <div class="text-xs text-slate-300 mb-3 flex-1">
+                                「消火」「警報」「避難」を1回ずつ選択。<br>
+                                Tier1〜Unlockを幅広く揃え、<span class="text-blue-300 font-bold">状況に応じた柔軟な対応</span>を可能にする戦略。
+                            </div>
+                            <!-- Visual -->
+                            <div class="flex justify-center gap-2 mt-auto">
+                                <div
+                                    class="w-8 h-8 rounded bg-red-900/40 border border-red-500/50 flex items-center justify-center">
+                                    <i data-lucide="flame" class="w-4 h-4 text-red-400"></i>
+                                </div>
+                                <div
+                                    class="w-8 h-8 rounded bg-yellow-900/40 border border-yellow-500/50 flex items-center justify-center">
+                                    <i data-lucide="bell" class="w-4 h-4 text-yellow-400"></i>
+                                </div>
+                                <div
+                                    class="w-8 h-8 rounded bg-green-900/40 border border-green-500/50 flex items-center justify-center">
+                                    <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: DECK BUILD -->
+    <div class="page flex flex-col relative overflow-hidden !p-3">
+        <!-- Decoration - Reduced size and opacity to not interfere -->
+        <div class="absolute -top-10 -right-10 w-64 h-64 bg-green-500/5 rounded-full blur-3xl pointer-events-none">
+        </div>
+
+        <!-- Header - More compact -->
+        <div class="flex items-center gap-4 mb-6 relative z-10 px-4 pt-4">
+            <h2 class="text-3xl font-black font-orbitron text-green-400">2. DECK BUILD PHASE</h2>
+            <div class="h-1 bg-gradient-to-r from-green-500 to-transparent flex-1"></div>
+            <div class="text-slate-400 font-orbitron text-xs tracking-[0.2em]">MANUAL > 04</div>
+        </div>
+
+        <div class="flex gap-3 flex-1 min-h-0 px-2 pb-1">
+            <!-- Left: Images in Glass Frames - Adjusted for better scaling -->
+            <div class="w-1/2 flex flex-col gap-1 min-h-0">
+                <div
+                    class="flex-1 glass-light p-1 rounded-lg border border-green-500/30 relative group overflow-hidden min-h-0">
+                    <div class="absolute inset-0 bg-green-500/5 group-hover:bg-green-500/10 transition-colors"></div>
+                    <img src="./src/assets/deck.png" alt="Deck Screen"
+                        class="w-full h-full object-cover rounded shadow-inner">
+                    <div
+                        class="absolute bottom-2 left-2 bg-black/80 backdrop-blur px-2 py-1 rounded border border-green-500/50 flex items-center gap-1.5">
+                        <i data-lucide="layout-grid" class="w-3 h-3 text-green-400"></i>
+                        <span class="text-[10px] font-bold text-green-100">デッキ構築画面</span>
+                    </div>
+                </div>
+                <!-- Connecting Arrow - Smaller -->
+                <div class="h-3 flex justify-center -my-1.5 relative z-10 shrink-0">
+                    <i data-lucide="arrow-down" class="w-4 h-4 text-green-500 animate-bounce"></i>
+                </div>
+                <div
+                    class="flex-1 glass-light p-1 rounded-lg border border-green-500/30 relative group overflow-hidden min-h-0">
+                    <div class="absolute inset-0 bg-green-500/5 group-hover:bg-green-500/10 transition-colors"></div>
+                    <img src="./src/assets/select.png" alt="Select Screen"
+                        class="w-full h-full object-cover rounded shadow-inner">
+                    <div
+                        class="absolute bottom-2 left-2 bg-black/80 backdrop-blur px-2 py-1 rounded border border-green-500/50 flex items-center gap-1.5">
+                        <i data-lucide="mouse-pointer-click" class="w-3 h-3 text-green-400"></i>
+                        <span class="text-[10px] font-bold text-green-100">カード選択</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Step Flow -->
+            <div class="w-1/2 flex flex-col justify-center gap-3 py-1 relative">
+                <!-- Vertical Line - Adjusted position -->
+                <div
+                    class="absolute left-[20px] top-6 bottom-6 w-0.5 bg-gradient-to-b from-green-500/50 via-green-500/20 to-transparent -z-10">
+                </div>
+
+                <!-- Step 1 -->
+                <div class="flex gap-3 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-slate-900 border-2 border-green-500/50 flex items-center justify-center shrink-0 group-hover:border-green-400 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.4)] transition-all z-10">
+                        <span class="font-orbitron font-bold text-base text-green-500">01</span>
+                    </div>
+                    <div
+                        class="glass-medium p-3 rounded-xl border-l-4 border-l-green-500 flex-1 border-y border-r border-slate-700/50">
+                        <h3 class="font-bold text-base text-white mb-1 flex items-center gap-2">
+                            <i data-lucide="unlock" class="w-5 h-5 text-green-400"></i>
+                            アンロック確認
+                        </h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            クイズ結果に応じて解放されたカード（Tier）を確認。<br>
+                            <span class="text-green-400 font-bold">高Tierカード</span>ほど強力だがコストが必要。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flex gap-3 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-slate-900 border-2 border-green-500/50 flex items-center justify-center shrink-0 group-hover:border-green-400 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.4)] transition-all z-10">
+                        <span class="font-orbitron font-bold text-base text-green-500">02</span>
+                    </div>
+                    <div
+                        class="glass-medium p-3 rounded-xl border-l-4 border-l-green-500 flex-1 border-y border-r border-slate-700/50">
+                        <h3 class="font-bold text-base text-white mb-1 flex items-center gap-2">
+                            <i data-lucide="mouse-pointer-2" class="w-5 h-5 text-green-400"></i>
+                            カード選定
+                        </h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            戦況に合わせて持ち込むカードを選択。<br>
+                            スロット上限は <span class="text-white font-bold bg-green-900/50 px-2 rounded">最大6枚</span> まで。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flex gap-3 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-slate-900 border-2 border-green-500/50 flex items-center justify-center shrink-0 group-hover:border-green-400 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.4)] transition-all z-10">
+                        <span class="font-orbitron font-bold text-base text-green-500">03</span>
+                    </div>
+                    <div
+                        class="glass-medium p-3 rounded-xl border-l-4 border-l-green-500 flex-1 border-y border-r border-slate-700/50">
+                        <h3 class="font-bold text-base text-white mb-1 flex items-center gap-2">
+                            <i data-lucide="coins" class="w-5 h-5 text-green-400"></i>
+                            コストマネジメント
+                        </h3>
+                        <p class="text-xs text-slate-400 mb-2 leading-relaxed">
+                            高Tierカードを採用すると、バトル開始時の<span class="text-red-400 font-bold">所持コスト</span>が減少します。
+                        </p>
+                        <div class="text-xs text-slate-300 bg-slate-900/50 p-2 rounded border border-slate-700/50">
+                            <div class="flex justify-between mb-1 border-b border-slate-700/50 pb-1">
+                                <span>Tier 1 (基本装備)</span>
+                                <span class="text-green-400 font-bold">0 COST</span>
+                            </div>
+                            <div class="flex justify-between pt-1">
+                                <span>Tier 2+ (強力装備)</span>
+                                <span class="text-red-400 font-bold">- COST</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="flex gap-3 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-slate-900 border-2 border-green-500/50 flex items-center justify-center shrink-0 group-hover:border-green-400 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.4)] transition-all z-10">
+                        <span class="font-orbitron font-bold text-base text-green-500">04</span>
+                    </div>
+                    <div
+                        class="glass-medium p-3 rounded-xl border-l-4 border-l-green-500 flex-1 border-y border-r border-slate-700/50 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-r from-green-500/10 to-transparent"></div>
+                        <h3 class="font-bold text-base text-white mb-1 flex items-center gap-2 relative z-10">
+                            <i data-lucide="play-circle" class="w-5 h-5 text-green-400"></i>
+                            BATTLE START
+                        </h3>
+                        <p class="text-xs text-slate-400 leading-relaxed relative z-10">
+                            残ったコストがそのまま<br>
+                            <span class="text-green-300 font-bold border-b border-green-500/50">バトル初期コスト</span> となる。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: BATTLE -->
+    <div class="page flex flex-col relative overflow-hidden p-4">
+        <!-- Background Decoration -->
+        <div class="absolute -bottom-20 -left-20 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none">
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-6 relative z-10 px-4 pt-4">
+            <h2 class="text-3xl font-black font-orbitron text-orange-400">3. BATTLE PHASE</h2>
+            <div class="h-1 bg-gradient-to-r from-orange-500 to-transparent flex-1"></div>
+            <div class="text-slate-400 font-orbitron text-xs tracking-[0.2em]">MANUAL > 05</div>
+        </div>
+
+        <!-- Main Content: 2 Columns -->
+        <div class="flex gap-4 flex-1 min-h-0">
+            <!-- Left: Info Column - Widened for better text readability -->
+            <div class="w-[40%] flex flex-col gap-3 min-h-0">
+
+                <!-- 1. Controls -->
+                <div class="glass-light p-4 rounded-xl border border-orange-500/30 flex flex-col gap-2 shrink-0">
+                    <h3
+                        class="font-bold text-white text-base flex items-center gap-2 border-b border-orange-500/30 pb-1">
+                        <i data-lucide="gamepad-2" class="w-5 h-5 text-orange-400"></i>
+                        基本操作
+                    </h3>
+                    <ol class="list-decimal pl-5 text-xs text-slate-300 space-y-1.5 font-mono">
+                        <li>デッキからカード選択</li>
+                        <li>グリッドをクリックして配置</li>
+                        <li>コストを消費</li>
+                        <li><span class="text-orange-400 font-bold">選択中は連続配置可能</span></li>
+                    </ol>
+                    <div
+                        class="text-xs bg-slate-900/60 p-2 rounded border border-orange-500/20 text-orange-200 flex items-center gap-2">
+                        <strong class="text-yellow-400">⚡</strong>
+                        <span>コストは自然回復します。</span>
+                    </div>
+                </div>
+
+                <!-- 2. Enemies -->
+                <div class="glass-light p-4 rounded-xl border border-orange-500/30 flex-1 flex flex-col gap-2 min-h-0">
+                    <h3
+                        class="font-bold text-white text-base flex items-center gap-2 border-b border-orange-500/30 pb-1">
+                        <i data-lucide="flame" class="w-5 h-5 text-orange-400"></i>
+                        敵（火災）の種類
+                    </h3>
+                    <div class="flex flex-col gap-2 flex-1 justify-center">
+                        <!-- Type A -->
+                        <div class="flex items-center gap-3 bg-slate-800/50 p-2 rounded border border-red-500/20">
+                            <span
+                                class="w-10 h-10 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center font-bold font-orbitron text-base border border-red-500/50 shrink-0">A</span>
+                            <div class="flex-1">
+                                <div class="text-xs text-red-200 font-bold">普通火災 (HP:200)</div>
+                                <div class="text-[10px] text-slate-400">標準的な火災</div>
+                            </div>
+                        </div>
+                        <!-- Type B -->
+                        <div class="flex items-center gap-3 bg-slate-800/50 p-2 rounded border border-yellow-500/20">
+                            <span
+                                class="w-10 h-10 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center font-bold font-orbitron text-base border border-yellow-500/50 shrink-0">B</span>
+                            <div class="flex-1">
+                                <div class="text-xs text-yellow-200 font-bold">油火災 (HP:400)</div>
+                                <div class="text-[10px] text-slate-400">水に強い / 泡に弱い</div>
+                            </div>
+                        </div>
+                        <!-- Type C -->
+                        <div class="flex items-center gap-3 bg-slate-800/50 p-2 rounded border border-blue-500/20">
+                            <span
+                                class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold font-orbitron text-base border border-blue-500/50 shrink-0">C</span>
+                            <div class="flex-1">
+                                <div class="text-xs text-blue-200 font-bold">電気火災 (HP:150)</div>
+                                <div class="text-[10px] text-slate-400">移動高速 / ガスに弱い</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Range -->
+                <div class="glass-light p-4 rounded-xl border border-orange-500/30">
+                    <h3
+                        class="font-bold text-white text-base flex items-center gap-2 border-b border-orange-500/30 pb-1 mb-2">
+                        <i data-lucide="crosshair" class="w-5 h-5 text-orange-400"></i>
+                        攻撃範囲
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2 text-xs text-center">
+                        <div class="bg-slate-800 p-2 rounded flex flex-col items-center">
+                            <div class="text-slate-400 mb-1 text-[10px]">Surround</div>
+                            <i data-lucide="grid" class="w-5 h-5 mx-auto text-green-400 mb-1"></i>
+                            <span class="text-[10px] text-white">周囲3x3</span>
+                        </div>
+                        <div class="bg-slate-800 p-2 rounded flex flex-col items-center">
+                            <div class="text-slate-400 mb-1 text-[10px]">Wide</div>
+                            <i data-lucide="align-justify" class="w-5 h-5 mx-auto text-blue-400 mb-1"></i>
+                            <span class="text-[10px] text-white">横1列x3</span>
+                        </div>
+                        <div class="bg-slate-800 p-2 rounded flex flex-col items-center">
+                            <div class="text-slate-400 mb-1 text-[10px]">Line</div>
+                            <i data-lucide="arrow-down" class="w-5 h-5 mx-auto text-red-400 mb-1"></i>
+                            <span class="text-[10px] text-white">縦1列</span>
+                        </div>
+                        <div class="bg-slate-800 p-2 rounded flex flex-col items-center">
+                            <div class="text-slate-400 mb-1 text-[10px]">Global</div>
+                            <i data-lucide="globe" class="w-5 h-5 mx-auto text-purple-400 mb-1"></i>
+                            <span class="text-[10px] text-white">全体</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Image Column -->
+            <div
+                class="w-[60%] glass-medium p-2 rounded-xl border border-orange-500/30 relative flex flex-col min-h-0 group">
+                <div class="absolute inset-0 bg-orange-500/5 group-hover:bg-orange-500/10 transition-colors rounded-xl">
+                </div>
+
+                <!-- Main Image -->
+                <div
+                    class="relative flex-1 w-full h-full overflow-hidden rounded-lg bg-black/40 flex items-center justify-center">
+                    <img src="./src/assets/play.png" alt="Battle Screen" class="w-full h-full object-contain">
+
+                    <!-- Annotated Overlays -->
+                    <div
+                        class="absolute top-[10%] left-[10%] bg-black/70 backdrop-blur px-3 py-1.5 rounded border border-red-500/50 flex items-center gap-2">
+                        <i data-lucide="layout-grid" class="w-4 h-4 text-red-400"></i>
+                        <span class="text-xs font-bold text-red-100">配置エリア (Grid)</span>
+                    </div>
+
+                    <div
+                        class="absolute bottom-[20%] right-[10%] bg-black/70 backdrop-blur px-3 py-1.5 rounded border border-green-500/50 flex items-center gap-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-green-400"></i>
+                        <span class="text-xs font-bold text-green-100">デッキ (Hand)</span>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Slide 6: Result & Score -->
+    <div class="page flex flex-col relative overflow-hidden">
+        <!-- Background Decoration -->
+        <div
+            class="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none">
+        </div>
+
+        <div class="flex items-center gap-4 mb-6 relative z-10 px-4 pt-4">
+            <h2 class="text-3xl font-black font-orbitron text-purple-400">4. SCORE SYSTEM</h2>
+            <div class="h-1 bg-gradient-to-r from-purple-400 to-transparent flex-1"></div>
+            <div class="text-slate-400 font-orbitron text-xs tracking-[0.2em]">MANUAL > 06</div>
+        </div>
+
+        <div class="flex flex-col gap-4 flex-1 px-8 pb-8 relative z-10 min-h-0">
+            <!-- Row 1: Conditions (Top ~35%) -->
+            <div class="flex gap-4 h-[35%] shrink-0">
+                <!-- Victory -->
+                <div
+                    class="flex-1 glass-medium p-5 rounded-2xl border-l-4 border-l-green-500 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-green-500/5 group-hover:bg-green-500/10 transition-colors"></div>
+                    <h3 class="text-2xl font-black font-orbitron text-green-400 mb-1 flex items-center gap-3 shrink-0">
+                        <i data-lucide="check-circle-2" class="w-7 h-7"></i> VICTORY
+                    </h3>
+                    <div class="text-xs text-slate-400 font-bold tracking-widest mb-3 shrink-0">勝利条件</div>
+
+                    <div class="flex items-center gap-4 flex-1 h-full min-h-0">
+                        <div
+                            class="flex-1 bg-slate-900/50 p-3 rounded-xl border border-green-500/20 h-full flex flex-col justify-center gap-1">
+                            <i data-lucide="clock" class="text-green-400 w-6 h-6 mb-1"></i>
+                            <strong class="text-white text-base block leading-tight">制限時間 耐久</strong>
+                            <span class="text-xs text-slate-400">90秒間 防衛</span>
+                        </div>
+                        <div class="text-slate-500 font-bold text-xs">- OR -</div>
+                        <div
+                            class="flex-1 bg-slate-900/50 p-3 rounded-xl border border-green-500/20 h-full flex flex-col justify-center gap-1">
+                            <i data-lucide="users" class="text-green-400 w-6 h-6 mb-1"></i>
+                            <strong class="text-white text-base block leading-tight">避難完了</strong>
+                            <span class="text-[10px] text-slate-400 leading-tight">避難人数は<br>難易度により変化</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Defeat -->
+                <div
+                    class="flex-1 glass-medium p-5 rounded-2xl border-l-4 border-l-red-500 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-red-500/5 group-hover:bg-red-500/10 transition-colors"></div>
+                    <h3 class="text-2xl font-black font-orbitron text-red-500 mb-1 flex items-center gap-3 shrink-0">
+                        <i data-lucide="x-circle" class="w-7 h-7"></i> DEFEAT
+                    </h3>
+                    <div class="text-xs text-slate-400 font-bold tracking-widest mb-3 shrink-0">敗北条件</div>
+
+                    <div
+                        class="bg-slate-900/50 p-3 rounded-xl border border-red-500/20 flex flex-col justify-center gap-1 h-full flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i data-lucide="skull" class="text-red-500 w-8 h-8"></i>
+                            <strong class="text-white text-xl">防衛失敗</strong>
+                        </div>
+                        <div class="text-sm text-slate-400 pl-1">
+                            <span class="text-red-400 font-bold text-lg">HP 0</span> <span class="text-xs">到達</span>
+                            <div class="text-[10px] opacity-70 mt-1">※ 敵が防衛ライン突破でダメージ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Scoring (Bottom ~65%) -->
+            <div class="flex gap-4 flex-1 min-h-0">
+                <!-- Basic Score -->
+                <div class="flex-1 glass-light p-5 rounded-2xl border border-purple-500/30 flex flex-col gap-3">
+                    <h3 class="text-xl font-bold text-purple-400 flex items-center gap-2 font-orbitron shrink-0">
+                        <i data-lucide="calculator" class="w-6 h-6"></i> BASIC SCORING
+                    </h3>
+
+                    <div class="flex-1 flex flex-col justify-between font-mono text-sm py-2">
+                        <div class="space-y-3">
+                            <div
+                                class="flex items-center justify-between p-3 rounded bg-slate-800/50 border border-slate-700">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="users" class="w-4 h-4 text-green-400"></i>
+                                    <span class="text-slate-300">避難人数</span>
+                                </div>
+                                <span class="text-green-400 font-bold">× 100 pt</span>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between p-3 rounded bg-slate-800/50 border border-slate-700">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i>
+                                    <span class="text-slate-300">残り時間</span>
+                                </div>
+                                <span class="text-cyan-400 font-bold">× 5 pt</span>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between p-3 rounded bg-slate-800/50 border border-slate-700">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="heart" class="w-4 h-4 text-red-400"></i>
+                                    <span class="text-slate-300">残りHP(%)</span>
+                                </div>
+                                <span class="text-red-400 font-bold">× 20 pt</span>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between p-3 rounded bg-slate-800/50 border border-slate-700">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="coins" class="w-4 h-4 text-yellow-400"></i>
+                                    <span class="text-slate-300">残りコスト</span>
+                                </div>
+                                <span class="text-yellow-400 font-bold">× 5 pt</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="h-px bg-slate-600 mb-3 mt-1"></div>
+                            <div class="flex justify-between items-end px-2">
+                                <div class="text-xs text-slate-400 mb-1">TOTAL BASIC SCORE</div>
+                                <div class="font-orbitron font-black text-3xl text-white tracking-widest leading-none">
+                                    SUM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge System -->
+                <div
+                    class="flex-1 glass-light p-5 rounded-2xl border border-yellow-500/30 relative overflow-hidden flex flex-col">
+                    <!-- Decor -->
+                    <div
+                        class="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/20 rounded-full blur-3xl animate-pulse">
+                    </div>
+
+                    <h3 class="text-xl font-bold text-yellow-400 mb-4 flex items-center gap-2 font-orbitron shrink-0">
+                        <i data-lucide="award" class="w-6 h-6"></i> BADGE BONUS
+                    </h3>
+
+                    <div class="flex-1 flex flex-col">
+                        <!-- 1. Available Badges List (Top) -->
+                        <div class="space-y-2 flex-1 min-h-0">
+                            <div class="text-[10px] text-slate-400 mb-1 font-bold uppercase tracking-wider">Available
+                                Badges</div>
+
+                            <div
+                                class="flex items-center gap-3 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700">
+                                <div
+                                    class="w-9 h-9 rounded bg-cyan-900/50 flex items-center justify-center border border-cyan-500/30 shrink-0">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-cyan-400"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-xs font-bold text-cyan-200">NO DAMAGE</div>
+                                    <div class="text-[10px] text-slate-500 truncate">HP 100% キープ</div>
+                                </div>
+                                <div class="text-yellow-400 font-mono font-bold text-lg">x1.2</div>
+                            </div>
+
+                            <div
+                                class="flex items-center gap-3 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700">
+                                <div
+                                    class="w-9 h-9 rounded bg-green-900/50 flex items-center justify-center border border-green-500/30 shrink-0">
+                                    <i data-lucide="users" class="w-5 h-5 text-green-400"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-xs font-bold text-green-200">EVACUATION</div>
+                                    <div class="text-[10px] text-slate-500 truncate">全員避難完了</div>
+                                </div>
+                                <div class="text-yellow-400 font-mono font-bold text-lg">x1.2</div>
+                            </div>
+
+                            <div
+                                class="flex items-center gap-3 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700">
+                                <div
+                                    class="w-9 h-9 rounded bg-yellow-900/50 flex items-center justify-center border border-yellow-500/30 shrink-0">
+                                    <i data-lucide="coins" class="w-5 h-5 text-yellow-400"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-xs font-bold text-yellow-200">ECONOMY</div>
+                                    <div class="text-[10px] text-slate-500 truncate">コスト 777以上</div>
+                                </div>
+                                <div class="text-yellow-400 font-mono font-bold text-lg">x1.2</div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Special Combo Multiplier (Bottom) -->
+                        <div
+                            class="bg-yellow-500/10 p-2 rounded-xl border border-yellow-500/50 mt-2 relative overflow-hidden shrink-0 flex items-center justify-between px-4">
+                            <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400/50"></div>
+                            <div class="text-left z-10">
+                                <div class="text-[10px] text-slate-300 font-bold">３つの条件を達成すると</div>
+                                <div class="text-sm font-black text-yellow-400 font-orbitron tracking-wider">SPECIAL
+                                    BONUS</div>
+                            </div>
+                            <div class="text-4xl font-black font-orbitron text-white text-shadow drop-shadow-xl z-10">x
+                                2.0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Tips & Achievements -->
+    <div class="page flex flex-col relative overflow-hidden">
+        <div class="flex items-center gap-4 mb-6 relative z-10 px-4 pt-4">
+            <h2 class="text-3xl font-black font-orbitron text-slate-200">TIPS & ACHIEVEMENTS</h2>
+            <div class="h-1 bg-gradient-to-r from-slate-200 to-transparent flex-1"></div>
+            <div class="text-slate-400 font-orbitron text-xs tracking-[0.2em]">MANUAL > 07</div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6 mb-6 flex-1">
+            <!-- Beginner Tips -->
+            <div class="glass-light p-5 rounded-xl border-t-4 border-green-500">
+                <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+                    <span class="text-2xl">🔰</span> 初心者向け
+                </h3>
+                <div class="space-y-4 text-sm text-slate-300">
+                    <div>
+                        <strong class="text-white block">基本配置</strong>
+                        消火設備を最前線(上)に。<br>
+                        警報でコスト回復を忘れずに。
+                    </div>
+                    <div>
+                        <strong class="text-white block">コスト管理</strong>
+                        序盤はTier1カードで展開。<br>
+                        コスト不足なら警報設備を追加。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Tips -->
+            <div class="glass-light p-5 rounded-xl border-t-4 border-red-500">
+                <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+                    <span class="text-2xl">⭐</span> 上級者向け
+                </h3>
+                <div class="space-y-4 text-sm text-slate-300">
+                    <div>
+                        <strong class="text-white block">オーバーフロー戦略</strong>
+                        1つの設備をTier4+まで強化。<br>
+                        割引&バフで圧倒的有利に。
+                    </div>
+                    <div>
+                        <strong class="text-white block">属性相性 (HARD必須)</strong>
+                        <span class="text-blue-300">泡</span>→油火災(B)に特効<br>
+                        <span class="text-purple-300">ガス</span>→電気火災(C)に有効
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="glass-light p-5 rounded-xl border-t-4 border-yellow-500">
+                <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+                    <span class="text-2xl">🏆</span> 実績 (全9種)
+                </h3>
+                <ul class="text-xs space-y-2 text-slate-400">
+                    <li class="flex justify-between border-b border-slate-800 pb-1"><span>初勝利</span>
+                        <span>Clear
+                            1</span>
+                    </li>
+                    <li class="flex justify-between border-b border-slate-800 pb-1">
+                        <span>全難易度制覇</span> <span>All
+                            Diff</span>
+                    </li>
+                    <li class="flex justify-between border-b border-slate-800 pb-1">
+                        <span>ノーダメージ</span> <span>HP
+                            100%</span>
+                    </li>
+                    <li class="flex justify-between border-b border-slate-800 pb-1">
+                        <span>完全避難</span> <span>Goal
+                            Reach</span>
+                    </li>
+                    <li class="flex justify-between border-b border-slate-800 pb-1">
+                        <span>エコノミー</span> <span>Cost
+                            777</span>
+                    </li>
+                    <li class="flex justify-between border-b border-slate-800 pb-1">
+                        <span>スピードクリア</span> <span>
+                            < 30s</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer Summary -->
+        <div class="glass-medium p-6 rounded-2xl text-center border border-slate-600">
+            <h3
+                class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">
+                楽しみながら消防設備の知識を習得しよう！
+            </h3>
+            <p class="font-orbitron tracking-widest text-slate-400">BLAZING DEFENSE - 設備士の決断</p>
+        </div>
+    </div>
+
+    <!-- Script to initialize Lucide icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
