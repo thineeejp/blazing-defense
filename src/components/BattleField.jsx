@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { Flame, ShieldAlert, Zap, AlertTriangle, Skull, Users } from 'lucide-react';
 import GlassCard from './ui/GlassCard';
+import { useDeviceTypeContext } from '../contexts/DeviceTypeContext';
 
 const GRID_ROWS = 6;
 const RANGE_LABEL = {
@@ -44,6 +45,9 @@ export default function BattleField({
   setRemoveModal,
   onSurrender,
 }) {
+  // デバイスタイプ検出（Context経由で取得）
+  const { isMobile, isTouchDevice } = useDeviceTypeContext();
+
   // HP遅延バー用
   const [hpLag, setHpLag] = useState(hp);
   const hpTargetRef = useRef(hp);
@@ -69,7 +73,7 @@ export default function BattleField({
   }, []);
 
   // カード選択時ボトムバー輝き
-  const [deckFlash, setDeckFlash] = useState(false);
+  const [deckFlash, setDeckFlash] = useState(false); // eslint-disable-line no-unused-vars
   useEffect(() => {
     if (selectedCard) {
       setHoverCell(null);  // カード選択時にホバー状態をクリア（シアン横線除去）
@@ -118,17 +122,17 @@ export default function BattleField({
       {damaged && <div className="absolute inset-0 bg-red-600/30 z-50 pointer-events-none animate-pulse"></div>}
 
       {/* Header (HUD) */}
-      <div className="absolute top-0 left-0 right-0 p-4 z-20 flex justify-between items-start pointer-events-none">
-        <div className="flex gap-4 pointer-events-auto">
-          <GlassCard className="flex items-center gap-3 px-4 py-2" hoverEffect={false}>
-            <ShieldAlert size={20} className={damaged ? 'text-red-500 animate-pulse' : hp < 30 ? 'text-orange-400 animate-pulse' : 'text-blue-400'} />
+      <div className={`absolute top-0 left-0 right-0 ${isMobile ? 'p-2' : 'p-4'} z-20 flex justify-between items-start pointer-events-none`}>
+        <div className={`flex ${isMobile ? 'gap-1.5' : 'gap-4'} pointer-events-auto`}>
+          <GlassCard className={`flex items-center ${isMobile ? 'gap-1.5 px-2 py-1.5' : 'gap-3 px-4 py-2'}`} hoverEffect={false}>
+            <ShieldAlert size={isMobile ? 16 : 20} className={damaged ? 'text-red-500 animate-pulse' : hp < 30 ? 'text-orange-400 animate-pulse' : 'text-blue-400'} />
             <div>
-              <div className="text-[10px] font-bold text-slate-400">DEFENSE HP</div>
-              <div className={`font-mono font-bold text-xl ${damaged ? 'text-red-500 animate-shake' : hp < 30 ? 'text-orange-400 animate-hp-danger' : 'text-white'}`}>
+              <div className={`${isMobile ? 'text-[8px]' : 'text-[10px]'} font-bold text-slate-400`}>HP</div>
+              <div className={`font-mono font-bold ${isMobile ? 'text-base' : 'text-xl'} ${damaged ? 'text-red-500 animate-shake' : hp < 30 ? 'text-orange-400 animate-hp-danger' : 'text-white'}`}>
                 {Math.floor(hp)}%
               </div>
               {/* HPゲージ */}
-              <div className="relative w-24 h-2 bg-slate-800/70 rounded-full overflow-hidden mt-1 border border-white/5">
+              <div className={`relative ${isMobile ? 'w-14' : 'w-24'} h-2 bg-slate-800/70 rounded-full overflow-hidden mt-1 border border-white/5`}>
                 {/* 遅延バー */}
                 <div
                   className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-600 to-orange-400 transition-all duration-500"
@@ -143,11 +147,11 @@ export default function BattleField({
             </div>
           </GlassCard>
 
-          <GlassCard className={`relative flex items-center gap-3 px-4 py-2 ${jackpot ? 'animate-jackpot' : ''}`} hoverEffect={false}>
-            <Zap size={20} className={`text-yellow-400 ${costIncreasing ? 'animate-pulse' : ''}`} />
+          <GlassCard className={`relative flex items-center ${isMobile ? 'gap-1.5 px-2 py-1.5' : 'gap-3 px-4 py-2'} ${jackpot ? 'animate-jackpot' : ''}`} hoverEffect={false}>
+            <Zap size={isMobile ? 16 : 20} className={`text-yellow-400 ${costIncreasing ? 'animate-pulse' : ''}`} />
             <div>
-              <div className="text-[10px] font-bold text-slate-400">COST</div>
-              <div className={`font-mono font-bold text-xl transition-all duration-150 ${cost >= 777 ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]' : 'text-yellow-400'} ${costIncreasing ? 'animate-cost-pulse-up text-green-400' : ''} ${costDecreasing ? 'animate-cost-flash-down text-red-400' : ''}`}>
+              <div className={`${isMobile ? 'text-[8px]' : 'text-[10px]'} font-bold text-slate-400`}>COST</div>
+              <div className={`font-mono font-bold ${isMobile ? 'text-base' : 'text-xl'} transition-all duration-150 ${cost >= 777 ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]' : 'text-yellow-400'} ${costIncreasing ? 'animate-cost-pulse-up text-green-400' : ''} ${costDecreasing ? 'animate-cost-flash-down text-red-400' : ''}`}>
                 {Math.floor(cost)}
               </div>
             </div>
@@ -168,15 +172,15 @@ export default function BattleField({
             )}
           </GlassCard>
 
-          <GlassCard className="flex items-center gap-3 px-4 py-2" hoverEffect={false}>
-            <Users size={20} className={`text-green-400 ${evacuatedCount >= evacuationGoal ? 'animate-pulse' : ''}`} />
+          <GlassCard className={`flex items-center ${isMobile ? 'gap-1.5 px-2 py-1.5' : 'gap-3 px-4 py-2'}`} hoverEffect={false}>
+            <Users size={isMobile ? 16 : 20} className={`text-green-400 ${evacuatedCount >= evacuationGoal ? 'animate-pulse' : ''}`} />
             <div>
-              <div className="text-[10px] font-bold text-slate-400">EVACUATED</div>
-              <div className={`font-mono font-bold text-xl ${evacuatedCount >= evacuationGoal ? 'text-green-400' : 'text-white'}`}>
-                {Math.floor(evacuatedCount)} <span className="text-sm text-slate-500">/ {evacuationGoal}</span>
+              <div className={`${isMobile ? 'text-[8px]' : 'text-[10px]'} font-bold text-slate-400`}>EVAC</div>
+              <div className={`font-mono font-bold ${isMobile ? 'text-base' : 'text-xl'} ${evacuatedCount >= evacuationGoal ? 'text-green-400' : 'text-white'}`}>
+                {Math.floor(evacuatedCount)}<span className={`${isMobile ? 'text-[10px]' : 'text-sm'} text-slate-500`}>/{evacuationGoal}</span>
               </div>
               {/* 避難進捗ゲージ */}
-              <div className="w-20 h-1.5 bg-slate-700/50 rounded-full overflow-hidden mt-1">
+              <div className={`${isMobile ? 'w-12' : 'w-20'} h-1.5 bg-slate-700/50 rounded-full overflow-hidden mt-1`}>
                 <div
                   className={`h-full transition-all duration-300 ${evacuatedCount >= evacuationGoal ? 'bg-gradient-to-r from-green-400 to-emerald-300' : 'bg-gradient-to-r from-green-600 to-green-500'}`}
                   style={{ width: `${Math.min(100, (evacuatedCount / evacuationGoal) * 100)}%` }}
@@ -186,17 +190,17 @@ export default function BattleField({
           </GlassCard>
         </div>
 
-        <div className="flex gap-4 pointer-events-auto">
-          <GlassCard className="px-6 py-2" hoverEffect={false}>
-            <div className="text-[10px] font-bold text-slate-400 text-center">TIME LIMIT</div>
-            <div className={`font-mono font-bold text-2xl w-24 text-center ${(timeLimit - frameCount) / 60 < 15 ? 'text-red-400 animate-pulse' : (timeLimit - frameCount) / 60 < 30 ? 'text-orange-400' : 'text-white'}`}>
-              {Math.floor((timeLimit - frameCount) / 60)}<span className="text-sm">s</span>
+        <div className={`flex ${isMobile ? 'gap-1.5' : 'gap-4'} pointer-events-auto`}>
+          <GlassCard className={`${isMobile ? 'px-2 py-1.5' : 'px-6 py-2'}`} hoverEffect={false}>
+            <div className={`${isMobile ? 'text-[8px]' : 'text-[10px]'} font-bold text-slate-400 text-center`}>TIME</div>
+            <div className={`font-mono font-bold ${isMobile ? 'text-lg w-12' : 'text-2xl w-24'} text-center ${(timeLimit - frameCount) / 60 < 15 ? 'text-red-400 animate-pulse' : (timeLimit - frameCount) / 60 < 30 ? 'text-orange-400' : 'text-white'}`}>
+              {Math.floor((timeLimit - frameCount) / 60)}<span className={`${isMobile ? 'text-[10px]' : 'text-sm'}`}>s</span>
             </div>
           </GlassCard>
 
           <button
             onClick={onSurrender}
-            className="h-full px-4 bg-red-900/40 border border-red-500/50 rounded-xl text-red-400 font-bold hover:bg-red-500 hover:text-white transition-all shadow-[0_0_10px_rgba(239,68,68,0.2)]"
+            className={`h-full ${isMobile ? 'px-2 min-h-[44px] text-sm' : 'px-4'} bg-red-900/40 border border-red-500/50 rounded-xl text-red-400 font-bold hover:bg-red-500 hover:text-white transition-all shadow-[0_0_10px_rgba(239,68,68,0.2)]`}
           >
             降参
           </button>
@@ -204,8 +208,8 @@ export default function BattleField({
       </div>
 
       {/* Main 3D Grid Area */}
-      <div className={`flex-1 relative flex items-center justify-center px-4 pt-0 pb-2 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
-        <div className="relative w-full max-w-[410px] max-h-[calc(100vh-240px)] aspect-[3/4] transition-all duration-500 mt-8" style={gridStyle}>
+      <div className={`flex-1 relative flex items-center justify-center ${isMobile ? 'px-2' : 'px-4'} pt-0 pb-2 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
+        <div className={`relative w-full max-w-[min(100vw_-_1rem,_410px)] ${isMobile ? 'max-h-[calc(100dvh-180px)] aspect-[2/3]' : 'max-h-[calc(100vh-240px)] aspect-[3/4]'} transition-all duration-500 ${isMobile ? 'mt-16' : 'mt-8'}`} style={gridStyle}>
           {Array.from({ length: GRID_ROWS * difficulty.cols }).map((_, i) => {
             const r = Math.floor(i / difficulty.cols);
             const c = i % difficulty.cols;
@@ -216,12 +220,27 @@ export default function BattleField({
               <div
                 key={i}
                 onClick={() => handleSlotClick(r, c)}
-                onMouseEnter={() => setHoverCell({ r, c })}
-                onMouseLeave={() => setHoverCell(null)}
+                onPointerEnter={(e) => {
+                  // タッチデバイスではホバー状態を無効化（pointerleave問題回避）
+                  if (e.pointerType !== 'touch' && !isTouchDevice) {
+                    setHoverCell({ r, c });
+                  }
+                }}
+                onPointerLeave={(e) => {
+                  if (e.pointerType !== 'touch') {
+                    setHoverCell(null);
+                  }
+                }}
+                onPointerDown={(e) => {
+                  // タッチ時は明示的にホバー状態リセット
+                  if (e.pointerType === 'touch') {
+                    setHoverCell(null);
+                  }
+                }}
                 className={`
                   relative border border-white/5 flex items-center justify-center
                   ${isDefenseLine ? 'bg-blue-900/10 border-b-2 border-b-blue-500/50' : 'bg-slate-800/20'}
-                  hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-[1px]
+                  hover:bg-white/10 touch:hover:bg-transparent cursor-pointer transition-colors backdrop-blur-[1px]
                   ${hoverCell && hoverCell.r === r && hoverCell.c === c && selectedCard ? 'ring-2 ring-cyan-300' : ''}
                 `}
               >
@@ -700,10 +719,10 @@ export default function BattleField({
       </div>
 
       {/* Deck (Bottom) */}
-      <div className="h-[clamp(180px,26vh,220px)] z-30 flex flex-col px-4 pt-0 pb-0 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent">
+      <div className={`${isMobile ? 'h-[clamp(130px,18dvh,160px)]' : 'h-[clamp(180px,26vh,220px)]'} z-30 flex flex-col ${isMobile ? 'px-2' : 'px-4'} pt-0 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent`} style={{ paddingBottom: isMobile ? 'max(0.5rem, env(safe-area-inset-bottom))' : 0 }}>
         {/* 操作ガイダンス */}
-        <div className="text-xs text-center text-slate-400 font-mono pb-1 pt-2">
-          カードをクリック → グリッドをクリックで配置
+        <div className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-center text-slate-400 font-mono pb-1 pt-2`}>
+          {isMobile ? 'タップで選択 → グリッドをタップで配置' : 'カードをクリック → グリッドをクリックで配置'}
         </div>
         {/* Deck Cards Container */}
         <div className="flex-1 flex items-center justify-center overflow-visible">
@@ -718,10 +737,17 @@ export default function BattleField({
               return (
                 <motion.button
                   key={card.id}
-                  onClick={() => cost >= actualCost && setSelectedCard(card)}
+                  onClick={() => {
+                    // 同じカードをタップで選択解除（キャンセルボタン代替）
+                    if (selectedCard?.id === card.id) {
+                      setSelectedCard(null);
+                    } else if (cost >= actualCost) {
+                      setSelectedCard(card);
+                    }
+                  }}
                   disabled={cost < actualCost}
                   className={`
-                relative flex-shrink-0 w-20 h-24 rounded-xl border border-white/10 flex flex-col items-center justify-center group
+                relative flex-shrink-0 ${isMobile ? 'w-16 h-20' : 'w-20 h-24'} rounded-xl border border-white/10 flex flex-col items-center justify-center group
                 ${selectedCard?.id === card.id
                       ? 'bg-slate-700 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)]'
                       : 'bg-slate-800/80'}
@@ -733,15 +759,15 @@ export default function BattleField({
                     y: 0,
                     rotateY: 0,
                   }}
-                  whileHover={cost >= actualCost ? {
+                  whileHover={!isTouchDevice && cost >= actualCost ? {
                     y: -4,
                     rotateY: 5,
                     transition: { type: 'spring', stiffness: 300, damping: 20 }
-                  } : {}}
+                  } : undefined}
                   whileTap={cost >= actualCost ? {
-                    scale: 0.95,
+                    scale: 0.92,
                     transition: { duration: 0.1 }
-                  } : {}}
+                  } : undefined}
                   transition={{
                     type: 'spring',
                     stiffness: 260,
@@ -759,7 +785,7 @@ export default function BattleField({
                   )}
 
                   <div
-                    className={`mb-1 transition-transform group-hover:scale-110 ${card.type === 'red'
+                    className={`${isMobile ? 'mb-0.5' : 'mb-1'} transition-transform ${!isTouchDevice ? 'group-hover:scale-110' : ''} ${card.type === 'red'
                       ? 'text-red-400'
                       : card.type === 'green'
                         ? 'text-green-400'
@@ -768,29 +794,29 @@ export default function BattleField({
                           : 'text-yellow-400'
                       }`}
                   >
-                    {React.createElement(card.icon, { size: 36 })}
+                    {React.createElement(card.icon, { size: isMobile ? 28 : 36 })}
                   </div>
 
-                  <div className="text-[10px] font-bold text-gray-300 mb-1 text-center leading-tight px-1">{card.name}</div>
+                  <div className={`${isMobile ? 'text-[8px]' : 'text-[10px]'} font-bold text-gray-300 mb-0.5 text-center leading-tight px-0.5`}>{card.name}</div>
 
-                  <div className="flex items-baseline gap-1 bg-black/40 px-2 py-0.5 rounded">
+                  <div className={`flex items-baseline gap-0.5 bg-black/40 ${isMobile ? 'px-1.5 py-0.5' : 'px-2 py-0.5'} rounded`}>
                     {hasDiscount && (
-                      <div className="text-[10px] line-through text-gray-500">{card.cost}</div>
+                      <div className={`${isMobile ? 'text-[8px]' : 'text-[10px]'} line-through text-gray-500`}>{card.cost}</div>
                     )}
-                    <div className={`text-lg font-black font-mono ${hasDiscount ? 'text-yellow-300' : 'text-white'}`}>
+                    <div className={`${isMobile ? 'text-sm' : 'text-lg'} font-black font-mono ${hasDiscount ? 'text-yellow-300' : 'text-white'}`}>
                       {actualCost}
                     </div>
                   </div>
 
                   {/* Badges */}
-                  <div className="absolute top-1 right-1 text-[8px] text-slate-300 bg-slate-700/80 px-1 rounded border border-white/10">
+                  <div className={`absolute top-0.5 right-0.5 ${isMobile ? 'text-[6px]' : 'text-[8px]'} text-slate-300 bg-slate-700/80 px-0.5 rounded border border-white/10`}>
                     {card.rangeType ? RANGE_LABEL[card.rangeType] : 'SUP'}
                   </div>
-                  <div className="absolute top-1 left-1 text-[8px] font-bold text-cyan-300 bg-slate-700/80 px-1 rounded border border-white/10">
+                  <div className={`absolute top-0.5 left-0.5 ${isMobile ? 'text-[6px]' : 'text-[8px]'} font-bold text-cyan-300 bg-slate-700/80 px-0.5 rounded border border-white/10`}>
                     {card.duration === null ? 'INF' : `${Math.floor(card.duration / 60)}s`}
                   </div>
                   {hasDiscount && (
-                    <div className="absolute -top-2 -right-2 text-[8px] font-bold text-slate-900 bg-yellow-400 px-1.5 py-0.5 rounded-full shadow-sm">
+                    <div className={`absolute -top-1.5 -right-1.5 ${isMobile ? 'text-[6px] px-1' : 'text-[8px] px-1.5'} font-bold text-slate-900 bg-yellow-400 py-0.5 rounded-full shadow-sm`}>
                       -{Math.floor(discount * 100)}%
                     </div>
                   )}

@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS変数（モバイル対応用） */
+:root {
+  --grid-cell-min: 40px;
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --grid-cell-min: 36px;
+  }
+}
+
+/* タッチデバイス向けスタイル */
+@media (hover: none) {
+  /* ボタンのアクティブ状態強調 */
+  button:active {
+    transform: scale(0.97);
+  }
+
+  /* タッチターゲット最小サイズ保証 */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 @layer components {
 
   /* グラスモーフィズムパネル - 軽度 */

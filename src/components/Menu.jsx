@@ -222,7 +222,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[600px]"
+              className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[600px] max-h-[85vh]"
             >
               <div className="flex justify-between items-center p-5 border-b border-slate-700 bg-slate-800">
                 <h2 className="text-xl font-black font-orbitron text-white tracking-wider flex items-center gap-3">

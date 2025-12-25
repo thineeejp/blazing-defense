@@ -6,6 +6,9 @@ export default {
     ],
     theme: {
         extend: {
+            screens: {
+                'touch': { 'raw': '(hover: none)' },
+            },
             fontFamily: {
                 orbitron: ['Orbitron', 'sans-serif'],
                 russo: ['Russo One', 'sans-serif'],

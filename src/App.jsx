@@ -7,6 +7,7 @@ import BriefingPhase from './components/BriefingPhase';
 import DeckBuildPhase from './components/DeckBuildPhase';
 import BattleField from './components/BattleField';
 import Gallery from './components/Gallery';
+import { DeviceTypeProvider } from './contexts/DeviceTypeContext';
 
 // 新しい定数のインポート
 import { ALL_CARDS } from './constants/cards';
@@ -1228,6 +1229,7 @@ export default function BlazingDefense() {
   };
 
   return (
+    <DeviceTypeProvider>
     <div className="w-full h-screen overflow-x-hidden overflow-y-visible font-sans select-none">
       {phase === 'MENU' && (
         <Menu
@@ -1319,5 +1321,6 @@ export default function BlazingDefense() {
         />
       )}
     </div>
+    </DeviceTypeProvider>
   );
 }

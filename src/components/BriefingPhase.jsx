@@ -134,7 +134,7 @@ export default function BriefingPhase({
                 <button
                   key={index}
                   onClick={() => onAnswerQuiz(index)}
-                  className="w-full p-5 text-left rounded-xl bg-slate-800/50 border border-slate-600 hover:border-cyan-400 hover:bg-cyan-900/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all group flex items-center"
+                  className="w-full p-5 min-h-[52px] text-left rounded-xl bg-slate-800/50 border border-slate-600 hover:border-cyan-400 hover:bg-cyan-900/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] active:scale-[0.98] transition-all group flex items-center"
                 >
                   <span className="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-4 group-hover:bg-cyan-500 group-hover:text-slate-900 transition-colors">
                     {String.fromCharCode(65 + index)}
