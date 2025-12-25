@@ -857,10 +857,29 @@
                         <li>コストを消費</li>
                         <li><span class="text-orange-400 font-bold">選択中は連続配置可能</span></li>
                     </ol>
-                    <div
-                        class="text-xs bg-slate-900/60 p-2 rounded border border-orange-500/20 text-orange-200 flex items-center gap-2">
-                        <strong class="text-yellow-400">⚡</strong>
-                        <span>コストは自然回復します。</span>
+
+                    <!-- Important Tips - Enhanced -->
+                    <div class="space-y-2 mt-3">
+                        <div class="bg-gradient-to-r from-red-900/40 to-orange-900/40 p-3 rounded-lg border-l-4 border-red-500 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-red-500/5 animate-pulse"></div>
+                            <div class="flex items-start gap-3 relative z-10">
+                                <div class="text-2xl shrink-0">🔥</div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-bold text-red-200 mb-1">敵がすぐに来るのでまずは消火設備を配置しよう！</div>
+                                    <div class="text-xs text-slate-300">配置すると自動で攻撃します。</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 p-3 rounded-lg border-l-4 border-yellow-500 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-yellow-500/5"></div>
+                            <div class="flex items-start gap-3 relative z-10">
+                                <div class="text-2xl shrink-0">⚡</div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-bold text-yellow-200">コストは自然回復します。</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -909,26 +928,26 @@
                         <i data-lucide="crosshair" class="w-5 h-5 text-orange-400"></i>
                         攻撃範囲
                     </h3>
-                    <div class="grid grid-cols-2 gap-2 text-xs text-center">
-                        <div class="bg-slate-800 p-2 rounded flex flex-col items-center">
-                            <div class="text-slate-400 mb-1 text-[10px]">Surround</div>
-                            <i data-lucide="grid" class="w-5 h-5 mx-auto text-green-400 mb-1"></i>
-                            <span class="text-[10px] text-white">周囲3x3</span>
+                    <div class="grid grid-cols-4 gap-1.5 text-xs text-center">
+                        <div class="bg-slate-800 p-1.5 rounded flex flex-col items-center">
+                            <div class="text-slate-400 mb-0.5 text-[9px]">Surround</div>
+                            <i data-lucide="grid" class="w-4 h-4 mx-auto text-green-400 mb-0.5"></i>
+                            <span class="text-[9px] text-white leading-tight">周囲<br>3x3</span>
                         </div>
-                        <div class="bg-slate-800 p-2 rounded flex flex-col items-center">
-                            <div class="text-slate-400 mb-1 text-[10px]">Wide</div>
-                            <i data-lucide="align-justify" class="w-5 h-5 mx-auto text-blue-400 mb-1"></i>
-                            <span class="text-[10px] text-white">横1列x3</span>
+                        <div class="bg-slate-800 p-1.5 rounded flex flex-col items-center">
+                            <div class="text-slate-400 mb-0.5 text-[9px]">Wide</div>
+                            <i data-lucide="align-justify" class="w-4 h-4 mx-auto text-blue-400 mb-0.5"></i>
+                            <span class="text-[9px] text-white leading-tight">横1列<br>x3</span>
                         </div>
-                        <div class="bg-slate-800 p-2 rounded flex flex-col items-center">
-                            <div class="text-slate-400 mb-1 text-[10px]">Line</div>
-                            <i data-lucide="arrow-down" class="w-5 h-5 mx-auto text-red-400 mb-1"></i>
-                            <span class="text-[10px] text-white">縦1列</span>
+                        <div class="bg-slate-800 p-1.5 rounded flex flex-col items-center">
+                            <div class="text-slate-400 mb-0.5 text-[9px]">Line</div>
+                            <i data-lucide="arrow-down" class="w-4 h-4 mx-auto text-red-400 mb-0.5"></i>
+                            <span class="text-[9px] text-white leading-tight">縦<br>1列</span>
                         </div>
-                        <div class="bg-slate-800 p-2 rounded flex flex-col items-center">
-                            <div class="text-slate-400 mb-1 text-[10px]">Global</div>
-                            <i data-lucide="globe" class="w-5 h-5 mx-auto text-purple-400 mb-1"></i>
-                            <span class="text-[10px] text-white">全体</span>
+                        <div class="bg-slate-800 p-1.5 rounded flex flex-col items-center">
+                            <div class="text-slate-400 mb-0.5 text-[9px]">Global</div>
+                            <i data-lucide="globe" class="w-4 h-4 mx-auto text-purple-400 mb-0.5"></i>
+                            <span class="text-[9px] text-white leading-tight">全体</span>
                         </div>
                     </div>
                 </div>
