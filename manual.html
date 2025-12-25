@@ -860,7 +860,7 @@
 
                     <!-- Important Tips - Enhanced -->
                     <div class="space-y-2 mt-3">
-                        <div class="bg-gradient-to-r from-red-900/40 to-orange-900/40 p-3 rounded-lg border-l-4 border-red-500 relative overflow-hidden">
+                        <div class="bg-gradient-to-r from-red-900/40 to-orange-900/40 p-3 rounded-lg border border-red-500/30 relative overflow-hidden">
                             <div class="absolute inset-0 bg-red-500/5 animate-pulse"></div>
                             <div class="flex items-start gap-3 relative z-10">
                                 <div class="text-2xl shrink-0">🔥</div>
@@ -871,7 +871,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 p-3 rounded-lg border-l-4 border-yellow-500 relative overflow-hidden">
+                        <div class="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 p-3 rounded-lg border border-yellow-500/30 relative overflow-hidden">
                             <div class="absolute inset-0 bg-yellow-500/5"></div>
                             <div class="flex items-start gap-3 relative z-10">
                                 <div class="text-2xl shrink-0">⚡</div>
@@ -880,74 +880,54 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="bg-gradient-to-r from-purple-900/40 to-blue-900/40 p-3 rounded-lg border border-purple-500/30 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-purple-500/5"></div>
+                            <div class="flex items-start gap-3 relative z-10">
+                                <div class="text-2xl shrink-0">🎯</div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-bold text-purple-200">ユニットにより効果範囲が異なります。</div>
+                                    <div class="text-xs text-slate-300">例：周囲、縦一列、全体</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- 2. Enemies -->
-                <div class="glass-light p-4 rounded-xl border border-orange-500/30 flex-1 flex flex-col gap-2 min-h-0">
+                <div class="glass-light p-3 rounded-xl border border-orange-500/30 flex flex-col gap-2">
                     <h3
-                        class="font-bold text-white text-base flex items-center gap-2 border-b border-orange-500/30 pb-1">
-                        <i data-lucide="flame" class="w-5 h-5 text-orange-400"></i>
+                        class="font-bold text-white text-sm flex items-center gap-2 border-b border-orange-500/30 pb-1 mb-1">
+                        <i data-lucide="flame" class="w-4 h-4 text-orange-400"></i>
                         敵（火災）の種類
                     </h3>
-                    <div class="flex flex-col gap-2 flex-1 justify-center">
+                    <div class="flex flex-col gap-1.5">
                         <!-- Type A -->
-                        <div class="flex items-center gap-3 bg-slate-800/50 p-2 rounded border border-red-500/20">
+                        <div class="flex items-center gap-2 bg-slate-800/50 p-1.5 rounded border border-red-500/20">
                             <span
-                                class="w-10 h-10 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center font-bold font-orbitron text-base border border-red-500/50 shrink-0">A</span>
-                            <div class="flex-1">
-                                <div class="text-xs text-red-200 font-bold">普通火災 (HP:200)</div>
-                                <div class="text-[10px] text-slate-400">標準的な火災</div>
+                                class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center font-bold font-orbitron text-sm border border-red-500/50 shrink-0">A</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-[11px] text-red-200 font-bold">普通火災 (HP:200)</div>
+                                <div class="text-[9px] text-slate-400">標準的な火災</div>
                             </div>
                         </div>
                         <!-- Type B -->
-                        <div class="flex items-center gap-3 bg-slate-800/50 p-2 rounded border border-yellow-500/20">
+                        <div class="flex items-center gap-2 bg-slate-800/50 p-1.5 rounded border border-yellow-500/20">
                             <span
-                                class="w-10 h-10 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center font-bold font-orbitron text-base border border-yellow-500/50 shrink-0">B</span>
-                            <div class="flex-1">
-                                <div class="text-xs text-yellow-200 font-bold">油火災 (HP:400)</div>
-                                <div class="text-[10px] text-slate-400">水に強い / 泡に弱い</div>
+                                class="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center font-bold font-orbitron text-sm border border-yellow-500/50 shrink-0">B</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-[11px] text-yellow-200 font-bold">油火災 (HP:400)</div>
+                                <div class="text-[9px] text-slate-400">水に強い / 泡に弱い</div>
                             </div>
                         </div>
                         <!-- Type C -->
-                        <div class="flex items-center gap-3 bg-slate-800/50 p-2 rounded border border-blue-500/20">
+                        <div class="flex items-center gap-2 bg-slate-800/50 p-1.5 rounded border border-blue-500/20">
                             <span
-                                class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold font-orbitron text-base border border-blue-500/50 shrink-0">C</span>
-                            <div class="flex-1">
-                                <div class="text-xs text-blue-200 font-bold">電気火災 (HP:150)</div>
-                                <div class="text-[10px] text-slate-400">移動高速 / ガスに弱い</div>
+                                class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold font-orbitron text-sm border border-blue-500/50 shrink-0">C</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-[11px] text-blue-200 font-bold">電気火災 (HP:150)</div>
+                                <div class="text-[9px] text-slate-400">移動高速 / ガスに弱い</div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. Range -->
-                <div class="glass-light p-4 rounded-xl border border-orange-500/30">
-                    <h3
-                        class="font-bold text-white text-base flex items-center gap-2 border-b border-orange-500/30 pb-1 mb-2">
-                        <i data-lucide="crosshair" class="w-5 h-5 text-orange-400"></i>
-                        攻撃範囲
-                    </h3>
-                    <div class="grid grid-cols-4 gap-1.5 text-xs text-center">
-                        <div class="bg-slate-800 p-1.5 rounded flex flex-col items-center">
-                            <div class="text-slate-400 mb-0.5 text-[9px]">Surround</div>
-                            <i data-lucide="grid" class="w-4 h-4 mx-auto text-green-400 mb-0.5"></i>
-                            <span class="text-[9px] text-white leading-tight">周囲<br>3x3</span>
-                        </div>
-                        <div class="bg-slate-800 p-1.5 rounded flex flex-col items-center">
-                            <div class="text-slate-400 mb-0.5 text-[9px]">Wide</div>
-                            <i data-lucide="align-justify" class="w-4 h-4 mx-auto text-blue-400 mb-0.5"></i>
-                            <span class="text-[9px] text-white leading-tight">横1列<br>x3</span>
-                        </div>
-                        <div class="bg-slate-800 p-1.5 rounded flex flex-col items-center">
-                            <div class="text-slate-400 mb-0.5 text-[9px]">Line</div>
-                            <i data-lucide="arrow-down" class="w-4 h-4 mx-auto text-red-400 mb-0.5"></i>
-                            <span class="text-[9px] text-white leading-tight">縦<br>1列</span>
-                        </div>
-                        <div class="bg-slate-800 p-1.5 rounded flex flex-col items-center">
-                            <div class="text-slate-400 mb-0.5 text-[9px]">Global</div>
-                            <i data-lucide="globe" class="w-4 h-4 mx-auto text-purple-400 mb-0.5"></i>
-                            <span class="text-[9px] text-white leading-tight">全体</span>
                         </div>
                     </div>
                 </div>
