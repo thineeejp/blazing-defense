@@ -482,7 +482,7 @@
                             <div class="p-1.5 bg-red-900/30 rounded"><i data-lucide="flame"
                                     class="w-4 h-4 text-red-400"></i></div>
                             <div class="flex-1">
-                                <div class="text-xs font-bold text-red-300">消火 (Fire)</div>
+                                <div class="text-xs font-bold text-red-300">消火設備</div>
                                 <div class="text-[10px] text-slate-500">攻撃・ダメージ</div>
                             </div>
                         </div>
@@ -491,7 +491,7 @@
                             <div class="p-1.5 bg-yellow-900/30 rounded"><i data-lucide="bell"
                                     class="w-4 h-4 text-yellow-400"></i></div>
                             <div class="flex-1">
-                                <div class="text-xs font-bold text-yellow-300">警報 (Alarm)</div>
+                                <div class="text-xs font-bold text-yellow-300">警報設備</div>
                                 <div class="text-[10px] text-slate-500">コスト回復</div>
                             </div>
                         </div>
@@ -500,7 +500,7 @@
                             <div class="p-1.5 bg-green-900/30 rounded"><i data-lucide="users"
                                     class="w-4 h-4 text-green-400"></i></div>
                             <div class="flex-1">
-                                <div class="text-xs font-bold text-green-300">避難 (Evacuation)</div>
+                                <div class="text-xs font-bold text-green-300">避難設備</div>
                                 <div class="text-[10px] text-slate-500">避難速度UP</div>
                             </div>
                         </div>
@@ -509,7 +509,7 @@
                             <div class="p-1.5 bg-blue-900/30 rounded"><i data-lucide="building"
                                     class="w-4 h-4 text-blue-400"></i></div>
                             <div class="flex-1">
-                                <div class="text-xs font-bold text-blue-300">施設 (Facility)</div>
+                                <div class="text-xs font-bold text-blue-300">施設</div>
                                 <div class="text-[10px] text-slate-500">バフ・サポート</div>
                             </div>
                         </div>
@@ -518,7 +518,7 @@
                             <div class="p-1.5 bg-purple-900/30 rounded"><i data-lucide="zap"
                                     class="w-4 h-4 text-purple-400"></i></div>
                             <div class="flex-1">
-                                <div class="text-xs font-bold text-purple-300">その他 (Other)</div>
+                                <div class="text-xs font-bold text-purple-300">その他</div>
                                 <div class="text-[10px] text-slate-500">特殊効果</div>
                             </div>
                         </div>
@@ -853,9 +853,7 @@
                     </h3>
                     <ol class="list-decimal pl-5 text-xs text-slate-300 space-y-1.5 font-mono">
                         <li>デッキからカード選択</li>
-                        <li>グリッドをクリックして配置</li>
-                        <li>コストを消費</li>
-                        <li><span class="text-orange-400 font-bold">選択中は連続配置可能</span></li>
+                        <li>グリッドをクリックして配置（コストを消費）</li>
                     </ol>
 
                     <!-- Important Tips - Enhanced -->
@@ -863,7 +861,7 @@
                         <div class="bg-gradient-to-r from-red-900/40 to-orange-900/40 p-3 rounded-lg border border-red-500/30 relative overflow-hidden">
                             <div class="absolute inset-0 bg-red-500/5 animate-pulse"></div>
                             <div class="flex items-start gap-3 relative z-10">
-                                <div class="text-2xl shrink-0">🔥</div>
+                                <i data-lucide="flame" class="w-6 h-6 text-red-400 shrink-0"></i>
                                 <div class="flex-1">
                                     <div class="text-sm font-bold text-red-200 mb-1">敵がすぐに来るのでまずは消火設備を配置しよう！</div>
                                     <div class="text-xs text-slate-300">配置すると自動で攻撃します。</div>
@@ -874,17 +872,27 @@
                         <div class="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 p-3 rounded-lg border border-yellow-500/30 relative overflow-hidden">
                             <div class="absolute inset-0 bg-yellow-500/5"></div>
                             <div class="flex items-start gap-3 relative z-10">
-                                <div class="text-2xl shrink-0">⚡</div>
+                                <i data-lucide="coins" class="w-6 h-6 text-yellow-400 shrink-0"></i>
                                 <div class="flex-1">
                                     <div class="text-sm font-bold text-yellow-200">コストは自然回復します。</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-r from-purple-900/40 to-blue-900/40 p-3 rounded-lg border border-purple-500/30 relative overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-900/40 to-cyan-900/40 p-3 rounded-lg border border-blue-500/30 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-blue-500/5"></div>
+                            <div class="flex items-start gap-3 relative z-10">
+                                <i data-lucide="mouse-pointer-click" class="w-6 h-6 text-blue-400 shrink-0"></i>
+                                <div class="flex-1">
+                                    <div class="text-sm font-bold text-blue-200">選択中のユニットは、空いているマスをクリックして連続で配置可能</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-purple-900/40 to-indigo-900/40 p-3 rounded-lg border border-purple-500/30 relative overflow-hidden">
                             <div class="absolute inset-0 bg-purple-500/5"></div>
                             <div class="flex items-start gap-3 relative z-10">
-                                <div class="text-2xl shrink-0">🎯</div>
+                                <i data-lucide="crosshair" class="w-6 h-6 text-purple-400 shrink-0"></i>
                                 <div class="flex-1">
                                     <div class="text-sm font-bold text-purple-200">ユニットにより効果範囲が異なります。</div>
                                     <div class="text-xs text-slate-300">例：周囲、縦一列、全体</div>
