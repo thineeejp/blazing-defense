@@ -80,19 +80,19 @@ function HighScoreEntry({ entry, index }) {
         {/* Main Info */}
         <div className="flex-1">
           {/* Score & Difficulty */}
-          <div className="flex items-baseline justify-between mb-3">
-            <div className="flex items-baseline gap-3">
-              <h2 className="font-orbitron text-3xl font-black text-cyan-300">
+          <div className="flex items-baseline justify-between flex-wrap gap-2 mb-3">
+            <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
+              <h2 className="font-orbitron text-2xl md:text-3xl font-black text-cyan-300">
                 {entry.score.toLocaleString()}
               </h2>
-              <span className={`text-sm font-bold px-2 py-1 rounded bg-slate-800/50 border border-white/10 ${difficultyColor}`}>
+              <span className={`text-xs md:text-sm font-bold px-2 py-1 rounded bg-slate-800/50 border border-white/10 ${difficultyColor}`}>
                 {entry.difficulty}
               </span>
-              <span className={`text-sm font-bold px-2 py-1 rounded ${entry.isVictory ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50' : 'bg-rose-500/20 text-rose-300 border border-rose-500/50'}`}>
+              <span className={`text-xs md:text-sm font-bold px-2 py-1 rounded ${entry.isVictory ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50' : 'bg-rose-500/20 text-rose-300 border border-rose-500/50'}`}>
                 {entry.isVictory ? 'VICTORY' : 'DEFEAT'}
               </span>
             </div>
-            <span className="text-slate-500 text-xs font-mono">{dateStr}</span>
+            <span className="text-slate-500 text-[10px] md:text-xs font-mono w-full md:w-auto text-right">{dateStr}</span>
           </div>
 
           {/* Stats Grid */}

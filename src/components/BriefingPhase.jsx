@@ -25,15 +25,17 @@ export default function BriefingPhase({
   // CategorySelect: 5種別の選択画面
   if (phase === 'SELECT') {
     return (
-      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-6 pb-8 min-h-screen overflow-y-auto">
+      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-6 pb-8 min-h-[100dvh] overflow-y-auto">
         <div className="max-w-5xl w-full animate-fadeIn">
-          <div className="text-center mb-12 relative">
-            <button
-              onClick={onBackToTitle}
-              className="absolute right-0 top-0 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors"
-            >
-              ← RETURN TO TITLE
-            </button>
+          {/* RETURN TO TITLE ボタン（タイトルの上に配置） */}
+          <button
+            onClick={onBackToTitle}
+            className="mb-4 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors"
+          >
+            ← RETURN TO TITLE
+          </button>
+
+          <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-black font-orbitron text-white mb-2 tracking-wider">
               BRIEFING <span className="text-cyan-400">PHASE</span>
             </h1>

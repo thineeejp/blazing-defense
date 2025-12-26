@@ -38,12 +38,12 @@ export default function DeckBuildPhase({
   return (
     <GameBackground className="flex flex-col min-h-[100dvh] overflow-hidden">
       {/* Header */}
-      <header className="flex-none pt-12 md:pt-20 pb-4 px-4 z-10">
-        <div className="max-w-6xl mx-auto w-full relative">
-          {/* Back Button (Absolute Left) */}
+      <header className="flex-none pt-6 md:pt-12 pb-4 px-4 z-10">
+        <div className="max-w-6xl mx-auto w-full">
+          {/* Back Button (タイトルの上に配置) */}
           <button
             onClick={onBackToTitle}
-            className="absolute left-0 top-0 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors z-20"
+            className="mb-4 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors"
           >
             ← RETURN TO TITLE
           </button>
@@ -56,8 +56,18 @@ export default function DeckBuildPhase({
             <p className="text-slate-400 text-xs font-mono tracking-widest">最大6つまで選択可能</p>
           </div>
 
-          {/* Stats Card (Absolute Right - Adjusted) */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block">
+          {/* モバイル用コスト表示 */}
+          <div className="lg:hidden text-center mt-3">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/80 rounded-lg border border-slate-700">
+              <Zap className="text-yellow-400" size={16} />
+              <span className="text-sm font-mono text-yellow-400 font-bold">
+                COST: {remainingCost} / {totalCost}
+              </span>
+            </div>
+          </div>
+
+          {/* Stats Card (PC用 - 右側固定) */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:block">
             <GlassCard className="px-6 py-3 flex items-center gap-4" hoverEffect={false}>
               <div className="text-right">
                 <div className="text-[10px] text-slate-400 font-bold mb-1">TOTAL COST</div>
@@ -295,39 +305,30 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
         className="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-y-auto flex flex-col md:flex-row max-h-[85dvh] md:max-h-[500px]"
       >
         {/* Left Side: Visual & Identity */}
-        <div className="md:w-5/12 relative bg-slate-800 p-3 md:p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700 overflow-hidden group">
+        <div className="md:w-5/12 relative bg-slate-800 p-4 md:p-6 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700 overflow-hidden group">
           {/* Animated BG */}
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-900 via-slate-900 to-slate-900" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
 
-          {/* 設備名・TIER・コストを1行に統合 */}
-          <div className="relative z-10 flex items-center justify-center gap-2 flex-wrap">
-            <h2 className="text-base md:text-xl font-black text-white font-orbitron tracking-wide">
-              {card.name}
-            </h2>
-            <span className="px-2 py-0.5 bg-slate-700 rounded text-[9px] md:text-[10px] font-mono text-cyan-400 border border-cyan-500/30">
-              T{card.tier}
+          {/* 設備名（1行目） */}
+          <h2 className="relative z-10 text-lg md:text-2xl font-black text-white font-orbitron tracking-wide mb-3 text-center">
+            {card.name}
+          </h2>
+          {/* Tier + コスト（2行目） */}
+          <div className="relative z-10 flex items-center justify-center gap-3">
+            <span className="px-3 py-1 bg-slate-700 rounded text-sm font-mono text-cyan-400 border border-cyan-500/30">
+              Tier {card.tier}
             </span>
-            <span className="px-2 py-0.5 bg-yellow-500/20 rounded text-sm md:text-base font-mono font-bold text-yellow-400 border border-yellow-500/30">
-              {card.cost}
+            <span className="px-3 py-1 bg-yellow-500/20 rounded text-sm font-mono font-bold text-yellow-400 border border-yellow-500/30">
+              コスト {card.cost}
             </span>
           </div>
         </div>
 
         {/* Right Side: Data & Controls */}
         <div className="flex-1 flex flex-col bg-slate-900/50">
-          {/* Header with Close */}
-          <div className="flex justify-between items-start p-6 pb-2">
-            <div className="flex items-center gap-2 text-slate-400 font-mono text-xs">
-              <Activity size={14} /> UNIT_ANALYSIS_PROTOCOL
-            </div>
-            <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-white">
-              <X size={24} />
-            </button>
-          </div>
-
           {/* Content Scroll */}
-          <div className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar space-y-8">
+          <div className="flex-1 overflow-y-auto p-6 pt-4 custom-scrollbar space-y-8">
             {/* Description */}
             <div>
               <h3 className="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">

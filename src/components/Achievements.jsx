@@ -25,33 +25,34 @@ export default function Achievements({ onBack }) {
           ← BACK
         </button>
 
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="font-orbitron text-4xl font-black text-white mb-2">
-              ACHIEVEMENTS
-            </h1>
-            <p className="text-slate-400 text-sm">
-              ゲーム内で解除できる称号一覧
-            </p>
-          </div>
+        <div className="mb-4">
+          <h1 className="font-orbitron text-3xl md:text-4xl font-black text-white mb-2">
+            ACHIEVEMENTS
+          </h1>
+          <p className="text-slate-400 text-sm">
+            ゲーム内で解除できる称号一覧
+          </p>
+        </div>
 
+        {/* プログレスバー + 達成率（横並び） */}
+        <div className="flex items-center gap-4">
+          <div className="flex-1">
+            <div className="w-full h-3 bg-slate-800/50 rounded-full overflow-hidden border border-white/10">
+              <div
+                className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-1000"
+                style={{ width: `${progress.percentage}%` }}
+              />
+            </div>
+          </div>
           {/* 達成率表示 */}
-          <div className="text-right flex-shrink-0 max-w-32">
+          <div className="text-right flex-shrink-0">
             <div className="text-2xl md:text-3xl font-orbitron font-black text-cyan-300">
               {progress.percentage}%
             </div>
-            <div className="text-slate-400 text-xs md:text-sm whitespace-nowrap">
-              {progress.unlocked} / {progress.total} 解除済み
+            <div className="text-slate-400 text-xs whitespace-nowrap">
+              {progress.unlocked}/{progress.total}
             </div>
           </div>
-        </div>
-
-        {/* プログレスバー */}
-        <div className="w-full h-3 bg-slate-800/50 rounded-full overflow-hidden border border-white/10">
-          <div
-            className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-1000"
-            style={{ width: `${progress.percentage}%` }}
-          />
         </div>
       </div>
 
