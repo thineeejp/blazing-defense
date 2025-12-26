@@ -36,11 +36,11 @@ export default function Achievements({ onBack }) {
           </div>
 
           {/* 達成率表示 */}
-          <div className="text-right">
-            <div className="text-3xl font-orbitron font-black text-cyan-300">
+          <div className="text-right flex-shrink-0 max-w-32">
+            <div className="text-2xl md:text-3xl font-orbitron font-black text-cyan-300">
               {progress.percentage}%
             </div>
-            <div className="text-slate-400 text-sm">
+            <div className="text-slate-400 text-xs md:text-sm whitespace-nowrap">
               {progress.unlocked} / {progress.total} 解除済み
             </div>
           </div>

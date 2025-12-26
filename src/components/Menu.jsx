@@ -209,7 +209,8 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
             )}
           </button>
 
-          <div className="absolute bottom-4 left-0 right-0 text-center text-slate-600 text-xs font-mono">
+          {/* モバイルでは非表示 */}
+          <div className="hidden md:block absolute bottom-4 left-0 right-0 text-center text-slate-600 text-xs font-mono">
             SYSTEM READY // WAITING FOR INPUT
           </div>
         </>

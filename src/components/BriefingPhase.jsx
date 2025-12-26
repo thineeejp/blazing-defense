@@ -25,12 +25,12 @@ export default function BriefingPhase({
   // CategorySelect: 5種別の選択画面
   if (phase === 'SELECT') {
     return (
-      <GameBackground className="flex flex-col items-center justify-center p-6">
+      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-6 pb-8 min-h-screen overflow-y-auto">
         <div className="max-w-5xl w-full animate-fadeIn">
           <div className="text-center mb-12 relative">
             <button
               onClick={onBackToTitle}
-              className="absolute left-0 top-1/2 -translate-y-1/2 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors"
+              className="absolute left-0 top-0 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors"
             >
               ← RETURN TO TITLE
             </button>
@@ -111,7 +111,7 @@ export default function BriefingPhase({
     if (!currentQuiz) return null;
 
     return (
-      <GameBackground className="flex flex-col items-center justify-center p-8">
+      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-8 pb-8 min-h-screen overflow-y-auto">
         <div className="max-w-3xl w-full animate-fadeIn">
           <GlassCard className="p-8 md:p-12" hoverEffect={false}>
             <div className="flex justify-between items-start mb-8 border-b border-white/10 pb-4">
@@ -156,7 +156,7 @@ export default function BriefingPhase({
     if (!currentQuiz || !latestAnswer) return null;
 
     return (
-      <GameBackground className="flex flex-col items-center justify-center p-8">
+      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-8 pb-8 min-h-screen overflow-y-auto">
         <div className="max-w-3xl w-full animate-fadeIn">
           <GlassCard className="p-8 md:p-12" hoverEffect={false}>
             <div className="flex justify-between items-start mb-8 border-b border-white/10 pb-4">
@@ -246,7 +246,7 @@ export default function BriefingPhase({
     const reward = correctCount === 3 ? 400 : correctCount * 100;
 
     return (
-      <GameBackground className="flex flex-col items-center justify-center p-6">
+      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-6 pb-8 min-h-screen overflow-y-auto">
         <div className="max-w-xl w-full animate-slam">
           <GlassCard className="p-6 text-center border-t-4 border-t-cyan-500" hoverEffect={false}>
             <div className="mb-5">

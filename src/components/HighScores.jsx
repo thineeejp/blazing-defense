@@ -8,7 +8,7 @@ export default function HighScores({ onBack }) {
   const highScores = loadHighScores();
 
   return (
-    <GameBackground className="flex flex-col items-center justify-start pt-6 px-6 pb-24 min-h-screen overflow-y-auto">
+    <GameBackground className="flex flex-col items-center justify-start pt-6 px-3 md:px-6 pb-24 min-h-screen overflow-y-auto">
       {/* Header */}
       <div className="w-full max-w-5xl mb-6">
         <button
@@ -66,7 +66,7 @@ function HighScoreEntry({ entry, index }) {
 
   return (
     <GlassCard className={`p-5 ${rankBorderColor} border-2 animate-slideUpFade`} style={{ animationDelay: `${index * 100}ms` }}>
-      <div className="flex items-start gap-5">
+      <div className="flex items-start gap-3 md:gap-5">
         {/* Rank Badge */}
         <div className={`flex-shrink-0 w-16 h-16 rounded-full ${rankBgColor} border-2 ${rankBorderColor} flex flex-col items-center justify-center`}>
           {index === 0 ? (
@@ -96,7 +96,7 @@ function HighScoreEntry({ entry, index }) {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4">
             <StatItem icon={Users} label="Evacuated" value={`${entry.stats.evacuated}/${entry.stats.goal}`} />
             <StatItem icon={Shield} label="HP" value={`${entry.stats.hp}%`} />
             <StatItem
@@ -122,10 +122,10 @@ function HighScoreEntry({ entry, index }) {
                 return (
                   <div
                     key={idx}
-                    className="flex items-center gap-1 bg-slate-800/50 border border-white/10 rounded px-2 py-1"
+                    className="flex items-center gap-1 bg-slate-800/50 border border-white/10 rounded px-1.5 md:px-2 py-0.5 md:py-1"
                   >
-                    <IconComponent size={12} className="text-cyan-400" />
-                    <span className="text-white text-xs">{card.name}</span>
+                    <IconComponent size={10} className="text-cyan-400" />
+                    <span className="text-white text-[10px] md:text-xs">{card.name}</span>
                   </div>
                 );
               })}
