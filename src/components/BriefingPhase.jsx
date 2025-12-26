@@ -30,7 +30,7 @@ export default function BriefingPhase({
           <div className="text-center mb-12 relative">
             <button
               onClick={onBackToTitle}
-              className="absolute left-0 top-0 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors"
+              className="absolute right-0 top-0 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors"
             >
               ← RETURN TO TITLE
             </button>
