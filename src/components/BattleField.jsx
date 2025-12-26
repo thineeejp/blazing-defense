@@ -209,7 +209,7 @@ export default function BattleField({
 
       {/* Main 3D Grid Area */}
       <div className={`flex-1 relative flex items-center justify-center ${isMobile ? 'px-2' : 'px-4'} pt-0 pb-2 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
-        <div className={`relative w-full max-w-[min(100vw_-_1rem,_410px)] ${isMobile ? 'max-h-[calc(100dvh-180px)] aspect-[2/3]' : 'max-h-[calc(100vh-240px)] aspect-[3/4]'} transition-all duration-500 ${isMobile ? 'mt-6' : 'mt-8'}`} style={gridStyle}>
+        <div className={`relative w-full max-w-[min(100vw_-_1rem,_410px)] ${isMobile ? 'max-h-[calc(100dvh-180px)] aspect-[2/3]' : 'max-h-[calc(100vh-240px)] aspect-[3/4]'} transition-all duration-500 ${isMobile ? 'mt-2' : 'mt-8'}`} style={gridStyle}>
           {Array.from({ length: GRID_ROWS * difficulty.cols }).map((_, i) => {
             const r = Math.floor(i / difficulty.cols);
             const c = i % difficulty.cols;

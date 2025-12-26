@@ -295,18 +295,12 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
         className="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-y-auto flex flex-col md:flex-row max-h-[85dvh] md:max-h-[500px]"
       >
         {/* Left Side: Visual & Identity */}
-        <div className="md:w-5/12 relative bg-slate-800 p-4 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700 overflow-hidden group">
+        <div className="md:w-5/12 relative bg-slate-800 p-3 md:p-6 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700 overflow-hidden group">
           {/* Animated BG */}
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-900 via-slate-900 to-slate-900" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
 
-          <div
-            className="relative z-10 mb-4 md:mb-8 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
-          >
-            {React.createElement(card.icon, { size: iconSize, className: "text-white" })}
-          </div>
-
-          <h2 className="relative z-10 text-2xl font-black text-white text-center font-orbitron tracking-wide mb-2">
+          <h2 className="relative z-10 text-xl md:text-2xl font-black text-white text-center font-orbitron tracking-wide mb-2 mt-4">
             {card.name}
           </h2>
           <div className="relative z-10 px-3 py-1 bg-slate-700 rounded text-[10px] md:text-xs font-mono text-cyan-400 border border-cyan-500/30">
