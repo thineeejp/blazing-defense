@@ -111,35 +111,35 @@ export default function BriefingPhase({
     if (!currentQuiz) return null;
 
     return (
-      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-8 pb-8 min-h-screen overflow-y-auto">
+      <GameBackground className="flex flex-col items-center justify-center px-4 md:px-8 py-4 md:py-8 h-screen overflow-hidden">
         <div className="max-w-3xl w-full animate-fadeIn">
-          <GlassCard className="p-8 md:p-12" hoverEffect={false}>
-            <div className="flex justify-between items-start mb-8 border-b border-white/10 pb-4">
+          <GlassCard className="p-5 md:p-12" hoverEffect={false}>
+            <div className="flex justify-between items-start mb-4 md:mb-8 border-b border-white/10 pb-3 md:pb-4">
               <div>
-                <h2 className="text-2xl font-bold font-orbitron text-cyan-400 mb-1">
+                <h2 className="text-xl md:text-2xl font-bold font-orbitron text-cyan-400 mb-1">
                   {EQUIPMENT_TREES[selectedCategory].name} QUIZ
                 </h2>
-                <div className="text-sm text-slate-400 font-mono">
+                <div className="text-xs md:text-sm text-slate-400 font-mono">
                   QUESTION {currentQIndex + 1} / 3
                 </div>
               </div>
             </div>
 
-            <p className="text-xl md:text-2xl font-bold mb-8 leading-relaxed">
+            <p className="text-base md:text-2xl font-bold mb-4 md:mb-8 leading-relaxed">
               {currentQuiz.question}
             </p>
 
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {currentQuiz.options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => onAnswerQuiz(index)}
-                  className="w-full p-5 min-h-[52px] text-left rounded-xl bg-slate-800/50 border border-slate-600 hover:border-cyan-400 hover:bg-cyan-900/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] active:scale-[0.98] transition-all group flex items-center"
+                  className="w-full p-3 md:p-5 min-h-[44px] md:min-h-[52px] text-left rounded-xl bg-slate-800/50 border border-slate-600 hover:border-cyan-400 hover:bg-cyan-900/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] active:scale-[0.98] transition-all group flex items-center"
                 >
-                  <span className="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-4 group-hover:bg-cyan-500 group-hover:text-slate-900 transition-colors">
+                  <span className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-3 md:mr-4 text-sm md:text-base group-hover:bg-cyan-500 group-hover:text-slate-900 transition-colors">
                     {String.fromCharCode(65 + index)}
                   </span>
-                  <span className="text-lg font-bold group-hover:text-cyan-100">{option}</span>
+                  <span className="text-sm md:text-lg font-bold group-hover:text-cyan-100">{option}</span>
                 </button>
               ))}
             </div>
@@ -156,26 +156,26 @@ export default function BriefingPhase({
     if (!currentQuiz || !latestAnswer) return null;
 
     return (
-      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-8 pb-8 min-h-screen overflow-y-auto">
+      <GameBackground className="flex flex-col items-center justify-center px-4 md:px-8 py-4 md:py-8 h-screen overflow-hidden">
         <div className="max-w-3xl w-full animate-fadeIn">
-          <GlassCard className="p-8 md:p-12" hoverEffect={false}>
-            <div className="flex justify-between items-start mb-8 border-b border-white/10 pb-4">
+          <GlassCard className="p-5 md:p-12" hoverEffect={false}>
+            <div className="flex justify-between items-start mb-4 md:mb-8 border-b border-white/10 pb-3 md:pb-4">
               <div>
-                <h2 className="text-2xl font-bold font-orbitron text-cyan-400 mb-1">
+                <h2 className="text-xl md:text-2xl font-bold font-orbitron text-cyan-400 mb-1">
                   {EQUIPMENT_TREES[selectedCategory].name} QUIZ
                 </h2>
-                <div className="text-sm text-slate-400 font-mono">
+                <div className="text-xs md:text-sm text-slate-400 font-mono">
                   QUESTION {currentQIndex + 1} / 3
                 </div>
               </div>
             </div>
 
-            <p className="text-xl md:text-2xl font-bold mb-8 leading-relaxed">
+            <p className="text-base md:text-2xl font-bold mb-4 md:mb-8 leading-relaxed">
               {currentQuiz.question}
             </p>
 
             {/* 選択肢（フィードバック表示） */}
-            <div className="space-y-4">
+            <div className="space-y-2 md:space-y-4">
               {currentQuiz.options.map((option, index) => {
                 const isCorrectOption = index === latestAnswer.correctAnswer;
                 const isSelectedOption = index === latestAnswer.selectedAnswer;
@@ -186,50 +186,50 @@ export default function BriefingPhase({
 
                 if (isCorrectOption) {
                   bgClass = 'bg-green-600/30 border-green-400 shadow-[0_0_20px_rgba(34,197,94,0.6)]';
-                  icon = <CheckCircle className="text-green-400" size={24} />;
+                  icon = <CheckCircle className="text-green-400" size={20} />;
                 } else if (isSelectedOption && !isCorrectOption) {
                   bgClass = 'bg-red-600/30 border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.6)] animate-shake';
-                  icon = <XCircle className="text-red-400" size={24} />;
+                  icon = <XCircle className="text-red-400" size={20} />;
                 }
 
                 return (
                   <div
                     key={index}
-                    className={`w-full p-5 rounded-xl border transition-all duration-500 flex items-center ${bgClass}`}
+                    className={`w-full p-3 md:p-5 rounded-xl border transition-all duration-500 flex items-center ${bgClass}`}
                   >
-                    <span className="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-4">
+                    <span className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-3 md:mr-4 text-sm md:text-base">
                       {String.fromCharCode(65 + index)}
                     </span>
-                    <span className="text-lg font-bold flex-1">{option}</span>
-                    {icon && <div className="ml-4">{icon}</div>}
+                    <span className="text-sm md:text-lg font-bold flex-1">{option}</span>
+                    {icon && <div className="ml-2 md:ml-4">{icon}</div>}
                   </div>
                 );
               })}
             </div>
 
             {/* フィードバックメッセージ */}
-            <div className="mt-8 text-center">
+            <div className="mt-4 md:mt-8 text-center">
               {latestAnswer.isCorrect ? (
-                <div className="text-green-400 font-bold text-2xl animate-bounce flex items-center justify-center gap-2">
-                  <CheckCircle size={28} />
+                <div className="text-green-400 font-bold text-xl md:text-2xl animate-bounce flex items-center justify-center gap-2">
+                  <CheckCircle size={24} />
                   正解！
                 </div>
               ) : (
-                <div className="text-red-400 font-bold text-2xl flex items-center justify-center gap-2">
-                  <XCircle size={28} />
+                <div className="text-red-400 font-bold text-xl md:text-2xl flex items-center justify-center gap-2">
+                  <XCircle size={24} />
                   不正解
                 </div>
               )}
             </div>
 
             {/* 手動遷移ボタン */}
-            <div className="mt-8 flex justify-center">
+            <div className="mt-4 md:mt-8 flex justify-center">
               <button
                 onClick={onFeedbackNext}
-                className="px-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:shadow-[0_0_30px_rgba(8,145,178,0.6)] flex items-center gap-2 group"
+                className="px-6 md:px-8 py-2.5 md:py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:shadow-[0_0_30px_rgba(8,145,178,0.6)] flex items-center gap-2 group min-h-[44px]"
               >
-                <span>{currentQIndex < quizzes.length - 1 ? '次の問題へ' : '結果を見る'}</span>
-                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                <span className="text-sm md:text-base">{currentQIndex < quizzes.length - 1 ? '次の問題へ' : '結果を見る'}</span>
+                <ArrowRight className="group-hover:translate-x-1 transition-transform" size={18} />
               </button>
             </div>
           </GlassCard>
@@ -246,43 +246,43 @@ export default function BriefingPhase({
     const reward = correctCount === 3 ? 400 : correctCount * 100;
 
     return (
-      <GameBackground className="flex flex-col items-center justify-start pt-6 md:pt-12 px-4 md:px-6 pb-8 min-h-screen overflow-y-auto">
-        <div className="max-w-xl w-full animate-slam">
-          <GlassCard className="p-6 text-center border-t-4 border-t-cyan-500" hoverEffect={false}>
-            <div className="mb-5">
-              <h2 className="text-3xl font-black font-orbitron italic text-white mb-2">
+      <GameBackground className="flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-8 h-screen overflow-hidden">
+        <div className="max-w-xl w-full animate-slam overflow-y-auto max-h-[95vh]">
+          <GlassCard className="p-4 md:p-6 text-center border-t-4 border-t-cyan-500" hoverEffect={false}>
+            <div className="mb-3 md:mb-5">
+              <h2 className="text-2xl md:text-3xl font-black font-orbitron italic text-white mb-1 md:mb-2">
                 ROUND COMPLETE
               </h2>
-              <div className="text-cyan-400 font-mono tracking-widest">
+              <div className="text-cyan-400 font-mono tracking-widest text-sm md:text-base">
                 UPGRADE SUCCESSFUL
               </div>
             </div>
 
-            <div className="bg-slate-800/50 rounded-xl p-4 mb-5 border border-white/5">
-              <div className="flex items-center justify-center gap-4 mb-4">
-                {React.createElement(tree.icon, { size: 40, className: `text-${tree.color}-400` })}
+            <div className="bg-slate-800/50 rounded-xl p-3 md:p-4 mb-3 md:mb-5 border border-white/5">
+              <div className="flex items-center justify-center gap-3 md:gap-4 mb-3 md:mb-4">
+                {React.createElement(tree.icon, { size: 32, className: `text-${tree.color}-400` })}
                 <div className="text-left">
-                  <div className="text-sm text-slate-400 font-bold">TIER UPGRADE</div>
-                  <div className="text-2xl font-bold font-orbitron">
-                    TIER {newTier - 1} <ArrowRight className="inline mx-2" size={20} /> TIER {newTier > 3 ? 3 : newTier}
+                  <div className="text-xs md:text-sm text-slate-400 font-bold">TIER UPGRADE</div>
+                  <div className="text-xl md:text-2xl font-bold font-orbitron">
+                    TIER {newTier - 1} <ArrowRight className="inline mx-1 md:mx-2" size={16} /> TIER {newTier > 3 ? 3 : newTier}
                   </div>
                 </div>
               </div>
 
               {isOverflow ? (
-                <div className="bg-yellow-900/20 border border-yellow-500/30 p-4 rounded-lg text-yellow-300">
-                  <div className="font-bold flex items-center justify-center gap-2 mb-2">
-                    <Star size={16} fill="currentColor" /> OVERFLOW BONUS ACTIVE
+                <div className="bg-yellow-900/20 border border-yellow-500/30 p-3 md:p-4 rounded-lg text-yellow-300">
+                  <div className="font-bold flex items-center justify-center gap-2 mb-1 md:mb-2 text-sm md:text-base">
+                    <Star size={14} fill="currentColor" /> OVERFLOW BONUS ACTIVE
                   </div>
-                  <div className="text-sm opacity-80">Cost -10% / Power +15%</div>
+                  <div className="text-xs md:text-sm opacity-80">Cost -10% / Power +15%</div>
                 </div>
               ) : (
                 newTier <= 3 && tree.tiers[newTier] && (
-                  <div className="text-left bg-slate-900/50 p-4 rounded border border-white/5">
+                  <div className="text-left bg-slate-900/50 p-3 md:p-4 rounded border border-white/5">
                     <div className="text-xs text-slate-400 mb-2 font-bold">UNLOCKED EQUIPMENT:</div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 md:gap-2">
                       {tree.tiers[newTier].map(cardId => (
-                        <span key={cardId} className="px-2 py-1 bg-slate-700 rounded text-xs font-mono text-cyan-300">
+                        <span key={cardId} className="px-1.5 md:px-2 py-0.5 md:py-1 bg-slate-700 rounded text-[10px] md:text-xs font-mono text-cyan-300">
                           {ALL_CARDS[cardId]?.name || cardId}
                         </span>
                       ))}
@@ -294,22 +294,22 @@ export default function BriefingPhase({
 
             {/* 問題別結果セクション */}
             {answerHistory && answerHistory.length > 0 && (
-              <div className="bg-slate-800/50 rounded-xl p-4 mb-6 border border-white/5">
-                <div className="text-sm text-slate-400 font-bold mb-4">問題別結果</div>
-                <div className="space-y-3">
+              <div className="bg-slate-800/50 rounded-xl p-3 md:p-4 mb-4 md:mb-6 border border-white/5">
+                <div className="text-xs md:text-sm text-slate-400 font-bold mb-2 md:mb-4">問題別結果</div>
+                <div className="space-y-2 md:space-y-3">
                   {answerHistory.map((answer, idx) => (
-                    <div key={idx} className="flex items-start gap-3 text-sm">
+                    <div key={idx} className="flex items-start gap-2 md:gap-3 text-xs md:text-sm">
                       {answer.isCorrect ? (
-                        <CheckCircle className="text-green-400 flex-shrink-0 mt-0.5" size={18} />
+                        <CheckCircle className="text-green-400 flex-shrink-0 mt-0.5" size={16} />
                       ) : (
-                        <XCircle className="text-red-400 flex-shrink-0 mt-0.5" size={18} />
+                        <XCircle className="text-red-400 flex-shrink-0 mt-0.5" size={16} />
                       )}
                       <div className="flex-1">
                         <div className={answer.isCorrect ? 'text-green-300 font-bold' : 'text-red-300 font-bold'}>
                           問題{idx + 1}: {answer.isCorrect ? '正解' : '不正解'}
                         </div>
                         {!answer.isCorrect && (
-                          <div className="text-xs text-slate-500 mt-1">
+                          <div className="text-[10px] md:text-xs text-slate-500 mt-0.5 md:mt-1">
                             あなたの回答: {String.fromCharCode(65 + answer.selectedAnswer)} /
                             正解: {String.fromCharCode(65 + answer.correctAnswer)}
                           </div>
@@ -321,23 +321,23 @@ export default function BriefingPhase({
               </div>
             )}
 
-            <div className="flex justify-center gap-8 mb-6">
+            <div className="flex justify-center gap-6 md:gap-8 mb-4 md:mb-6">
               <div className="text-center">
-                <div className="text-xs text-slate-400 font-bold mb-1">CORRECT</div>
-                <div className="text-2xl font-black text-white">{correctCount} / 3</div>
+                <div className="text-[10px] md:text-xs text-slate-400 font-bold mb-1">CORRECT</div>
+                <div className="text-xl md:text-2xl font-black text-white">{correctCount} / 3</div>
               </div>
               <div className="text-center">
-                <div className="text-xs text-slate-400 font-bold mb-1">REWARD</div>
-                <div className="text-2xl font-black text-yellow-400">+{reward}</div>
+                <div className="text-[10px] md:text-xs text-slate-400 font-bold mb-1">REWARD</div>
+                <div className="text-xl md:text-2xl font-black text-yellow-400">+{reward}</div>
               </div>
             </div>
 
             <button
               onClick={round < 3 ? onFinishRound : onStartBattle}
-              className="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:shadow-[0_0_30px_rgba(8,145,178,0.6)] flex items-center justify-center gap-2 group"
+              className="w-full py-2.5 md:py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:shadow-[0_0_30px_rgba(8,145,178,0.6)] flex items-center justify-center gap-2 group min-h-[44px] text-sm md:text-base"
             >
               <span>{round < 3 ? 'NEXT ROUND' : 'PROCEED TO DECK BUILD'}</span>
-              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="group-hover:translate-x-1 transition-transform" size={18} />
             </button>
           </GlassCard>
         </div>

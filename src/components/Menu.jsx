@@ -21,22 +21,67 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
     }
   }, [isFirstLaunch]);
 
-  // 全画面状態の監視
+  // 全画面状態の監視（ベンダープレフィックス対応）
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const fullscreenElement = document.fullscreenElement
+        || document.webkitFullscreenElement
+        || document.mozFullScreenElement
+        || document.msFullscreenElement;
+      setIsFullscreen(!!fullscreenElement);
     };
+
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
   }, []);
 
-  // 全画面切り替え関数
+  // 全画面切り替え関数（ベンダープレフィックス対応 + iOS代替案）
   const toggleFullscreen = async () => {
+    const doc = document;
+    const docEl = document.documentElement;
+
+    // 現在の全画面状態を確認（ベンダープレフィックス対応）
+    const fullscreenElement = doc.fullscreenElement
+      || doc.webkitFullscreenElement
+      || doc.mozFullScreenElement
+      || doc.msFullscreenElement;
+
     try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
+      if (!fullscreenElement) {
+        // 全画面化（ベンダープレフィックス対応）
+        if (docEl.requestFullscreen) {
+          await docEl.requestFullscreen();
+        } else if (docEl.webkitRequestFullscreen) {
+          await docEl.webkitRequestFullscreen();
+        } else if (docEl.mozRequestFullScreen) {
+          await docEl.mozRequestFullScreen();
+        } else if (docEl.msRequestFullscreen) {
+          await docEl.msRequestFullscreen();
+        } else {
+          // Fullscreen API非対応（iOS Safari等）: ホーム画面追加を促す
+          alert('このブラウザは全画面表示に対応していません。\n「ホーム画面に追加」するとフルスクリーンで利用できます。');
+          return;
+        }
       } else {
-        await document.exitFullscreen();
+        // 全画面解除（ベンダープレフィックス対応）
+        if (doc.exitFullscreen) {
+          await doc.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+          await doc.webkitExitFullscreen();
+        } else if (doc.mozCancelFullScreen) {
+          await doc.mozCancelFullScreen();
+        } else if (doc.msExitFullscreen) {
+          await doc.msExitFullscreen();
+        }
       }
     } catch (err) {
       console.error('全画面表示の切り替えに失敗しました:', err);
