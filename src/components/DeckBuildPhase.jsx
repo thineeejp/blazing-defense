@@ -127,7 +127,7 @@ export default function DeckBuildPhase({
       {/* Footer (Selected Deck) - Fixed Bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-none" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {/* Gradient Fade */}
-        <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-56 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent" />
 
         <div className="relative max-w-7xl mx-auto p-4 flex flex-col items-center pointer-events-auto">
           {/* Deck List */}
