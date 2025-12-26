@@ -61,7 +61,7 @@ export default function DeckBuildPhase({
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/80 rounded-lg border border-slate-700">
               <Zap className="text-yellow-400" size={16} />
               <span className="text-sm font-mono text-yellow-400 font-bold">
-                COST: {remainingCost} / {totalCost}
+                COST: {totalCost - remainingCost} / {totalCost}
               </span>
             </div>
           </div>
@@ -70,9 +70,9 @@ export default function DeckBuildPhase({
           <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:block">
             <GlassCard className="px-6 py-3 flex items-center gap-4" hoverEffect={false}>
               <div className="text-right">
-                <div className="text-[10px] text-slate-400 font-bold mb-1">TOTAL COST</div>
+                <div className="text-[10px] text-slate-400 font-bold mb-1">USED COST</div>
                 <div className="text-2xl font-bold font-mono text-yellow-400 drop-shadow-lg flex items-baseline justify-end gap-2">
-                  {remainingCost} <span className="text-slate-600 text-sm">/ {totalCost}</span>
+                  {totalCost - remainingCost} <span className="text-slate-600 text-sm">/ {totalCost}</span>
                 </div>
               </div>
               <div className="relative">
@@ -86,7 +86,7 @@ export default function DeckBuildPhase({
 
       {/* Card Grid */}
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-        <div className="max-w-6xl mx-auto pb-32" style={{ paddingBottom: 'max(8rem, calc(8rem + env(safe-area-inset-bottom)))' }}>
+        <div className="max-w-6xl mx-auto" style={{ paddingBottom: 'max(12rem, calc(12rem + env(safe-area-inset-bottom)))' }}>
           <motion.div
             layout
             className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4 mt-4"
@@ -136,7 +136,7 @@ export default function DeckBuildPhase({
               <div className="px-4 py-2 bg-slate-800 rounded-full text-xs font-bold text-slate-400 mr-2 border border-slate-700">
                 DECK SLOTS {selectedCards.length}/6
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 {[...Array(6)].map((_, i) => {
                   const cardId = selectedCards[i];
                   const card = cardId ? availableCards.find(c => c.id === cardId) : null;
@@ -144,7 +144,7 @@ export default function DeckBuildPhase({
                     <div
                       key={i}
                       className={`
-                        w-10 h-10 rounded-lg border flex items-center justify-center transition-all relative group
+                        w-8 h-8 rounded-lg border flex items-center justify-center transition-all relative group
                         ${card
                           ? 'bg-slate-800 border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
                           : 'bg-slate-900/50 border-slate-800 border-dashed'}
@@ -153,17 +153,17 @@ export default function DeckBuildPhase({
                       {card ? (
                         <>
                           <div className="text-cyan-400">
-                            {React.createElement(card.icon, { size: 24 })}
+                            {React.createElement(card.icon, { size: 18 })}
                           </div>
                           <button
                             onClick={() => onSelectCard(card.id)}
-                            className="absolute -top-2 -right-2 bg-red-500 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute -top-1.5 -right-1.5 bg-red-500 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <X size={10} className="text-white" />
+                            <X size={8} className="text-white" />
                           </button>
                         </>
                       ) : (
-                        <div className="w-1.5 h-1.5 rounded-full bg-slate-800" />
+                        <div className="w-1 h-1 rounded-full bg-slate-800" />
                       )}
                     </div>
                   );
@@ -177,8 +177,8 @@ export default function DeckBuildPhase({
             onClick={onStartBattle}
             disabled={selectedCards.length === 0}
             className={`
-              w-full max-w-md py-3 mb-4 rounded-lg font-black text-xl font-orbitron tracking-[0.2em] transition-all shadow-xl
-              flex items-center justify-center gap-4 group overflow-hidden relative
+              w-full max-w-sm py-2 mb-2 rounded-lg font-black text-base md:text-lg font-orbitron tracking-[0.15em] transition-all shadow-lg
+              flex items-center justify-center gap-3 group overflow-hidden relative
               ${selectedCards.length > 0
                 ? 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-500/30'
                 : 'bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-700'}
@@ -188,7 +188,7 @@ export default function DeckBuildPhase({
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer-slide_1s_infinite]" />
             )}
             <span>戦闘開始</span>
-            <span className="text-sm opacity-50 group-hover:translate-x-1 transition-transform">{">>>"}</span>
+            <span className="text-xs opacity-50 group-hover:translate-x-1 transition-transform">{">>>"}</span>
           </button>
         </div>
       </div>
