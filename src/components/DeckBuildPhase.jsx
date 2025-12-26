@@ -295,23 +295,22 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
         className="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-y-auto flex flex-col md:flex-row max-h-[85dvh] md:max-h-[500px]"
       >
         {/* Left Side: Visual & Identity */}
-        <div className="md:w-5/12 relative bg-slate-800 p-3 md:p-6 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700 overflow-hidden group">
+        <div className="md:w-5/12 relative bg-slate-800 p-3 md:p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700 overflow-hidden group">
           {/* Animated BG */}
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-900 via-slate-900 to-slate-900" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
 
-          <h2 className="relative z-10 text-xl md:text-2xl font-black text-white text-center font-orbitron tracking-wide mb-2 mt-4">
-            {card.name}
-          </h2>
-          <div className="relative z-10 px-3 py-1 bg-slate-700 rounded text-[10px] md:text-xs font-mono text-cyan-400 border border-cyan-500/30">
-            TIER-{card.tier} UNIT
-          </div>
-
-          <div className="absolute bottom-6 left-0 right-0 text-center">
-            <div className="text-xs text-slate-500 font-mono mb-1">DEPLOYMENT COST</div>
-            <div className="text-3xl md:text-4xl font-mono font-bold text-yellow-500 drop-shadow-md">
+          {/* 設備名・TIER・コストを1行に統合 */}
+          <div className="relative z-10 flex items-center justify-center gap-2 flex-wrap">
+            <h2 className="text-base md:text-xl font-black text-white font-orbitron tracking-wide">
+              {card.name}
+            </h2>
+            <span className="px-2 py-0.5 bg-slate-700 rounded text-[9px] md:text-[10px] font-mono text-cyan-400 border border-cyan-500/30">
+              T{card.tier}
+            </span>
+            <span className="px-2 py-0.5 bg-yellow-500/20 rounded text-sm md:text-base font-mono font-bold text-yellow-400 border border-yellow-500/30">
               {card.cost}
-            </div>
+            </span>
           </div>
         </div>
 
@@ -379,7 +378,7 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
             {/* Back Button */}
             <button
               onClick={onClose}
-              className="flex-1 py-4 rounded-xl font-bold font-orbitron tracking-widest text-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors border border-slate-700"
+              className="flex-1 py-2.5 rounded-xl font-bold font-orbitron tracking-widest text-sm md:text-base bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors border border-slate-700"
             >
               戻る
             </button>
@@ -389,7 +388,7 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
               onClick={onToggleSelect}
               disabled={!isSelected && !canSelect}
               className={`
-                  flex-[2] py-4 rounded-xl font-bold font-orbitron tracking-widest text-lg flex items-center justify-center gap-3 transition-all
+                  flex-[2] py-2.5 rounded-xl font-bold font-orbitron tracking-widest text-sm md:text-base flex items-center justify-center gap-3 transition-all
                   ${isSelected
                   ? 'bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500 hover:text-white'
                   : canSelect

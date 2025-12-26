@@ -208,7 +208,7 @@ export default function BattleField({
       </div>
 
       {/* Main 3D Grid Area */}
-      <div className={`flex-1 relative flex items-center justify-center ${isMobile ? 'px-2' : 'px-4'} pt-0 pb-2 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
+      <div className={`flex-1 relative flex items-center justify-center ${isMobile ? 'px-2' : 'px-4'} pt-0 pb-0 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
         <div className={`relative w-full max-w-[min(100vw_-_1rem,_410px)] ${isMobile ? 'max-h-[calc(100dvh-180px)] aspect-[2/3]' : 'max-h-[calc(100vh-240px)] aspect-[3/4]'} transition-all duration-500 ${isMobile ? 'mt-2' : 'mt-8'}`} style={gridStyle}>
           {Array.from({ length: GRID_ROWS * difficulty.cols }).map((_, i) => {
             const r = Math.floor(i / difficulty.cols);
@@ -721,7 +721,7 @@ export default function BattleField({
       {/* Deck (Bottom) */}
       <div className={`${isMobile ? 'h-[clamp(130px,18dvh,160px)]' : 'h-[clamp(180px,26vh,220px)]'} z-30 flex flex-col ${isMobile ? 'px-2' : 'px-4'} pt-0 overflow-visible bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent`} style={{ paddingBottom: isMobile ? 'max(0.5rem, env(safe-area-inset-bottom))' : 0 }}>
         {/* 操作ガイダンス */}
-        <div className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-center text-slate-400 font-mono pb-1 pt-2`}>
+        <div className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-center text-slate-400 font-mono pb-0.5 pt-1`}>
           {isMobile ? 'タップで選択 → グリッドをタップで配置' : 'カードをクリック → グリッドをクリックで配置'}
         </div>
         {/* Deck Cards Container */}
