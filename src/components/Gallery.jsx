@@ -11,7 +11,7 @@ export default function Gallery({ onBack }) {
   const [activeTab, setActiveTab] = useState('achievements'); // 'achievements' | 'highscores'
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* タブヘッダー */}
       <div className="absolute top-0 left-0 right-0 z-10 bg-slate-900/80 backdrop-blur-sm border-b border-white/10">
         <div className="flex items-center justify-center gap-4 p-4">
@@ -50,7 +50,7 @@ export default function Gallery({ onBack }) {
       </div>
 
       {/* コンテンツエリア */}
-      <div className="pt-20 h-full">
+      <div className="pt-20 min-h-full pb-8">
         {activeTab === 'achievements' && <Achievements onBack={onBack} />}
         {activeTab === 'highscores' && <HighScores onBack={onBack} />}
       </div>

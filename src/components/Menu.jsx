@@ -44,7 +44,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
   };
 
   return (
-    <GameBackground className="flex flex-col items-center justify-start pt-40 pb-4 px-4">
+    <GameBackground className="flex flex-col items-center justify-start pt-20 md:pt-40 pb-4 px-4 min-h-screen overflow-y-auto">
       {/* Boot Animation Overlay */}
       <AnimatePresence>
         {isFirstLaunch && !showContent && (

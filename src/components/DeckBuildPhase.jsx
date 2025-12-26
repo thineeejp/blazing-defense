@@ -37,7 +37,7 @@ export default function DeckBuildPhase({
   return (
     <GameBackground className="flex flex-col h-screen overflow-hidden">
       {/* Header */}
-      <header className="flex-none pt-20 pb-4 px-4 z-10">
+      <header className="flex-none pt-12 md:pt-20 pb-4 px-4 z-10">
         <div className="max-w-6xl mx-auto w-full relative">
           {/* Back Button (Absolute Left) */}
           <button
@@ -288,7 +288,7 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
         onClick={e => e.stopPropagation()}
-        className="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row h-[70vh] md:h-[500px]"
+        className="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-y-auto flex flex-col md:flex-row max-h-[85dvh] md:max-h-[500px]"
       >
         {/* Left Side: Visual & Identity */}
         <div className="md:w-5/12 relative bg-slate-800 p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700 overflow-hidden group">

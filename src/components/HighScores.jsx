@@ -8,7 +8,7 @@ export default function HighScores({ onBack }) {
   const highScores = loadHighScores();
 
   return (
-    <GameBackground className="flex flex-col items-center justify-start pt-6 px-6 pb-24 h-screen overflow-y-auto">
+    <GameBackground className="flex flex-col items-center justify-start pt-6 px-6 pb-24 min-h-screen overflow-y-auto">
       {/* Header */}
       <div className="w-full max-w-5xl mb-6">
         <button
