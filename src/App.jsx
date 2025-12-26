@@ -1230,7 +1230,7 @@ export default function BlazingDefense() {
 
   return (
     <DeviceTypeProvider>
-    <div className={`w-full h-screen overflow-x-hidden font-sans select-none ${phase === 'BATTLE' || phase === 'DECK_BUILD' ? 'overflow-y-hidden' : 'overflow-y-auto'}`}>
+    <div className={`w-full min-h-[100dvh] overflow-x-hidden font-sans select-none ${phase === 'BATTLE' || phase === 'DECK_BUILD' ? 'overflow-y-hidden' : 'overflow-y-auto'}`}>
       {phase === 'MENU' && (
         <Menu
           missions={DRAFT_MISSIONS}

@@ -1,6 +1,6 @@
 export default function GameBackground({ children, className = "" }) {
     return (
-        <div className="relative w-full h-full min-h-screen bg-slate-900 overflow-hidden font-sans select-none">
+        <div className="relative w-full h-full min-h-[100dvh] bg-slate-900 overflow-hidden font-sans select-none">
             {/* 3D Grid Floor */}
             <div
                 className="absolute inset-0 origin-bottom pointer-events-none"

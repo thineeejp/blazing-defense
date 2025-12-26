@@ -122,7 +122,7 @@ export default function BattleField({
       {damaged && <div className="absolute inset-0 bg-red-600/30 z-50 pointer-events-none animate-pulse"></div>}
 
       {/* Header (HUD) */}
-      <div className={`absolute top-0 left-0 right-0 ${isMobile ? 'p-2' : 'p-4'} z-20 flex justify-between items-start pointer-events-none`}>
+      <div className={`absolute top-0 left-0 right-0 ${isMobile ? 'p-2' : 'p-4'} z-20 flex justify-between items-start pointer-events-none`} style={{ paddingTop: `calc(${isMobile ? '0.5rem' : '1rem'} + env(safe-area-inset-top))` }}>
         <div className={`flex ${isMobile ? 'gap-1.5' : 'gap-4'} pointer-events-auto`}>
           <GlassCard className={`flex items-center ${isMobile ? 'gap-1.5 px-2 py-1.5' : 'gap-3 px-4 py-2'}`} hoverEffect={false}>
             <ShieldAlert size={isMobile ? 16 : 20} className={damaged ? 'text-red-500 animate-pulse' : hp < 30 ? 'text-orange-400 animate-pulse' : 'text-blue-400'} />
@@ -209,7 +209,7 @@ export default function BattleField({
 
       {/* Main 3D Grid Area */}
       <div className={`flex-1 relative flex items-center justify-center ${isMobile ? 'px-2' : 'px-4'} pt-0 pb-0 ${damaged ? 'translate-x-1 translate-y-1' : ''}`}>
-        <div className={`relative w-full max-w-[min(100vw_-_1rem,_410px)] ${isMobile ? 'max-h-[calc(100dvh-180px)] aspect-[2/3]' : 'max-h-[calc(100vh-240px)] aspect-[3/4]'} transition-all duration-500 ${isMobile ? 'mt-2' : 'mt-8'}`} style={gridStyle}>
+        <div className={`relative w-full max-w-[min(100vw_-_1rem,_410px)] aspect-[2/3] md:aspect-[3/4] transition-all duration-500 ${isMobile ? 'mt-2' : 'mt-8'}`} style={{ ...gridStyle, maxHeight: isMobile ? 'calc(100dvh - 180px - env(safe-area-inset-top))' : 'calc(100vh - 240px)' }}>
           {Array.from({ length: GRID_ROWS * difficulty.cols }).map((_, i) => {
             const r = Math.floor(i / difficulty.cols);
             const c = i % difficulty.cols;

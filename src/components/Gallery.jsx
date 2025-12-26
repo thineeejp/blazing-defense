@@ -14,12 +14,12 @@ export default function Gallery({ onBack }) {
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* タブヘッダー */}
       <div className="absolute top-0 left-0 right-0 z-10 bg-slate-900/80 backdrop-blur-sm border-b border-white/10">
-        <div className="flex items-center justify-center gap-4 p-4">
+        <div className="flex items-center justify-center gap-2 md:gap-4 p-4 flex-wrap">
           {/* ACHIEVEMENTSタブ */}
           <button
             onClick={() => setActiveTab('achievements')}
             className={`
-              flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all
+              flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold text-sm md:text-base transition-all
               ${
                 activeTab === 'achievements'
                   ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/30'
@@ -27,7 +27,7 @@ export default function Gallery({ onBack }) {
               }
             `}
           >
-            <Award size={20} />
+            <Award size={18} className="md:w-5 md:h-5" />
             <span>ACHIEVEMENTS</span>
           </button>
 
@@ -35,7 +35,7 @@ export default function Gallery({ onBack }) {
           <button
             onClick={() => setActiveTab('highscores')}
             className={`
-              flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all
+              flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold text-sm md:text-base transition-all
               ${
                 activeTab === 'highscores'
                   ? 'bg-yellow-500 text-slate-900 shadow-lg shadow-yellow-500/30'
@@ -43,7 +43,7 @@ export default function Gallery({ onBack }) {
               }
             `}
           >
-            <Trophy size={20} />
+            <Trophy size={18} className="md:w-5 md:h-5" />
             <span>HIGH SCORES</span>
           </button>
         </div>

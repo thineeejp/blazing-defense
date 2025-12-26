@@ -36,7 +36,7 @@ export default function DeckBuildPhase({
   };
 
   return (
-    <GameBackground className="flex flex-col h-screen overflow-hidden">
+    <GameBackground className="flex flex-col min-h-[100dvh] overflow-hidden">
       {/* Header */}
       <header className="flex-none pt-12 md:pt-20 pb-4 px-4 z-10">
         <div className="max-w-6xl mx-auto w-full relative">
@@ -76,7 +76,7 @@ export default function DeckBuildPhase({
 
       {/* Card Grid */}
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-        <div className="max-w-6xl mx-auto pb-32">
+        <div className="max-w-6xl mx-auto pb-32" style={{ paddingBottom: 'max(8rem, calc(8rem + env(safe-area-inset-bottom)))' }}>
           <motion.div
             layout
             className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4 mt-4"
@@ -115,7 +115,7 @@ export default function DeckBuildPhase({
       </AnimatePresence>
 
       {/* Footer (Selected Deck) - Fixed Bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-none">
+      <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-none" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {/* Gradient Fade */}
         <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent" />
 
