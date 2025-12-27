@@ -188,18 +188,15 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.4 }}
-
-                className="w-full max-w-5xl flex flex-col items-center relative"
+                className="w-full max-w-5xl flex flex-col"
               >
-                {/* 戻るボタン */}
-                <div className="absolute left-4 -top-14">
-                  <button
-                    onClick={() => setMenuMode('main')}
-                    className="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-white font-bold rounded-lg transition-colors border border-white/10"
-                  >
-                    ← BACK
-                  </button>
-                </div>
+                {/* 戻るボタン（タイトルの上に配置） */}
+                <button
+                  onClick={() => setMenuMode('main')}
+                  className="mb-4 px-4 py-2 text-sm font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded transition-colors self-start ml-4"
+                >
+                  ← BACK
+                </button>
 
                 {/* ミッション選択グリッド */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full px-4">
