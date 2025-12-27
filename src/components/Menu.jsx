@@ -405,7 +405,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                       </div>
 
                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-                        <div className="grid grid-cols-2 gap-6 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                           {/* Left Column: Rules & Intro */}
                           <div className="space-y-4">
                             <p className="text-slate-300 text-sm leading-relaxed">
@@ -502,7 +502,7 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                       </div>
 
                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="bg-slate-950 p-3 rounded border border-slate-800 flex flex-col">
                             <strong className="text-purple-400 block mb-2 text-sm">スコア計算</strong>
                             <div className="space-y-1 text-xs text-slate-400 flex-1">
