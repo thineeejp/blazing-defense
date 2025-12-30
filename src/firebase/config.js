@@ -5,12 +5,12 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  apiKey: 'AIzaSyAdkylfh-FSN4ChzPmw_Ck5jPcDwV6Ttqw',
+  authDomain: 'blazing-defense.firebaseapp.com',
+  projectId: 'blazing-defense',
+  storageBucket: 'blazing-defense.firebasestorage.app',
+  messagingSenderId: '19668192274',
+  appId: '1:19668192274:web:e2234b1a3f49822bc09ccb'
 };
 
 // Firebase初期化
