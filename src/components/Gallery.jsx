@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Trophy, Award } from 'lucide-react';
+import { Trophy, Award, Globe } from 'lucide-react';
 import Achievements from './Achievements';
 import HighScores from './HighScores';
+import Ranking from './Ranking';
 
 /**
  * ギャラリー画面
- * ACHIEVEMENTSとHIGH SCORESをタブで切り替え表示
+ * ACHIEVEMENTS / HIGH SCORES / RANKING をタブで切り替え表示
  */
-export default function Gallery({ onBack }) {
-  const [activeTab, setActiveTab] = useState('achievements'); // 'achievements' | 'highscores'
+export default function Gallery({ onBack, uid }) {
+  const [activeTab, setActiveTab] = useState('achievements'); // 'achievements' | 'highscores' | 'ranking'
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -46,6 +47,22 @@ export default function Gallery({ onBack }) {
             <Trophy size={18} className="md:w-5 md:h-5" />
             <span>HIGH SCORES</span>
           </button>
+
+          {/* RANKINGタブ */}
+          <button
+            onClick={() => setActiveTab('ranking')}
+            className={`
+              flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold text-sm md:text-base transition-all
+              ${
+                activeTab === 'ranking'
+                  ? 'bg-cyan-500 text-slate-900 shadow-lg shadow-cyan-500/30'
+                  : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700 hover:text-white'
+              }
+            `}
+          >
+            <Globe size={18} className="md:w-5 md:h-5" />
+            <span>RANKING</span>
+          </button>
         </div>
       </div>
 
@@ -53,6 +70,7 @@ export default function Gallery({ onBack }) {
       <div className="pt-20 min-h-full pb-8">
         {activeTab === 'achievements' && <Achievements onBack={onBack} />}
         {activeTab === 'highscores' && <HighScores onBack={onBack} />}
+        {activeTab === 'ranking' && <Ranking onBack={onBack} uid={uid} />}
       </div>
     </div>
   );

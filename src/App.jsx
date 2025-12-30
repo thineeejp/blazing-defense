@@ -7,6 +7,7 @@ import BriefingPhase from './components/BriefingPhase';
 import DeckBuildPhase from './components/DeckBuildPhase';
 import BattleField from './components/BattleField';
 import Gallery from './components/Gallery';
+import PlayerNameModal from './components/PlayerNameModal';
 import { DeviceTypeProvider } from './contexts/DeviceTypeContext';
 
 // 新しい定数のインポート
@@ -14,6 +15,11 @@ import { ALL_CARDS } from './constants/cards';
 import { BRIEFING_REWARD_TABLE, OVERFLOW_BONUS } from './constants/equipment';
 import { QUIZ_QUESTIONS } from './constants/quizzes';
 import { MAX_COST } from './constants/game';
+
+// Firebase認証とプレイヤー名管理
+import { ensureAnonymousAuth } from './firebase/auth';
+import { submitScore } from './firebase/ranking';
+import { loadPlayerName, savePlayerName } from './utils/playerName';
 
 // --- データ定義 ---
 
@@ -151,6 +157,12 @@ export default function BlazingDefense() {
   const [clearTime, setClearTime] = useState(0);
   const [globalCostReduction, setGlobalCostReduction] = useState(0);
 
+  // Firebase認証とランキング関連
+  const [uid, setUid] = useState(null);
+  const [playerName, setPlayerName] = useState(() => loadPlayerName());
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [pendingScore, setPendingScore] = useState(null);
+
   const prevPhaseRef = useRef(phase);
   const frameRef = useRef(0);
   const gameLoopRef = useRef(null);
@@ -270,6 +282,51 @@ export default function BlazingDefense() {
     setIsVictory(false);
     setPhase('GAMEOVER');
   };
+
+  // プレイヤー名入力モーダルのハンドラー
+  const handleRequestNameInput = (scoreData) => {
+    setPendingScore(scoreData);
+    setShowNameModal(true);
+  };
+
+  const handleNameSubmit = async (name) => {
+    savePlayerName(name);
+    setPlayerName(name);
+    setShowNameModal(false);
+
+    // Firestoreにスコアを送信
+    if (uid && pendingScore) {
+      try {
+        await submitScore(uid, {
+          playerName: name,
+          score: pendingScore.score,
+          difficulty: pendingScore.difficulty,
+          isVictory: pendingScore.isVictory
+        });
+      } catch (error) {
+        console.error('Failed to submit score:', error);
+      }
+    }
+    setPendingScore(null);
+  };
+
+  const handleNameSkip = () => {
+    setShowNameModal(false);
+    setPendingScore(null);
+  };
+
+  // Firebase匿名認証の初期化
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const authUid = await ensureAnonymousAuth();
+        setUid(authUid);
+      } catch (error) {
+        console.error('Firebase auth failed:', error);
+      }
+    };
+    initAuth();
+  }, []);
 
   useEffect(() => {
     towersRef.current = towers;
@@ -1240,7 +1297,7 @@ export default function BlazingDefense() {
         />
       )}
       {phase === 'GALLERY' && (
-        <Gallery onBack={() => setPhase('MENU')} />
+        <Gallery onBack={() => setPhase('MENU')} uid={uid} />
       )}
       {phase === 'BRIEFING' && (
         <BriefingPhase
@@ -1318,6 +1375,19 @@ export default function BlazingDefense() {
           cost={cost}
           onBackToMenu={handleBackToMenu}
           onRetry={handleRetry}
+          uid={uid}
+          playerName={playerName}
+          onRequestNameInput={handleRequestNameInput}
+        />
+      )}
+
+      {/* プレイヤー名入力モーダル */}
+      {showNameModal && (
+        <PlayerNameModal
+          isOpen={showNameModal}
+          score={pendingScore?.score}
+          onSubmit={handleNameSubmit}
+          onSkip={handleNameSkip}
         />
       )}
     </div>

@@ -2,12 +2,24 @@ import { useState, useEffect, useRef } from 'react';
 import { Clock, Users, ShieldCheck, RefreshCw, ArrowRight, Trophy, Award, Coins } from 'lucide-react';
 import { isHighScore, addHighScore, serializeDeck } from '../utils/highScores';
 import { checkAchievements, updateGameStats, analyzeDeck, trackUsedCards } from '../utils/achievements';
+import { submitScore, fetchPlayerScore } from '../firebase/ranking';
 
 /**
  * ゲームオーバー / ミッション完了画面
  * サンプル.jsxのデザインをベースに実装
  */
-export default function GameOver({ isVictory, scoreData, difficulty, deck, cost, onBackToMenu, onRetry }) {
+export default function GameOver({
+  isVictory,
+  scoreData,
+  difficulty,
+  deck,
+  cost,
+  onBackToMenu,
+  onRetry,
+  uid,
+  playerName,
+  onRequestNameInput
+}) {
   const [gameState, setGameState] = useState('finish'); // finish -> result
   const [highScoreInfo, setHighScoreInfo] = useState(null); // { isNewHighScore, rank }
   const [newAchievements, setNewAchievements] = useState([]); // 新規解除実績
@@ -20,8 +32,9 @@ export default function GameOver({ isVictory, scoreData, difficulty, deck, cost,
     hasSaved.current = true;
 
     const totalScore = scoreData.total;
+    let isLocalHighScore = false;
 
-    // トップ3に入るかチェック
+    // トップ3に入るかチェック（ローカルハイスコア）
     if (isHighScore(totalScore)) {
       // スコアエントリを作成
       const scoreEntry = {
@@ -45,7 +58,42 @@ export default function GameOver({ isVictory, scoreData, difficulty, deck, cost,
       // ランキングに追加
       const result = addHighScore(scoreEntry);
       setHighScoreInfo(result);
+      isLocalHighScore = true;
     }
+
+    // グローバルランキング送信判定
+    const handleGlobalRanking = async () => {
+      if (!uid) return; // 認証なしの場合はスキップ
+
+      try {
+        // 既存のスコアを確認
+        const existingScore = await fetchPlayerScore(uid);
+        const isGlobalHighScore = !existingScore || totalScore > existingScore.score;
+
+        if (isGlobalHighScore) {
+          if (playerName) {
+            // 名前が既に登録済み → 自動でFirestore更新
+            await submitScore(uid, {
+              playerName,
+              score: totalScore,
+              difficulty,
+              isVictory
+            });
+          } else if (isLocalHighScore) {
+            // ローカルハイスコアかつ名前未登録 → 名前入力モーダルを表示
+            onRequestNameInput({
+              score: totalScore,
+              difficulty,
+              isVictory
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check/submit global ranking:', error);
+      }
+    };
+
+    handleGlobalRanking();
 
     // 使用カード履歴を更新（デッキ分析の前に実行）
     trackUsedCards(deck);
