@@ -4,6 +4,7 @@ import { ALL_CARDS } from '../constants/cards';
 import { ArrowRight, Star, CheckCircle, XCircle } from 'lucide-react';
 import GameBackground from './ui/GameBackground';
 import GlassCard from './ui/GlassCard';
+import { useDeviceTypeContext } from '../contexts/DeviceTypeContext';
 
 export default function BriefingPhase({
   round,
@@ -22,6 +23,9 @@ export default function BriefingPhase({
   onStartBattle,
   onBackToTitle,
 }) {
+  // タッチデバイス判定（hover状態の残留防止）
+  const { isTouchDevice } = useDeviceTypeContext();
+
   // CategorySelect: 5種別の選択画面
   if (phase === 'SELECT') {
     return (
@@ -136,12 +140,12 @@ export default function BriefingPhase({
                 <button
                   key={index}
                   onClick={() => onAnswerQuiz(index)}
-                  className="w-full p-3 md:p-5 min-h-[44px] md:min-h-[52px] text-left rounded-xl bg-slate-800/50 border border-slate-600 hover:border-cyan-400 hover:bg-cyan-900/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] active:scale-[0.98] transition-all group flex items-center"
+                  className={`w-full p-3 md:p-5 min-h-[44px] md:min-h-[52px] text-left rounded-xl bg-slate-800/50 border border-slate-600 ${!isTouchDevice ? 'hover:border-cyan-400 hover:bg-cyan-900/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]' : ''} active:scale-[0.98] transition-all group flex items-center`}
                 >
-                  <span className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-3 md:mr-4 text-sm md:text-base group-hover:bg-cyan-500 group-hover:text-slate-900 transition-colors">
+                  <span className={`w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold mr-3 md:mr-4 text-sm md:text-base ${!isTouchDevice ? 'group-hover:bg-cyan-500 group-hover:text-slate-900' : ''} transition-colors`}>
                     {String.fromCharCode(65 + index)}
                   </span>
-                  <span className="text-sm md:text-lg font-bold group-hover:text-cyan-100">{option}</span>
+                  <span className={`text-sm md:text-lg font-bold ${!isTouchDevice ? 'group-hover:text-cyan-100' : ''}`}>{option}</span>
                 </button>
               ))}
             </div>
