@@ -10,9 +10,9 @@ export const ALL_CARDS = {
     tier: 1,
     type: 'red',
     cost: 40,
-    duration: 1350, // 22.5秒
+    duration: 1500, // 25秒
     icon: Shield,
-    desc: '【消火】周囲1マス(3×3)へ散水 [22秒]',
+    desc: '【消火】周囲1マス(3×3)へ散水 [25秒]',
     rangeType: 'surround',
     power: 20,
     speed: 40,
@@ -26,9 +26,9 @@ export const ALL_CARDS = {
     tier: 1,
     type: 'red',
     cost: 60,
-    duration: 1620, // 27秒
+    duration: 1500, // 25秒
     icon: ShieldAlert,
-    desc: '【特効】周囲1マス(3×3)に粉末散布（B火災2倍）[27秒]',
+    desc: '【特効】周囲1マス(3×3)に粉末散布（B火災2倍）[25秒]',
     rangeType: 'surround',
     power: 30,
     speed: 45,
@@ -41,7 +41,7 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 2,
     type: 'red',
-    cost: 95,
+    cost: 80,
     duration: 2700, // 45秒
     icon: Droplets,
     desc: '【消火】縦1列に強力放水＋ノックバック [45秒]',
@@ -58,12 +58,12 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 2,
     type: 'red',
-    cost: 105,
+    cost: 100,
     duration: 3600, // 60秒
     icon: ShowerHead,
     desc: '【消火】横3行×全列を散水 [60秒]',
     rangeType: 'tripleRow',
-    power: 25,
+    power: 30,
     speed: 60,
     damageType: 'water',
   },
@@ -74,8 +74,8 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 3,
     type: 'red',
-    cost: 140,
-    duration: 1530, // 25.5秒
+    cost: 120,
+    duration: 1500, // 25秒
     icon: Circle,
     desc: '【特効】周囲3×3＋横1行に大ダメージ（B火災2倍）[25秒]',
     rangeType: 'surroundRow',
@@ -91,11 +91,11 @@ export const ALL_CARDS = {
     tier: 3,
     type: 'red',
     cost: 120,
-    duration: 1275, // 21秒
+    duration: 1500, // 25秒
     icon: CloudFog,
-    desc: '【特効】全画面へ持続ダメージ（C火災1.5倍）[21秒]',
+    desc: '【特効】全画面へ持続ダメージ（C火災1.5倍）[25秒]',
     rangeType: 'global',
-    power: 12,
+    power: 15,
     speed: 20,
     damageType: 'gas',
   },
