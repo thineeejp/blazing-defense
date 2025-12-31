@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Globe, ArrowLeft, Loader2 } from 'lucide-react';
+import { Globe, ArrowLeft, Loader2, HelpCircle, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import GameBackground from './ui/GameBackground';
 import GlassCard from './ui/GlassCard';
 import { fetchAllRankings } from '../firebase/ranking';
@@ -14,6 +15,7 @@ export default function Ranking({ onBack, uid }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPlayers, setTotalPlayers] = useState(0);
+  const [showTierHelp, setShowTierHelp] = useState(false);
 
   // ランキングデータを取得
   const loadRankings = useCallback(async () => {
@@ -69,9 +71,18 @@ export default function Ranking({ onBack, uid }) {
           <div className="flex items-center gap-4">
             <Globe size={38} className="text-cyan-400" />
             <div>
-              <h1 className="font-orbitron text-3xl md:text-4xl font-black text-white">
-                GLOBAL RANKING
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="font-orbitron text-3xl md:text-4xl font-black text-white">
+                  GLOBAL RANKING
+                </h1>
+                <button
+                  onClick={() => setShowTierHelp(true)}
+                  className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-full transition-all"
+                  title="称号について"
+                >
+                  <HelpCircle size={20} />
+                </button>
+              </div>
               <p className="text-slate-400 text-sm">
                 {totalPlayers > 0 ? `${totalPlayers} Players` : 'Loading...'}
               </p>
@@ -154,6 +165,12 @@ export default function Ranking({ onBack, uid }) {
           </>
         )}
       </div>
+
+      {/* 称号説明モーダル */}
+      <TierHelpModal
+        isOpen={showTierHelp}
+        onClose={() => setShowTierHelp(false)}
+      />
     </GameBackground>
   );
 }
@@ -220,5 +237,118 @@ function RankingEntry({ player, isMe, delay = 0 }) {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * 称号説明データ
+ */
+const TIER_INFO = [
+  { emoji: '👑', name: 'MASTER', rate: '2000+', percent: '上位1%', gradient: 'from-yellow-500/30 via-amber-500/20 to-orange-500/30', border: 'border-yellow-500/50', text: 'text-yellow-400' },
+  { emoji: '💠', name: 'DIAMOND', rate: '1900+', percent: '上位5%', gradient: 'from-cyan-400/30 via-sky-400/20 to-blue-400/30', border: 'border-cyan-400/50', text: 'text-cyan-300' },
+  { emoji: '💎', name: 'PLATINUM', rate: '1800+', percent: '上位15%', gradient: 'from-purple-400/30 via-violet-400/20 to-fuchsia-400/30', border: 'border-purple-400/50', text: 'text-purple-300' },
+  { emoji: '🥇', name: 'GOLD', rate: '1700+', percent: '上位30%', gradient: 'from-yellow-600/30 via-amber-500/20 to-yellow-500/30', border: 'border-yellow-600/50', text: 'text-yellow-500' },
+  { emoji: '🥈', name: 'SILVER', rate: '1500+', percent: '上位60%', gradient: 'from-slate-400/30 via-gray-400/20 to-slate-300/30', border: 'border-slate-400/50', text: 'text-slate-300' },
+  { emoji: '🥉', name: 'BRONZE', rate: '-', percent: 'スタート', gradient: 'from-amber-700/30 via-orange-700/20 to-amber-600/30', border: 'border-amber-600/50', text: 'text-amber-600' },
+];
+
+/**
+ * 称号説明モーダル
+ */
+function TierHelpModal({ isOpen, onClose }) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          {/* オーバーレイ */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-slate-950/85 backdrop-blur-md"
+            onClick={onClose}
+          />
+
+          {/* モーダル */}
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="relative w-full max-w-md bg-gradient-to-br from-slate-800/95 to-slate-900/95 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden"
+          >
+            {/* 光の反射エフェクト */}
+            <div className="absolute top-0 -left-full w-1/2 h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 animate-[shimmer_3s_infinite]" />
+
+            {/* 閉じるボタン */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors z-10"
+            >
+              <X size={20} />
+            </button>
+
+            {/* コンテンツ */}
+            <div className="relative p-6">
+              {/* ヘッダー */}
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-black text-white font-orbitron tracking-wide">
+                  RANK TIERS
+                </h2>
+                <p className="text-slate-400 text-xs mt-1">
+                  レートに応じて称号が決まります
+                </p>
+              </div>
+
+              {/* 称号リスト */}
+              <div className="space-y-2">
+                {TIER_INFO.map((tier, index) => (
+                  <motion.div
+                    key={tier.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.08, duration: 0.3 }}
+                    className={`
+                      flex items-center gap-3 p-3 rounded-xl border
+                      bg-gradient-to-r ${tier.gradient} ${tier.border}
+                    `}
+                  >
+                    {/* 絵文字 */}
+                    <div className="text-2xl flex-shrink-0 w-10 text-center">
+                      {tier.emoji}
+                    </div>
+
+                    {/* 称号名 */}
+                    <div className="flex-1">
+                      <div className={`font-bold text-sm ${tier.text}`}>
+                        {tier.name}
+                      </div>
+                      <div className="text-slate-500 text-xs">
+                        Rate {tier.rate}
+                      </div>
+                    </div>
+
+                    {/* 目安 */}
+                    <div className="text-right">
+                      <div className="text-slate-300 text-xs font-bold">
+                        {tier.percent}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* 補足説明 */}
+              <div className="mt-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  ※ レート = 順位(80%) + スコア(20%)<br />
+                  ※ 目安%は概算です（プレイヤー数により変動）
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

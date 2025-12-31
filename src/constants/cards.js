@@ -9,10 +9,10 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 1,
     type: 'red',
-    cost: 30,
-    duration: 1500, // 25秒
+    cost: 40,
+    duration: 1350, // 22.5秒
     icon: Shield,
-    desc: '【消火】周囲1マス(3×3)へ散水 [25秒]',
+    desc: '【消火】周囲1マス(3×3)へ散水 [22秒]',
     rangeType: 'surround',
     power: 20,
     speed: 40,
@@ -25,10 +25,10 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 1,
     type: 'red',
-    cost: 50,
-    duration: 1800, // 30秒
+    cost: 60,
+    duration: 1620, // 27秒
     icon: ShieldAlert,
-    desc: '【特効】周囲1マス(3×3)に粉末散布（B火災2倍）[30秒]',
+    desc: '【特効】周囲1マス(3×3)に粉末散布（B火災2倍）[27秒]',
     rangeType: 'surround',
     power: 30,
     speed: 45,
@@ -41,12 +41,12 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 2,
     type: 'red',
-    cost: 80,
+    cost: 95,
     duration: 2700, // 45秒
     icon: Droplets,
     desc: '【消火】縦1列に強力放水＋ノックバック [45秒]',
     rangeType: 'line',
-    power: 40,
+    power: 35,
     speed: 50,
     damageType: 'water',
     knockback: 0.1,
@@ -58,13 +58,13 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 2,
     type: 'red',
-    cost: 90,
+    cost: 105,
     duration: 3600, // 60秒
     icon: ShowerHead,
-    desc: '【消火】横3行×全列を高速散水 [60秒]',
+    desc: '【消火】横3行×全列を散水 [60秒]',
     rangeType: 'tripleRow',
-    power: 15,
-    speed: 30,
+    power: 25,
+    speed: 60,
     damageType: 'water',
   },
 
@@ -74,10 +74,10 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 3,
     type: 'red',
-    cost: 120,
-    duration: 1800, // 30秒
+    cost: 140,
+    duration: 1530, // 25.5秒
     icon: Circle,
-    desc: '【特効】周囲3×3＋横1行に大ダメージ（B火災2倍）[30秒]',
+    desc: '【特効】周囲3×3＋横1行に大ダメージ（B火災2倍）[25秒]',
     rangeType: 'surroundRow',
     power: 80,
     speed: 60,
@@ -90,13 +90,13 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 3,
     type: 'red',
-    cost: 100,
-    duration: 1500, // 25秒
+    cost: 120,
+    duration: 1275, // 21秒
     icon: CloudFog,
-    desc: '【特効】全画面へ持続ダメージ（C火災1.5倍）[25秒]',
+    desc: '【特効】全画面へ持続ダメージ（C火災1.5倍）[21秒]',
     rangeType: 'global',
-    power: 4,
-    speed: 5,
+    power: 12,
+    speed: 20,
     damageType: 'gas',
   },
 
