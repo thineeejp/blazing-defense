@@ -152,6 +152,7 @@ export default function BlazingDefense() {
   const [isVictory, setIsVictory] = useState(false);
   const [evacuatedCount, setEvacuatedCount] = useState(0);
   const [timeLimit] = useState(5400); // 1.5分 = 90秒 × 60FPS
+  const [displayTime, setDisplayTime] = useState(0); // タイマー表示用（毎秒更新）
   const [evacuationGoal, setEvacuationGoal] = useState(100);
   const [defeatedEnemies, setDefeatedEnemies] = useState(0);
   const [clearTime, setClearTime] = useState(0);
@@ -399,6 +400,8 @@ export default function BlazingDefense() {
     // 避難速度適用（基本1.0 + ブースト）
     const currentEvacSpeed = 1.0 + evacBoost;
     if (frameRef.current % 60 === 0) {
+      // タイマー表示を毎秒更新（re-render保証）
+      setDisplayTime(frameRef.current);
       setEvacuatedCount((count) => {
         const newCount = Math.min(evacuationGoal, count + currentEvacSpeed);
         evacuatedCountRef.current = newCount;  // refを即座に更新
@@ -1271,6 +1274,7 @@ export default function BlazingDefense() {
     setSelectedCard(null);
     setIsPaused(false);
     frameRef.current = 0;
+    setDisplayTime(0);
 
     // 勝利条件・スコアシステムの初期化
     setIsVictory(false);
@@ -1340,7 +1344,7 @@ export default function BlazingDefense() {
           prevCost={prevCost}
           evacuatedCount={evacuatedCount}
           evacuationGoal={evacuationGoal}
-          frameCount={frameRef.current}
+          frameCount={displayTime}
           timeLimit={timeLimit}
           towers={towers}
           enemies={enemies}
