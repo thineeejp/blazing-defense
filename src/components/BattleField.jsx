@@ -285,7 +285,10 @@ export default function BattleField({
                             <div className="w-8 h-0.5 bg-slate-900/50 mt-0.5 rounded-full overflow-hidden">
                               <div className={`h-full ${barColor}`} style={{ width: `${percentage}%` }} />
                             </div>
-                            <div className={`text-[7px] font-bold mt-0.5 font-mono ${percentage > 20 ? 'text-white' : 'text-red-300 animate-pulse'}`}>
+                            <div
+                              key={percentage > 20 ? 'normal' : 'warning'}
+                              className={`text-[7px] font-bold mt-0.5 font-mono ${percentage > 20 ? 'text-white' : 'text-red-300 animate-pulse'}`}
+                            >
                               {remainingSec}s
                             </div>
                           </>
