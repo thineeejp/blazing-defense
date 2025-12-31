@@ -150,7 +150,7 @@ export default function PlayerNameModal({ isOpen, score, onSubmit, onSkip }) {
                     }
                   `}
                 >
-                  SUBMIT
+                  登録する
                 </button>
               </div>
 
