@@ -409,9 +409,12 @@ export default function BlazingDefense() {
       });
     }
 
-    const spawnRate = Math.max(30, difficultyRef.current.spawnRate - Math.floor(frameRef.current / 500));
-    if (frameRef.current % spawnRate === 0) {
-      spawnEnemy();
+    // 開始5秒（300フレーム）は敵スポーン無し
+    if (frameRef.current >= 300) {
+      const spawnRate = Math.max(30, difficultyRef.current.spawnRate - Math.floor(frameRef.current / 500));
+      if (frameRef.current % spawnRate === 0) {
+        spawnEnemy();
+      }
     }
 
     // 防火戸で塞がれている行

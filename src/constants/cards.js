@@ -42,11 +42,11 @@ export const ALL_CARDS = {
     tier: 2,
     type: 'red',
     cost: 80,
-    duration: 2700, // 45秒
+    duration: 2100, // 35秒
     icon: Droplets,
-    desc: '【消火】縦1列に強力放水＋ノックバック [45秒]',
+    desc: '【消火】縦1列に強力放水＋ノックバック [35秒]',
     rangeType: 'line',
-    power: 35,
+    power: 40,
     speed: 50,
     damageType: 'water',
     knockback: 0.1,
@@ -58,7 +58,7 @@ export const ALL_CARDS = {
     category: 'fire',
     tier: 2,
     type: 'red',
-    cost: 100,
+    cost: 90,
     duration: 3600, // 60秒
     icon: ShowerHead,
     desc: '【消火】横3行×全列を散水 [60秒]',
