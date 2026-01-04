@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, AlertTriangle, Award, Sword, HelpCircle, X, Flame, Bell, Users, Shield, Activity, Building, Zap, Maximize2, Minimize2 } from 'lucide-react';
+import { Play, AlertTriangle, Award, HelpCircle, X, Flame, Bell, Users, Shield, Activity, Building, Zap, Maximize2, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameBackground from './ui/GameBackground';
 import GlassCard from './ui/GlassCard';
@@ -151,7 +151,13 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                   className="p-8 flex flex-col items-center justify-center h-56 group-hover:border-red-500/50"
                   hoverEffect={true}
                 >
-                  <Sword size={50} className="text-red-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
+                  <Flame
+                    size={50}
+                    className="text-red-400 mb-4 group-hover:scale-110 transition-all duration-300"
+                    style={{
+                      filter: 'drop-shadow(0 0 8px #ef4444) drop-shadow(0 0 20px #f97316)'
+                    }}
+                  />
                   <h2 className="text-3xl font-black text-white mb-2 font-orbitron">BATTLE</h2>
                   <p className="text-slate-400 text-center text-sm">ミッション選択</p>
                 </GlassCard>
@@ -162,7 +168,13 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                   className="p-8 flex flex-col items-center justify-center h-56 group-hover:border-purple-500/50"
                   hoverEffect={true}
                 >
-                  <Award size={50} className="text-purple-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
+                  <Award
+                    size={50}
+                    className="text-purple-400 mb-4 group-hover:scale-110 transition-all duration-300"
+                    style={{
+                      filter: 'drop-shadow(0 0 8px #a855f7) drop-shadow(0 0 20px #ec4899)'
+                    }}
+                  />
                   <h2 className="text-3xl font-black text-white mb-2 font-orbitron">GALLERY</h2>
                   <p className="text-slate-400 text-center text-sm">実績 & ハイスコア</p>
                 </GlassCard>
@@ -173,7 +185,13 @@ export default function Menu({ missions, onStartBattle, onShowGallery, isFirstLa
                   className="p-8 flex flex-col items-center justify-center h-56 group-hover:border-green-500/50"
                   hoverEffect={true}
                 >
-                  <HelpCircle size={50} className="text-green-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
+                  <HelpCircle
+                    size={50}
+                    className="text-green-400 mb-4 group-hover:scale-110 transition-all duration-300"
+                    style={{
+                      filter: 'drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 20px #06b6d4)'
+                    }}
+                  />
                   <h2 className="text-2xl font-black text-white mb-2 font-orbitron text-center">HOW TO<br />PLAY</h2>
                   <p className="text-slate-400 text-center text-sm">遊び方説明</p>
                 </GlassCard>
