@@ -53,7 +53,7 @@ export default function DeckBuildPhase({
             <h1 className="text-3xl md:text-4xl font-black font-orbitron text-white tracking-wider mb-2">
               <span className="text-cyan-400">{'///'}</span> DECK BUILD <span className="text-cyan-400">PHASE</span>
             </h1>
-            <p className="text-slate-400 text-xs font-mono tracking-widest">最大6つまで選択可能</p>
+            <p className="text-slate-400 text-xs font-mono tracking-widest">最大6つまで選択可能 ｜ Tier1は登録無料</p>
           </div>
 
           {/* モバイル用コスト表示 */}
@@ -269,12 +269,20 @@ function CardItemThumbnail({ card, isSelected, onClick }) {
           TIER-{t.label}
         </div>
 
-        {/* Cost */}
-        <div className="flex flex-col items-end leading-none">
-          <span className="text-[8px] text-slate-500 font-mono">COST</span>
-          <span className={`font-mono font-bold text-sm ${card.cost === 0 ? 'text-green-400' : 'text-yellow-400'}`}>
-            {card.cost === 0 ? 'FREE' : card.cost}
-          </span>
+        {/* Cost - 登録コストと配置コストを分けて表示 */}
+        <div className="flex flex-col items-end leading-none text-[10px] font-mono gap-0.5">
+          {/* 登録コスト */}
+          <div className="flex items-center gap-1">
+            <span className="text-slate-500">登録:</span>
+            <span className={card.tier === 1 ? 'text-green-400 font-bold' : 'text-yellow-400'}>
+              {card.tier === 1 ? 'FREE' : card.cost}
+            </span>
+          </div>
+          {/* 配置コスト */}
+          <div className="flex items-center gap-1">
+            <span className="text-slate-500">配置:</span>
+            <span className="text-yellow-400">{card.cost}</span>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -314,13 +322,20 @@ function CardDetailOverlay({ card, isSelected, canSelect, selectCost: _selectCos
           <h2 className="relative z-10 text-lg md:text-2xl font-black text-white font-orbitron tracking-wide mb-3 text-center">
             {card.name}
           </h2>
-          {/* Tier + コスト（2行目） */}
-          <div className="relative z-10 flex items-center justify-center gap-3">
+          {/* Tier + 登録コスト + 配置コスト（2行目） */}
+          <div className="relative z-10 flex flex-wrap items-center justify-center gap-2">
             <span className="px-3 py-1 bg-slate-700 rounded text-sm font-mono text-cyan-400 border border-cyan-500/30">
               Tier {card.tier}
             </span>
+            <span className={`px-3 py-1 rounded text-sm font-mono font-bold border ${
+              card.tier === 1
+                ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+            }`}>
+              登録 {card.tier === 1 ? 'FREE' : card.cost}
+            </span>
             <span className="px-3 py-1 bg-yellow-500/20 rounded text-sm font-mono font-bold text-yellow-400 border border-yellow-500/30">
-              コスト {card.cost}
+              配置 {card.cost}
             </span>
           </div>
         </div>
